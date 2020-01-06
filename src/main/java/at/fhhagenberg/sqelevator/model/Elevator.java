@@ -1,9 +1,13 @@
 package at.fhhagenberg.sqelevator.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Elevator {
     private int elevatorNumber;
     private int maximumPayload;
     private ElevatorStatus elevatorStatus;
+    private List<ElevatorFloor> elevatorFloors = new ArrayList<>();
 
     public int getElevatorNumber() {
         return elevatorNumber;
@@ -27,5 +31,22 @@ public class Elevator {
 
     public void setElevatorStatus(ElevatorStatus elevatorStatus) {
         this.elevatorStatus = elevatorStatus;
+    }
+
+    public List<ElevatorFloor> getElevatorFloors() {
+        return elevatorFloors;
+    }
+
+    public void setElevatorFloors(List<ElevatorFloor> elevatorFloors) {
+        this.elevatorFloors = elevatorFloors;
+    }
+
+    public void addElevatorFloor(ElevatorFloor elevatorFloor) {
+        this.elevatorFloors.add(elevatorFloor);
+    }
+
+    @Override
+    public String toString() {
+        return "Elevator " + elevatorNumber;
     }
 }

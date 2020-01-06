@@ -7,6 +7,7 @@ public class ElevatorFloor {
     private BooleanProperty downRequest = new SimpleBooleanProperty();
     private BooleanProperty upRequest = new SimpleBooleanProperty();
     private BooleanProperty serviceEnabled = new SimpleBooleanProperty();
+    private Floor floor;
 
     public boolean isDownRequest() {
         return downRequest.get();
@@ -42,5 +43,13 @@ public class ElevatorFloor {
 
     public void setServiceEnabled(boolean serviceEnabled) {
         this.serviceEnabled.set(serviceEnabled);
+    }
+
+    public Floor getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Floor floor) {
+        this.floor = floor;
     }
 }

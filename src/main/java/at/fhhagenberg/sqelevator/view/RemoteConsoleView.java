@@ -1,19 +1,31 @@
 package at.fhhagenberg.sqelevator.view;
 
-import at.fhhagenberg.sqelevator.model.ElevatorFloor;
+import at.fhhagenberg.sqelevator.model.*;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import java.lang.Comparable;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class RemoteConsoleView extends Application {
-    // private RemoteConsole object
+    private RemoteConsole remoteConsole;
+    private ObjectProperty<Elevator> currentElevator = new SimpleObjectProperty<>();
 
     public static void main(String[] args) {
         launch(args);
@@ -23,8 +35,24 @@ public class RemoteConsoleView extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Elevator Remote Console");
 
+        this.remoteConsole = DummyRemoteConsole.generate();
+        this.currentElevator = new SimpleObjectProperty<>(this.remoteConsole.getElevators().get(0));
 
-        Scene scene = new Scene(this.getElevatorStatusPane(), 600, 600);
+        VBox masterPane = new VBox();
+
+        HBox statusControlPane = new HBox();
+        statusControlPane.getChildren().addAll(this.getElevatorStatusPane(), this.getElevatorStatusControlPane());
+        statusControlPane.setSpacing(20);
+
+        HBox elevatorAndAlarmListPane = new HBox();
+        elevatorAndAlarmListPane.getChildren().addAll(this.getElevatorListPane(), this.getAlarmListPane());
+        elevatorAndAlarmListPane.setSpacing(20);
+
+        masterPane.getChildren().addAll(statusControlPane, elevatorAndAlarmListPane);
+        masterPane.setSpacing(20);
+        masterPane.setPadding(new Insets(20));
+
+        Scene scene = new Scene(masterPane, 1200, 900, Color.WHITE);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -33,25 +61,218 @@ public class RemoteConsoleView extends Application {
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
         elevatorStatusPane.addColumn(0, this.getElevatorPositionArrowPane());
-        elevatorStatusPane.addColumn(1, this.getElevatorFloorStatusPane());
+        elevatorStatusPane.addColumn(1, this.getFloorsStatusPane());
+
+        elevatorStatusPane.setBorder(this.getThinBlackBorder());
+        elevatorStatusPane.setPadding(new Insets(5));
 
         return elevatorStatusPane;
     }
 
-    private Pane getElevatorPositionArrowPane() {
-        // TODO implement
-        return new GridPane();
+    private Pane getElevatorStatusControlPane() {
+        VBox pane = new VBox();
+        pane.setSpacing(10);
+
+        pane.getChildren().addAll(this.getModeControl(),
+                this.getDoorsControl(),
+                this.getSpeedAndPayloadControl(),
+                this.getCurrentTargetFloorPane(),
+                this.getIsConectedPane());
+        return pane;
     }
 
-    private Pane getElevatorFloorStatusPane() {
-        ElevatorFloor elevatorFloor = new ElevatorFloor(); // TODO: switch to actual object
+    private Pane getModeControl() {
+        HBox box = new HBox();
+
+        Label modeLabel = new Label("Mode");
+        modeLabel.setPrefWidth(100.0);
+        modeLabel.setStyle("-fx-font-size: 20;");
+        modeLabel.setPadding(new Insets(20, 0, 20, 0));
+
+        Label automatic = this.getControlLabelStyled("Automatic");
+        Label manual = this.getControlLabelStyled("Manual");
+
+        box.getChildren().addAll(modeLabel, automatic, manual);
+        box.setPadding(new Insets(10));
+        box.setBorder(this.getThinBlackBorder());
+        return box;
+    }
+
+    private Pane getDoorsControl() {
+        HBox box = new HBox();
+
+        Label modeLabel = new Label("Doors");
+        modeLabel.setPrefWidth(100.0);
+        modeLabel.setStyle("-fx-font-size: 20;");
+        modeLabel.setPadding(new Insets(20, 0, 20, 0));
+
+        Label automatic = this.getControlLabelStyled("Open");
+        Label manual = this.getControlLabelStyled("Closed");
+
+        box.getChildren().addAll(modeLabel, automatic, manual);
+        box.setPadding(new Insets(10));
+        box.setBorder(this.getThinBlackBorder());
+        return box;
+    }
+
+    private Pane getSpeedAndPayloadControl() {
+        BorderPane speedAndPayloadControl = new BorderPane();
+        speedAndPayloadControl.setLeft(this.getSpeedControl());
+        speedAndPayloadControl.setRight(this.getPayloadControl());
+        return speedAndPayloadControl;
+    }
+
+    private Pane getSpeedControl() {
+        Label speedLabel = new Label("Speed: ");
+        Label currentSpeedLabel = new Label("10km/h");
+        currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
+
+        speedLabel.setStyle("-fx-font-size: 20;");
+        currentSpeedLabel.setStyle("-fx-font-size: 20;");
+
+        BorderPane pane = new BorderPane();
+        pane.setLeft(speedLabel);
+        pane.setRight(currentSpeedLabel);
+        pane.setBorder(this.getThinBlackBorder());
+        pane.setPadding(new Insets(15, 5, 15, 5));
+        return pane;
+    }
+
+    private Pane getPayloadControl() {
+        Label payloadLabel = new Label("Payload: ");
+        Label currentPayloadLabel = new Label("100kg");
+        currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
+
+        payloadLabel.setStyle("-fx-font-size: 20;");
+        currentPayloadLabel.setStyle("-fx-font-size: 20;");
+
+        BorderPane pane = new BorderPane();
+        pane.setLeft(payloadLabel);
+        pane.setRight(currentPayloadLabel);
+        pane.setBorder(this.getThinBlackBorder());
+        pane.setPadding(new Insets(15, 5, 15, 5));
+        return pane;
+    }
+
+    private Pane getCurrentTargetFloorPane() {
+        Label label = new Label ("Current Target Floor: ");
+        label.setStyle("-fx-font-size: 20;");
+
+        // TODO: make value field not-editable when in automatic mode
+        TextField value = new TextField("1");
+        value.setStyle("-fx-font-size: 20;");
+
+        label.setPadding(new Insets(20, 5, 20, 5));
+        value.setMaxWidth(80.0);
+        value.setAlignment(Pos.CENTER_RIGHT);
+
+        VBox valueWrapper = new VBox(value);
+        valueWrapper.setPadding(new Insets(15, 5, 15, 5));
+
+        BorderPane pane = new BorderPane();
+        pane.setPadding(new Insets(0, 5, 0, 5));
+        pane.setLeft(label);
+        pane.setRight(valueWrapper);
+        pane.setBorder(this.getThinBlackBorder());
+
+        return pane;
+    }
+
+    private Label getControlLabelStyled(String text) {
+        Label label = new Label(text);
+        label.setAlignment(Pos.CENTER);
+        label.setBorder(this.getThinBlackBorder());
+        label.setStyle("-fx-font-size: 20;");
+        label.setPrefWidth(120.0);
+        label.setPadding(new Insets(20, 0, 20, 0));
+        return label;
+    }
+
+    private Pane getElevatorPositionArrowPane() {
+        Label positionLabel = new Label("Position");
+        positionLabel.setStyle("-fx-font-size: 20;");
+        positionLabel.setPadding(new Insets(5));
+
+        Polygon arrow1 = new Polygon();
+        arrow1.getPoints().addAll(new Double[] {
+            30.0, 20.0,
+            10.0, 45.0,
+            23.0, 45.0,
+            23.0, 120.0,
+            37.0, 120.0,
+            37.0, 45.0,
+            50.0, 45.0,
+            30.0, 20.0
+        });
+
+        arrow1.setFill(Color.TRANSPARENT);
+        arrow1.setStroke(Color.BLACK);
+
+        VBox arrow1Wrapper = new VBox(arrow1);
+        arrow1Wrapper.setPadding(new Insets(45, 5, 5, 15));
+
+        Polygon rectangle = new Polygon();
+        rectangle.getPoints().addAll(new Double[] {
+           23.0, 20.0,
+           37.0, 20.0,
+           37.0, 30.0,
+           23.0, 30.0,
+           23.0, 20.0
+        });
+
+        rectangle.setFill(Color.LIGHTGRAY);
+        rectangle.setStroke(Color.BLACK);
+
+        VBox rectangleWrapper = new VBox(rectangle);
+        rectangleWrapper.setPadding(new Insets(0, 5, 0, 29));
+
+        Polygon arrow2 = new Polygon();
+        arrow2.getPoints().addAll(new Double[] {
+            23.0, 20.0,
+            23.0, 95.0,
+            10.0, 95.0,
+            30.0, 120.0,
+            50.0, 95.0,
+            37.0, 95.0,
+            37.0, 20.0,
+            23.0, 20.0
+        });
+
+        arrow2.setFill((Color.TRANSPARENT));
+        arrow2.setStroke(Color.BLACK);
+
+        VBox arrow2Wrapper = new VBox(arrow2);
+        arrow2Wrapper.setPadding(new Insets(5, 5, 15, 15));
+
+        VBox pane = new VBox(positionLabel, arrow1Wrapper, rectangleWrapper, arrow2Wrapper);
+        return pane;
+    }
+
+    private Pane getFloorsStatusPane() {
+        VBox floorsStatusPane = new VBox();
+
+        for (ElevatorFloor elevatorFloor :
+                currentElevator.get().getElevatorFloors()
+                .stream().sorted(Comparator.comparing(ElevatorFloor::getFloor).reversed())
+                .collect(Collectors.toList())){
+            floorsStatusPane.getChildren().add(this.getElevatorFloorStatusPane(elevatorFloor));
+        }
+
+        floorsStatusPane.setSpacing(5);
+        return floorsStatusPane;
+    }
+
+    private Pane getElevatorFloorStatusPane(ElevatorFloor elevatorFloor) {
         GridPane elevatorFloorStatusPane = new GridPane();
+
+        // column 0 - door sign
+        elevatorFloorStatusPane.addColumn(0, this.getDoorSignForFloorPane(elevatorFloor));
 
         // column 1 - floor request
         elevatorFloorStatusPane.addColumn(1, this.getFloorRequestLabel(elevatorFloor));
 
         // column 2 - floor label
-        elevatorFloorStatusPane.addColumn(2, this.getFloorNameLabel());
+        elevatorFloorStatusPane.addColumn(2, this.getFloorNameLabel(elevatorFloor.getFloor()));
 
         // column 3 - service enabled
         elevatorFloorStatusPane.addColumn(3, this.getServiceEnabledLabel(elevatorFloor));
@@ -67,6 +288,32 @@ public class RemoteConsoleView extends Application {
        return new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
                         null, new BorderWidths(1)));
+    }
+
+    private Pane getDoorSignForFloorPane(ElevatorFloor elevatorFloor) {
+        int dummyPosition = 2;
+
+        Rectangle doorOutline = new Rectangle(60, 60);
+        doorOutline.setFill(Color.TRANSPARENT);
+        doorOutline.setStroke(Color.GRAY);
+        doorOutline.getStrokeDashArray().addAll(2.0, 2.0);
+
+        Rectangle door1 = new Rectangle(5, 10, 24, 40);
+        door1.setFill(Color.TRANSPARENT);
+
+        Rectangle door2 = new Rectangle(31, 10, 24, 40);
+        door2.setFill(Color.TRANSPARENT);
+
+        // TODO: bind stroke color
+        if (dummyPosition == elevatorFloor.getFloor().getFloorNumber()) {
+            door1.setStroke(Color.GRAY);
+            door2.setStroke(Color.GRAY);
+        }
+
+        Group group = new Group(doorOutline, door1, door2);
+        HBox groupWrapper = new HBox(group);
+        groupWrapper.setPadding(new Insets(10));
+        return new VBox(groupWrapper);
     }
 
     private Pane getFloorRequestLabel (ElevatorFloor elevatorFloor) {
@@ -85,8 +332,8 @@ public class RemoteConsoleView extends Application {
         return wrapper;
     }
 
-    private Pane getFloorNameLabel() {
-        Label floorLabel = new Label("Floor");
+    private Pane getFloorNameLabel(Floor floor) {
+        Label floorLabel = new Label("Floor " + floor.getFloorNumber());
         floorLabel.setStyle("-fx-font-size: 20;");
 
         HBox wrapper = new HBox(floorLabel);
@@ -182,5 +429,78 @@ public class RemoteConsoleView extends Application {
         HBox wrapper = new HBox(pane);
         wrapper.setPadding(new Insets(10));
         return wrapper;
+    }
+
+    private Pane getElevatorListPane() {
+        VBox pane = new VBox();
+
+        Label elevatorListLabel = new Label("Elevator List");
+        elevatorListLabel.setStyle("-fx-font-size: 22;");
+
+        ListView<Elevator> elevatorList = new ListView<>();
+        elevatorList.setBorder(this.getThinBlackBorder());
+        elevatorList.setItems(remoteConsole.getElevators());
+        VBox.setVgrow(elevatorList, Priority.SOMETIMES);
+
+        currentElevator.bind(elevatorList.getSelectionModel().selectedItemProperty());
+        elevatorList.setCellFactory((cell) -> {
+            return new ListCell<>() {
+                @Override
+                protected void updateItem(Elevator elevator, boolean b) {
+                    super.updateItem(elevator, b);
+
+                    if (elevator != null) {
+                        setText(elevator.toString());
+                        setFont(Font.font(20.0));
+                    }
+                }
+            };
+        });
+
+        pane.getChildren().addAll(elevatorListLabel, elevatorList);
+        return pane;
+    }
+
+    private Pane getAlarmListPane() {
+        VBox pane = new VBox();
+
+        Label alarmListLabel = new Label("Alarm List");
+        alarmListLabel.setStyle("-fx-font-size: 22;");
+
+        ListView<Alarm> alarmList = new ListView<>();
+        alarmList.setBorder(this.getThinBlackBorder());
+        alarmList.setItems(remoteConsole.getAlarms());
+        VBox.setVgrow(alarmList, Priority.SOMETIMES);
+
+        alarmList.setCellFactory(cell -> {
+            return new ListCell<>() {
+                @Override
+                protected void updateItem(Alarm alarm, boolean b) {
+                    super.updateItem(alarm, b);
+
+                    if (alarm != null) {
+                        setText(alarm.getTimestamp() + " " + alarm.getMessage());
+                        setFont(Font.font(14.0));
+                    }
+                }
+            };
+        });
+
+        pane.getChildren().addAll(alarmListLabel, alarmList);
+        return pane;
+    }
+
+    private Pane getIsConectedPane() {
+        Circle isConnectedStatus = new Circle(8.0);
+        isConnectedStatus.setFill(Color.GREEN);
+
+        VBox connectedStatusBox = new VBox(isConnectedStatus);
+        connectedStatusBox.setPadding(new Insets(6, 5, 0, 0));
+
+        Label isConnectedLabel = new Label(" connected to system");
+        isConnectedLabel.setStyle("-fx-font-size: 20;");
+
+        HBox pane = new HBox(connectedStatusBox, isConnectedLabel);
+        return pane;
     }
 }
