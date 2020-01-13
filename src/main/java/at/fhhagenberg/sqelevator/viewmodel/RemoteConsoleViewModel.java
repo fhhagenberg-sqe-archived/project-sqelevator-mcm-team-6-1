@@ -10,7 +10,10 @@ import sqelevator.IElevator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RemoteConsoleViewModel {
 
@@ -20,6 +23,8 @@ public class RemoteConsoleViewModel {
     public ObjectProperty<Elevator> selectedElevatorProperty = new SimpleObjectProperty<>();
     public ListProperty<Elevator> elevatorListProperty;
 
+    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty = new SimpleObjectProperty<>();
+    public BooleanProperty doorsStatusProperty = new SimpleBooleanProperty();
     public DoubleProperty velocityProperty = new SimpleDoubleProperty();
     public DoubleProperty payloadProperty = new SimpleDoubleProperty();
 
@@ -27,16 +32,16 @@ public class RemoteConsoleViewModel {
         this.client = client;
 
         List<Elevator> elevators = new ArrayList<>();
-        List<ElevatorFloor> floors = new ArrayList<>();
 
-        for (int j = 0; j < client.getFloorNum(); j++) {
-            Floor floor = new Floor(j);
-            floors.add(new ElevatorFloor(floor));
-        }
+        var floors = IntStream.rangeClosed(1, client.getFloorNum())
+                .boxed()
+                .sorted(Comparator.reverseOrder())
+                .map(i -> new ElevatorFloor(new Floor(i)))
+                .collect(Collectors.toList());
 
         for (int i = 0; i < client.getElevatorNum(); i++) {
             Elevator elevator = new Elevator();
-            elevator.setElevatorNumber(i);
+            elevator.setElevatorNumber(i + 1);
             elevator.setMaximumPayload(client.getElevatorCapacity(i));
             elevator.setElevatorFloors(floors);
 
@@ -73,11 +78,19 @@ public class RemoteConsoleViewModel {
 
         Platform.runLater(() -> {
             try {
+                this.currentElevatorFloorProperty.set(getCurrentFloor(currentElevator));
+                this.doorsStatusProperty.set(client.getElevatorDoorStatus(currentElevatorNumber) == 1);
                 this.velocityProperty.set(client.getElevatorSpeed(currentElevatorNumber));
                 this.payloadProperty.set(client.getElevatorWeight(currentElevatorNumber));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private ElevatorFloor getCurrentFloor(Elevator currentElevator) throws RemoteException {
+        var floorsOfCurrentElevator = currentElevator.getElevatorFloors();
+        var currentFloorNumber = client.getElevatorFloor(currentElevator.getElevatorNumber());
+        return floorsOfCurrentElevator.get(floorsOfCurrentElevator.size() - currentFloorNumber - 1);
     }
 }

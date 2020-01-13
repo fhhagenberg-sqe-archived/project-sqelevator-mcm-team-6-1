@@ -3,9 +3,11 @@ package at.fhhagenberg.sqelevator.view;
 import at.fhhagenberg.sqelevator.model.*;
 import at.fhhagenberg.sqelevator.viewmodel.RemoteConsoleViewModel;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -105,10 +107,28 @@ public class RemoteConsoleView {
         modeLabel.setStyle("-fx-font-size: 20;");
         modeLabel.setPadding(new Insets(20, 0, 20, 0));
 
-        Label automatic = this.getControlLabelStyled("Open");
-        Label manual = this.getControlLabelStyled("Closed");
+        Label open = this.getControlLabelStyled("Open");
+        Label closed = this.getControlLabelStyled("Closed");
 
-        box.getChildren().addAll(modeLabel, automatic, manual);
+        viewModel.doorsStatusProperty.addListener((observableValue, wasDoorOpen, isDoorOpen) -> {
+            if (wasDoorOpen != isDoorOpen) {
+                Platform.runLater(() -> {
+                    if (isDoorOpen) {
+                        final var greenBackground = new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY));
+
+                        open.setBackground(greenBackground);
+                        closed.setBackground(null);
+                    } else {
+                        final var redBackground = new Background(new BackgroundFill(Color.rgb(255, 0, 0), CornerRadii.EMPTY, Insets.EMPTY));
+
+                        open.setBackground(null);
+                        closed.setBackground(redBackground);
+                    }
+                });
+            }
+        });
+
+        box.getChildren().addAll(modeLabel, open, closed);
         box.setPadding(new Insets(10));
         box.setBorder(this.getThinBlackBorder());
         return box;
@@ -124,9 +144,7 @@ public class RemoteConsoleView {
     private Pane getSpeedControl() {
         Label speedLabel = new Label("Speed: ");
         Label currentSpeedLabel = new Label("0 km/h");
-
         currentSpeedLabel.textProperty().bind(viewModel.velocityProperty.asString().concat(" km/h"));
-
         currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
 
         speedLabel.setStyle("-fx-font-size: 20;");
@@ -143,6 +161,7 @@ public class RemoteConsoleView {
     private Pane getPayloadControl() {
         Label payloadLabel = new Label("Payload: ");
         Label currentPayloadLabel = new Label("0 kg");
+        currentPayloadLabel.textProperty().bind(viewModel.payloadProperty.asString().concat(" kg"));
         currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
 
         payloadLabel.setStyle("-fx-font-size: 20;");
@@ -240,8 +259,24 @@ public class RemoteConsoleView {
                 23.0, 20.0
         });
 
-        arrow2.setFill((Color.TRANSPARENT));
+        arrow2.setFill(Color.TRANSPARENT);
         arrow2.setStroke(Color.BLACK);
+
+        viewModel.velocityProperty.addListener(((observableValue, oldSpeed, currentSpeed) -> {
+            var speed = currentSpeed.doubleValue();
+
+            if (speed == 0.0) {
+                arrow1.setFill(Color.TRANSPARENT);
+                arrow2.setFill(Color.TRANSPARENT);
+            } else if (speed < 0.0) {
+                arrow1.setFill(Color.TRANSPARENT);
+                arrow2.setFill(Color.BLUE);
+            }
+            else {
+                arrow1.setFill(Color.BLUE);
+                arrow2.setFill(Color.TRANSPARENT);
+            }
+        }));
 
         VBox arrow2Wrapper = new VBox(arrow2);
         arrow2Wrapper.setPadding(new Insets(5, 5, 15, 15));
@@ -289,8 +324,6 @@ public class RemoteConsoleView {
     }
 
     private Pane getDoorSignForFloorPane(ElevatorFloor elevatorFloor) {
-        int dummyPosition = 2;
-
         Rectangle doorOutline = new Rectangle(60, 60);
         doorOutline.setFill(Color.TRANSPARENT);
         doorOutline.setStroke(Color.GRAY);
@@ -302,11 +335,15 @@ public class RemoteConsoleView {
         Rectangle door2 = new Rectangle(31, 10, 24, 40);
         door2.setFill(Color.TRANSPARENT);
 
-        // TODO: bind stroke color
-        if (dummyPosition == elevatorFloor.getFloor().getFloorNumber()) {
-            door1.setStroke(Color.GRAY);
-            door2.setStroke(Color.GRAY);
-        }
+        viewModel.currentElevatorFloorProperty.addListener((observableValue, prevFloor, currentFloor) -> {
+            if (currentFloor.getFloor().getFloorNumber() == elevatorFloor.getFloor().getFloorNumber()) {
+                door1.setStroke(Color.GRAY);
+                door2.setStroke(Color.GRAY);
+            } else {
+                door1.setStroke(Color.TRANSPARENT);
+                door2.setStroke(Color.TRANSPARENT);
+            }
+        });
 
         Group group = new Group(doorOutline, door1, door2);
         HBox groupWrapper = new HBox(group);
