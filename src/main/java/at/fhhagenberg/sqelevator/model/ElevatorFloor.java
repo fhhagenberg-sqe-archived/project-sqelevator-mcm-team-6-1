@@ -4,10 +4,15 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class ElevatorFloor {
+
     private BooleanProperty downRequest = new SimpleBooleanProperty();
     private BooleanProperty upRequest = new SimpleBooleanProperty();
     private BooleanProperty serviceEnabled = new SimpleBooleanProperty();
     private Floor floor;
+
+    public ElevatorFloor(Floor floor) {
+        this.floor = floor;
+    }
 
     public boolean isDownRequest() {
         return downRequest.get();

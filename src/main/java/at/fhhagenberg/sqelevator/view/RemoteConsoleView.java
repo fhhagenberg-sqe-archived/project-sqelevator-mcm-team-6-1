@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.view;
 
 import at.fhhagenberg.sqelevator.model.*;
+import at.fhhagenberg.sqelevator.viewmodel.RemoteConsoleViewModel;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -18,26 +19,26 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import sqelevator.IElevator;
+
 import java.lang.Comparable;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-public class RemoteConsoleView extends Application {
-    private RemoteConsole remoteConsole;
-    private ObjectProperty<Elevator> currentElevator = new SimpleObjectProperty<>();
+public class RemoteConsoleView {
 
-    public static void main(String[] args) {
-        launch(args);
+    private RemoteConsoleViewModel viewModel;
+
+    public RemoteConsoleView(RemoteConsoleViewModel viewModel) {
+        this.viewModel = viewModel;
     }
 
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Elevator Remote Console");
-
-        this.remoteConsole = DummyRemoteConsole.generate();
-        this.currentElevator = new SimpleObjectProperty<>(this.remoteConsole.getElevators().get(0));
-
+    public ScrollPane createView() {
         VBox masterPane = new VBox();
 
         HBox statusControlPane = new HBox();
@@ -52,9 +53,7 @@ public class RemoteConsoleView extends Application {
         masterPane.setSpacing(20);
         masterPane.setPadding(new Insets(20));
 
-        Scene scene = new Scene(masterPane, 1200, 900, Color.WHITE);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        return new ScrollPane(masterPane);
     }
 
     private Pane getElevatorStatusPane() {
@@ -124,7 +123,10 @@ public class RemoteConsoleView extends Application {
 
     private Pane getSpeedControl() {
         Label speedLabel = new Label("Speed: ");
-        Label currentSpeedLabel = new Label("10km/h");
+        Label currentSpeedLabel = new Label("0 km/h");
+
+        currentSpeedLabel.textProperty().bind(viewModel.velocityProperty.asString().concat(" km/h"));
+
         currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
 
         speedLabel.setStyle("-fx-font-size: 20;");
@@ -140,7 +142,7 @@ public class RemoteConsoleView extends Application {
 
     private Pane getPayloadControl() {
         Label payloadLabel = new Label("Payload: ");
-        Label currentPayloadLabel = new Label("100kg");
+        Label currentPayloadLabel = new Label("0 kg");
         currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
 
         payloadLabel.setStyle("-fx-font-size: 20;");
@@ -155,7 +157,7 @@ public class RemoteConsoleView extends Application {
     }
 
     private Pane getCurrentTargetFloorPane() {
-        Label label = new Label ("Current Target Floor: ");
+        Label label = new Label("Current Target Floor: ");
         label.setStyle("-fx-font-size: 20;");
 
         // TODO: make value field not-editable when in automatic mode
@@ -194,15 +196,15 @@ public class RemoteConsoleView extends Application {
         positionLabel.setPadding(new Insets(5));
 
         Polygon arrow1 = new Polygon();
-        arrow1.getPoints().addAll(new Double[] {
-            30.0, 20.0,
-            10.0, 45.0,
-            23.0, 45.0,
-            23.0, 120.0,
-            37.0, 120.0,
-            37.0, 45.0,
-            50.0, 45.0,
-            30.0, 20.0
+        arrow1.getPoints().addAll(new Double[]{
+                30.0, 20.0,
+                10.0, 45.0,
+                23.0, 45.0,
+                23.0, 120.0,
+                37.0, 120.0,
+                37.0, 45.0,
+                50.0, 45.0,
+                30.0, 20.0
         });
 
         arrow1.setFill(Color.TRANSPARENT);
@@ -212,12 +214,12 @@ public class RemoteConsoleView extends Application {
         arrow1Wrapper.setPadding(new Insets(45, 5, 5, 15));
 
         Polygon rectangle = new Polygon();
-        rectangle.getPoints().addAll(new Double[] {
-           23.0, 20.0,
-           37.0, 20.0,
-           37.0, 30.0,
-           23.0, 30.0,
-           23.0, 20.0
+        rectangle.getPoints().addAll(new Double[]{
+                23.0, 20.0,
+                37.0, 20.0,
+                37.0, 30.0,
+                23.0, 30.0,
+                23.0, 20.0
         });
 
         rectangle.setFill(Color.LIGHTGRAY);
@@ -227,15 +229,15 @@ public class RemoteConsoleView extends Application {
         rectangleWrapper.setPadding(new Insets(0, 5, 0, 29));
 
         Polygon arrow2 = new Polygon();
-        arrow2.getPoints().addAll(new Double[] {
-            23.0, 20.0,
-            23.0, 95.0,
-            10.0, 95.0,
-            30.0, 120.0,
-            50.0, 95.0,
-            37.0, 95.0,
-            37.0, 20.0,
-            23.0, 20.0
+        arrow2.getPoints().addAll(new Double[]{
+                23.0, 20.0,
+                23.0, 95.0,
+                10.0, 95.0,
+                30.0, 120.0,
+                50.0, 95.0,
+                37.0, 95.0,
+                37.0, 20.0,
+                23.0, 20.0
         });
 
         arrow2.setFill((Color.TRANSPARENT));
@@ -244,19 +246,15 @@ public class RemoteConsoleView extends Application {
         VBox arrow2Wrapper = new VBox(arrow2);
         arrow2Wrapper.setPadding(new Insets(5, 5, 15, 15));
 
-        VBox pane = new VBox(positionLabel, arrow1Wrapper, rectangleWrapper, arrow2Wrapper);
-        return pane;
+        return new VBox(positionLabel, arrow1Wrapper, rectangleWrapper, arrow2Wrapper);
     }
 
     private Pane getFloorsStatusPane() {
         VBox floorsStatusPane = new VBox();
 
-        for (ElevatorFloor elevatorFloor :
-                currentElevator.get().getElevatorFloors()
-                .stream().sorted(Comparator.comparing(ElevatorFloor::getFloor).reversed())
-                .collect(Collectors.toList())){
-            floorsStatusPane.getChildren().add(this.getElevatorFloorStatusPane(elevatorFloor));
-        }
+        viewModel.selectedElevatorProperty.get().getElevatorFloors().forEach(elevatorFloor ->
+                floorsStatusPane.getChildren().add(this.getElevatorFloorStatusPane(elevatorFloor))
+        );
 
         floorsStatusPane.setSpacing(5);
         return floorsStatusPane;
@@ -285,7 +283,7 @@ public class RemoteConsoleView extends Application {
     }
 
     private Border getThinBlackBorder() {
-       return new Border(
+        return new Border(
                 new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
                         null, new BorderWidths(1)));
     }
@@ -316,7 +314,7 @@ public class RemoteConsoleView extends Application {
         return new VBox(groupWrapper);
     }
 
-    private Pane getFloorRequestLabel (ElevatorFloor elevatorFloor) {
+    private Pane getFloorRequestLabel(ElevatorFloor elevatorFloor) {
         Label label = new Label("Floor\nRequest\n#");
         label.setBorder(this.getThinBlackBorder());
 
@@ -341,21 +339,21 @@ public class RemoteConsoleView extends Application {
         return wrapper;
     }
 
-    private Label getServiceEnabledLabel (ElevatorFloor elevatorFloor) {
+    private Label getServiceEnabledLabel(ElevatorFloor elevatorFloor) {
         Label label = new Label("Service\nenabled");
         label.setPadding(new Insets(5));
         label.setTextAlignment(TextAlignment.CENTER);
 
         // bind border color to serviceEnabledProperty
         label.borderProperty().bind(
-            Bindings.when(
-                  elevatorFloor.serviceEnabledProperty())
-                    .then(new Border(
-                            new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,
-                                    null, new BorderWidths(1))))
-                    .otherwise(new Border(
-                            new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID,
-                                    null, new BorderWidths(1))))
+                Bindings.when(
+                        elevatorFloor.serviceEnabledProperty())
+                        .then(new Border(
+                                new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,
+                                        null, new BorderWidths(1))))
+                        .otherwise(new Border(
+                                new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID,
+                                        null, new BorderWidths(1))))
 
         );
 
@@ -365,8 +363,7 @@ public class RemoteConsoleView extends Application {
                         () -> {
                             if (elevatorFloor.serviceEnabledProperty().getValue()) {
                                 return Color.BLACK;
-                            }
-                            else {
+                            } else {
                                 return Color.GRAY;
                             }
                         }, elevatorFloor.serviceEnabledProperty()
@@ -439,10 +436,11 @@ public class RemoteConsoleView extends Application {
 
         ListView<Elevator> elevatorList = new ListView<>();
         elevatorList.setBorder(this.getThinBlackBorder());
-        elevatorList.setItems(remoteConsole.getElevators());
+        elevatorList.itemsProperty().bind(viewModel.elevatorListProperty);
         VBox.setVgrow(elevatorList, Priority.SOMETIMES);
+        viewModel.selectedElevatorProperty.bind(elevatorList.getSelectionModel().selectedItemProperty());
+        elevatorList.getSelectionModel().select(0);
 
-        currentElevator.bind(elevatorList.getSelectionModel().selectedItemProperty());
         elevatorList.setCellFactory((cell) -> {
             return new ListCell<>() {
                 @Override
@@ -469,7 +467,7 @@ public class RemoteConsoleView extends Application {
 
         ListView<Alarm> alarmList = new ListView<>();
         alarmList.setBorder(this.getThinBlackBorder());
-        alarmList.setItems(remoteConsole.getAlarms());
+//        alarmList.setItems(remoteConsole.getAlarms());
         VBox.setVgrow(alarmList, Priority.SOMETIMES);
 
         alarmList.setCellFactory(cell -> {
