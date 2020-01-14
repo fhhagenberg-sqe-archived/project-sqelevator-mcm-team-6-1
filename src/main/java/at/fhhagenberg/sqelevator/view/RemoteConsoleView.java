@@ -2,16 +2,11 @@ package at.fhhagenberg.sqelevator.view;
 
 import at.fhhagenberg.sqelevator.model.*;
 import at.fhhagenberg.sqelevator.viewmodel.RemoteConsoleViewModel;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -20,17 +15,6 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import sqelevator.IElevator;
-
-import java.lang.Comparable;
-
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 public class RemoteConsoleView {
 
@@ -78,7 +62,7 @@ public class RemoteConsoleView {
                 this.getDoorsControl(),
                 this.getSpeedAndPayloadControl(),
                 this.getCurrentTargetFloorPane(),
-                this.getIsConectedPane());
+                this.getIsConnectedPane());
         return pane;
     }
 
@@ -262,19 +246,24 @@ public class RemoteConsoleView {
         arrow2.setFill(Color.TRANSPARENT);
         arrow2.setStroke(Color.BLACK);
 
-        viewModel.velocityProperty.addListener(((observableValue, oldSpeed, currentSpeed) -> {
-            var speed = currentSpeed.doubleValue();
+        viewModel.directionProperty.addListener(((observableValue, oldDirection, currentDirection) -> {
 
-            if (speed == 0.0) {
+            var direction = currentDirection.intValue();
+
+            if (direction == 2) { // uncommitted
                 arrow1.setFill(Color.TRANSPARENT);
                 arrow2.setFill(Color.TRANSPARENT);
-            } else if (speed < 0.0) {
-                arrow1.setFill(Color.TRANSPARENT);
-                arrow2.setFill(Color.BLUE);
-            }
-            else {
+                rectangle.setFill(Color.BLUE);
+            } else if (direction == 0) { // up
                 arrow1.setFill(Color.BLUE);
                 arrow2.setFill(Color.TRANSPARENT);
+                rectangle.setFill(Color.TRANSPARENT);
+            }
+            else { // down
+                arrow1.setFill(Color.TRANSPARENT);
+                arrow2.setFill(Color.BLUE);
+
+                rectangle.setFill(Color.TRANSPARENT);
             }
         }));
 
@@ -360,6 +349,8 @@ public class RemoteConsoleView {
         // TODO think about how to realize floorRequests best
         // floorRequest = floor requested INSIDE elevator
         // elevator.getCurrentFloorRequests needed for that
+        label.textProperty().bind(this.viewModel.floorRequestProperty.valueAt(elevatorFloor.getFloor().getFloorNumber()).asString().concat("\nFloor\nRequest"));
+
 
         HBox wrapper = new HBox(label);
         wrapper.setPrefHeight(60.0);
@@ -525,7 +516,7 @@ public class RemoteConsoleView {
         return pane;
     }
 
-    private Pane getIsConectedPane() {
+    private Pane getIsConnectedPane() {
         Circle isConnectedStatus = new Circle(8.0);
         isConnectedStatus.setFill(Color.GREEN);
 

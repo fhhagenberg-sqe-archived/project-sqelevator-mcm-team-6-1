@@ -27,6 +27,8 @@ public class RemoteConsoleViewModel {
     public BooleanProperty doorsStatusProperty = new SimpleBooleanProperty();
     public DoubleProperty velocityProperty = new SimpleDoubleProperty();
     public DoubleProperty payloadProperty = new SimpleDoubleProperty();
+    public IntegerProperty directionProperty = new SimpleIntegerProperty();
+    public ListProperty<Integer> floorRequestProperty = new SimpleListProperty<>();
 
     public RemoteConsoleViewModel(IElevator client) throws RemoteException {
         this.client = client;
@@ -75,6 +77,7 @@ public class RemoteConsoleViewModel {
     private void pollStatus() {
         final Elevator currentElevator = selectedElevatorProperty.get();
         final int currentElevatorNumber = currentElevator.getElevatorNumber();
+        final List<ElevatorFloor> floors = currentElevator.getElevatorFloors();
 
         Platform.runLater(() -> {
             try {
@@ -82,6 +85,16 @@ public class RemoteConsoleViewModel {
                 this.doorsStatusProperty.set(client.getElevatorDoorStatus(currentElevatorNumber) == 1);
                 this.velocityProperty.set(client.getElevatorSpeed(currentElevatorNumber));
                 this.payloadProperty.set(client.getElevatorWeight(currentElevatorNumber));
+                this.directionProperty.set(client.getCommittedDirection(currentElevatorNumber));
+                var requests = IntStream.rangeClosed(1, client.getFloorNum()).boxed().map(i -> {
+                    try {
+                        return client.getElevatorButton(currentElevatorNumber, i);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }).collect(Collectors.toList());
+                this.floorRequestProperty = new SimpleListProperty(FXCollections.observableList(requests));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
