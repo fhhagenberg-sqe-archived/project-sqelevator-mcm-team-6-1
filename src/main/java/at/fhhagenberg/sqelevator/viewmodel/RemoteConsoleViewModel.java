@@ -3,6 +3,7 @@ package at.fhhagenberg.sqelevator.viewmodel;
 import at.fhhagenberg.sqelevator.model.Elevator;
 import at.fhhagenberg.sqelevator.model.ElevatorFloor;
 import at.fhhagenberg.sqelevator.model.Floor;
+import at.fhhagenberg.sqelevator.model.Mode;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -20,15 +21,11 @@ public class RemoteConsoleViewModel {
     private IElevator client;
     private Thread pollingStatusThread;
 
-    public ObjectProperty<Elevator> selectedElevatorProperty = new SimpleObjectProperty<>();
+    //    public ObjectProperty<Elevator> selectedElevatorProperty = new SimpleObjectProperty<>();
     public ListProperty<Elevator> elevatorListProperty;
+    public ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.MANUAL);
+    public BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
 
-    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty = new SimpleObjectProperty<>();
-    public BooleanProperty doorsStatusProperty = new SimpleBooleanProperty();
-    public DoubleProperty velocityProperty = new SimpleDoubleProperty();
-    public DoubleProperty payloadProperty = new SimpleDoubleProperty();
-    public IntegerProperty directionProperty = new SimpleIntegerProperty();
-    public ListProperty<Integer> floorRequestProperty = new SimpleListProperty<>();
 
     public RemoteConsoleViewModel(IElevator client) throws RemoteException {
         this.client = client;
@@ -43,7 +40,7 @@ public class RemoteConsoleViewModel {
 
         for (int i = 0; i < client.getElevatorNum(); i++) {
             Elevator elevator = new Elevator();
-            elevator.setElevatorNumber(i + 1);
+            elevator.setElevatorNumber(i);
             elevator.setMaximumPayload(client.getElevatorCapacity(i));
             elevator.setElevatorFloors(floors);
 
@@ -51,17 +48,18 @@ public class RemoteConsoleViewModel {
         }
 
         elevatorListProperty = new SimpleListProperty<>(FXCollections.observableList(elevators));
-        selectedElevatorProperty.set(elevatorListProperty.get(0));
     }
 
     public void startPollingStatus() {
         this.pollingStatusThread = new Thread(() -> {
             while (true) {
-                try {
-                    pollStatus();
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                for (Elevator elevator : elevatorListProperty) {
+                    try {
+                        pollStatus(elevator);
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -74,29 +72,25 @@ public class RemoteConsoleViewModel {
         this.pollingStatusThread.interrupt();
     }
 
-    private void pollStatus() {
-        final Elevator currentElevator = selectedElevatorProperty.get();
-        final int currentElevatorNumber = currentElevator.getElevatorNumber();
-        final List<ElevatorFloor> floors = currentElevator.getElevatorFloors();
+    private void pollStatus(Elevator elevator) {
+        final int currentElevatorNumber = elevator.getElevatorNumber();
+        final List<ElevatorFloor> floors = elevator.getElevatorFloors();
 
         Platform.runLater(() -> {
             try {
-                this.currentElevatorFloorProperty.set(getCurrentFloor(currentElevator));
-                this.doorsStatusProperty.set(client.getElevatorDoorStatus(currentElevatorNumber) == 1);
-                this.velocityProperty.set(client.getElevatorSpeed(currentElevatorNumber));
-                this.payloadProperty.set(client.getElevatorWeight(currentElevatorNumber));
-                this.directionProperty.set(client.getCommittedDirection(currentElevatorNumber));
-                var requests = IntStream.rangeClosed(1, client.getFloorNum()).boxed().map(i -> {
-                    try {
-                        return client.getElevatorButton(currentElevatorNumber, i);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }).collect(Collectors.toList());
-                this.floorRequestProperty = new SimpleListProperty(FXCollections.observableList(requests));
+                elevator.currentElevatorFloorProperty.set(getCurrentFloor(elevator));
+                elevator.doorsStatusProperty.set(client.getElevatorDoorStatus(currentElevatorNumber) == 1);
+                elevator.velocityProperty.set(client.getElevatorSpeed(currentElevatorNumber));
+                elevator.payloadProperty.set(client.getElevatorWeight(currentElevatorNumber));
+                elevator.directionProperty.set(client.getCommittedDirection(currentElevatorNumber));
+
+                for (ElevatorFloor elevatorFloor : floors) {
+                    elevatorFloor.serviceEnabled.set(client.getServicesFloors(elevator.getElevatorNumber(), elevatorFloor.floorProperty.get().getFloorNumber()));
+                }
+
+                isConnectedProperty.set(true);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                isConnectedProperty.set(false);
             }
         });
     }

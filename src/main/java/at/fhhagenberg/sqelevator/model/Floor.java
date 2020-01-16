@@ -21,14 +21,6 @@ public class Floor implements Comparable<Floor>{
 
     @Override
     public int compareTo(Floor o) {
-        if (this.getFloorNumber() < o.getFloorNumber()) {
-            return -1;
-        }
-
-        if (this.getFloorNumber() == o.getFloorNumber()) {
-            return 0;
-        }
-
-        return 1;
+        return Integer.compare(this.getFloorNumber(), o.getFloorNumber());
     }
 }

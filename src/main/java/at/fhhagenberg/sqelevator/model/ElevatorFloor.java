@@ -1,17 +1,19 @@
 package at.fhhagenberg.sqelevator.model;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
-public class ElevatorFloor {
+public class ElevatorFloor implements Comparable<ElevatorFloor> {
 
-    private BooleanProperty downRequest = new SimpleBooleanProperty();
-    private BooleanProperty upRequest = new SimpleBooleanProperty();
-    private BooleanProperty serviceEnabled = new SimpleBooleanProperty();
-    private Floor floor;
+    public BooleanProperty downRequest = new SimpleBooleanProperty();
+    public BooleanProperty upRequest = new SimpleBooleanProperty();
+    public BooleanProperty serviceEnabled = new SimpleBooleanProperty();
+    public ObjectProperty<Floor> floorProperty = new SimpleObjectProperty<>();
 
     public ElevatorFloor(Floor floor) {
-        this.floor = floor;
+        this.floorProperty.set(floor);
     }
 
     public boolean isDownRequest() {
@@ -42,19 +44,12 @@ public class ElevatorFloor {
         return serviceEnabled.get();
     }
 
-    public BooleanProperty serviceEnabledProperty() {
-        return serviceEnabled;
-    }
-
     public void setServiceEnabled(boolean serviceEnabled) {
         this.serviceEnabled.set(serviceEnabled);
     }
 
-    public Floor getFloor() {
-        return floor;
-    }
-
-    public void setFloor(Floor floor) {
-        this.floor = floor;
+    @Override
+    public int compareTo(ElevatorFloor o) {
+        return Integer.compare(this.floorProperty.get().getFloorNumber(), o.floorProperty.get().getFloorNumber());
     }
 }
