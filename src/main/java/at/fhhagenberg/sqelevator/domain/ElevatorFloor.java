@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.model;
+package at.fhhagenberg.sqelevator.domain;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -7,8 +7,8 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class ElevatorFloor implements Comparable<ElevatorFloor> {
 
-    public BooleanProperty downRequest = new SimpleBooleanProperty();
-    public BooleanProperty upRequest = new SimpleBooleanProperty();
+    public BooleanProperty downRequestProperty = new SimpleBooleanProperty();
+    public BooleanProperty upRequestProperty = new SimpleBooleanProperty();
     public BooleanProperty serviceEnabled = new SimpleBooleanProperty();
     public ObjectProperty<Floor> floorProperty = new SimpleObjectProperty<>();
 
@@ -16,29 +16,25 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
         this.floorProperty.set(floor);
     }
 
-    public boolean isDownRequest() {
-        return downRequest.get();
-    }
-
-    public BooleanProperty downRequestProperty() {
-        return downRequest;
-    }
-
-    public void setDownRequest(boolean downRequest) {
-        this.downRequest.set(downRequest);
+    public Floor getFloor() {
+        return this.floorProperty.get();
     }
 
     public boolean isUpRequest() {
-        return upRequest.get();
+        return upRequestProperty.get();
     }
 
-    public BooleanProperty upRequestProperty() {
-        return upRequest;
+    public void setUpRequest() {
+        this.upRequestProperty.set(true);
     }
 
-    public void setUpRequest(boolean upRequest) {
-        this.upRequest.set(upRequest);
-    }
+    public void unsetUpRequest() { this.downRequestProperty.set(false); }
+
+    public boolean isDownRequest() { return this.downRequestProperty.get(); }
+
+    public void setDownRequest() { this.downRequestProperty.set(true); }
+
+    public void unsetDownRequest() { this.downRequestProperty.set(false); }
 
     public boolean isServiceEnabled() {
         return serviceEnabled.get();

@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.model;
+package at.fhhagenberg.sqelevator.domain;
 
 public enum Direction {
     UP("up"),

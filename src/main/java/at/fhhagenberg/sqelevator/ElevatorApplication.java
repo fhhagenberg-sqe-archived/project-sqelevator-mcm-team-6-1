@@ -1,7 +1,9 @@
 package at.fhhagenberg.sqelevator;
 
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
-import at.fhhagenberg.sqelevator.viewmodel.RemoteConsoleViewModel;
+import sqelevator.ElevatorClient;
+import sqelevator.IElevatorClient;
+import sqelevator.RemoteConsoleViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -18,7 +20,8 @@ public class ElevatorApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         IElevator controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
-        this.viewModel = new RemoteConsoleViewModel(controller);
+        IElevatorClient client = new ElevatorClient(controller);
+        this.viewModel = new RemoteConsoleViewModel(client);
         this.view = new RemoteConsoleView(viewModel);
 
         primaryStage.setTitle("Elevator Remote Console");

@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.model;
+package at.fhhagenberg.sqelevator.domain;
 
 public class Floor implements Comparable<Floor>{
     private int floorNumber;
