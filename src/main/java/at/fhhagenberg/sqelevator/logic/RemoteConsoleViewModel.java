@@ -1,17 +1,19 @@
-package sqelevator;
+package at.fhhagenberg.sqelevator.logic;
 
+import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Mode;
+import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import sqelevator.IElevatorClient;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Observable;
 
-public class RemoteConsoleViewModel {
+public class RemoteConsoleViewModel extends Observable {
 
     private IElevatorClient client;
     private Thread pollingStatusThread;
@@ -25,7 +27,17 @@ public class RemoteConsoleViewModel {
     public RemoteConsoleViewModel(IElevatorClient client) throws RemoteException {
         this.client = client;
 
+        var automaticElevatorMode = new AutomaticElevatorMode(this.client);
+        this.addObserver(automaticElevatorMode);
+
+        this.modeProperty.addListener(
+                (observable, oldvalue, newvalue) ->
+                { this.setChanged(); this.notifyObservers(newvalue);}
+        );
+
         var elevators = this.client.getElevators();
+        this.setChanged();
+        this.notifyObservers(elevators);
 
         elevatorListProperty = new SimpleListProperty<>(FXCollections.observableList(elevators));
     }
@@ -41,6 +53,9 @@ public class RemoteConsoleViewModel {
                         e.printStackTrace();
                     }
                 }
+
+                this.setChanged();
+                this.notifyObservers(elevatorListProperty.get());
             }
         });
 
@@ -67,7 +82,7 @@ public class RemoteConsoleViewModel {
             try {
                 client.getTargetedFloor(elevator).ifPresent(targetedFloor -> elevator.targetedElevatorFloorProperty.set(targetedFloor));
 
-                elevator.currentElevatorFloorProperty.set(client.getCurrentFloor(elevator));
+                elevator.currentElevatorFloorProperty().set(client.getCurrentFloor(elevator));
                 elevator.doorsStatusProperty.set(client.getElevatorDoorStatus(elevator));
                 elevator.velocityProperty.set(client.getCurrentVelocity(elevator));
                 elevator.payloadProperty.set(client.getCurrentWeightLoad(elevator));

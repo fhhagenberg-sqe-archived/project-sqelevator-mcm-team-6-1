@@ -10,14 +10,10 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
     public BooleanProperty downRequestProperty = new SimpleBooleanProperty();
     public BooleanProperty upRequestProperty = new SimpleBooleanProperty();
     public BooleanProperty serviceEnabled = new SimpleBooleanProperty();
-    public ObjectProperty<Floor> floorProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Floor> floor = new SimpleObjectProperty<>();
 
     public ElevatorFloor(Floor floor) {
-        this.floorProperty.set(floor);
-    }
-
-    public Floor getFloor() {
-        return this.floorProperty.get();
+        this.floor.set(floor);
     }
 
     public boolean isUpRequest() {
@@ -44,8 +40,21 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
         this.serviceEnabled.set(serviceEnabled);
     }
 
+    public Floor getFloor() {
+        return floor.get();
+    }
+
+    public ObjectProperty<Floor> floorProperty() {
+        return floor;
+    }
+
+    public void setFloor(Floor floor) {
+        this.floor.set(floor);
+    }
+
+
     @Override
     public int compareTo(ElevatorFloor o) {
-        return Integer.compare(this.floorProperty.get().getFloorNumber(), o.floorProperty.get().getFloorNumber());
+        return Integer.compare(this.floor.get().getFloorNumber(), o.floor.get().getFloorNumber());
     }
 }
