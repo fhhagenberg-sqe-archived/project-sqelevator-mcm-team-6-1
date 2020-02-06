@@ -65,18 +65,18 @@ public class RemoteConsoleViewModel {
 
         Platform.runLater(() -> {
             try {
-                client.getTargetedFloor(elevator).ifPresent(targetedFloor -> elevator.targetedElevatorFloorProperty.set(targetedFloor));
+                client.getTargetedFloor(elevator).ifPresent(targetedFloor -> elevator.setTargetedElevatorFloor(targetedFloor));
 
-                elevator.currentElevatorFloorProperty.set(client.getCurrentFloor(elevator));
-                elevator.doorsStatusProperty.set(client.getElevatorDoorStatus(elevator));
-                elevator.velocityProperty.set(client.getCurrentVelocity(elevator));
-                elevator.payloadProperty.set(client.getCurrentWeightLoad(elevator));
-                elevator.directionProperty.set(client.getDirection(elevator));
+                elevator.setCurrentElevatorFloor(client.getCurrentFloor(elevator));
+                elevator.setDoorsStatus(client.getElevatorDoorStatus(elevator));
+                elevator.setVelocity(client.getCurrentVelocity(elevator));
+                elevator.setPayload(client.getCurrentWeightLoad(elevator));
+                elevator.setDirection(client.getDirection(elevator));
 
                 for (ElevatorFloor elevatorFloor : floors) {
-                    elevatorFloor.upRequestProperty.set(client.hasFloorBeenRequestedUp(elevatorFloor.getFloor()));
-                    elevatorFloor.downRequestProperty.set(client.hasFloorBeenRequestedDown(elevatorFloor.getFloor()));
-                    elevatorFloor.serviceEnabled.set(client.isServiceEnabled(elevator, elevatorFloor.getFloor()));
+                    elevatorFloor.setUpRequest(client.hasFloorBeenRequestedUp(elevatorFloor.getFloor()));
+                    elevatorFloor.setDownRequest(client.hasFloorBeenRequestedDown(elevatorFloor.getFloor()));
+                    elevatorFloor.setServiceEnabled(client.isServiceEnabled(elevator, elevatorFloor.getFloor()));
                 }
 
                 isConnectedProperty.set(true);

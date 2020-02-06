@@ -117,12 +117,12 @@ public class RemoteConsoleView {
         Label closed = this.getControlLabelStyled("Closed");
 
         open.backgroundProperty().bind(
-                Bindings.when(elevator.doorsStatusProperty.isEqualTo(DoorStatus.OPEN))
+                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.OPEN))
                         .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
         closed.backgroundProperty().bind(
-                Bindings.when(elevator.doorsStatusProperty.isEqualTo(DoorStatus.CLOSED))
+                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.CLOSED))
                         .then(new Background(new BackgroundFill(Color.rgb(255, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
@@ -142,7 +142,7 @@ public class RemoteConsoleView {
     private Pane getSpeedControl(Elevator elevator) {
         Label speedLabel = new Label("Speed: ");
         Label currentSpeedLabel = new Label("0 km/h");
-        currentSpeedLabel.textProperty().bind(elevator.velocityProperty.asString().concat(" km/h"));
+        currentSpeedLabel.textProperty().bind(elevator.getVelocity().asString().concat(" km/h"));
         currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
 
         speedLabel.setStyle("-fx-font-size: 20;");
@@ -159,7 +159,7 @@ public class RemoteConsoleView {
     private Pane getPayloadControl(Elevator elevator) {
         Label payloadLabel = new Label("Payload: ");
         Label currentPayloadLabel = new Label("0 kg");
-        currentPayloadLabel.textProperty().bind(elevator.payloadProperty.asString().concat(" kg"));
+        currentPayloadLabel.textProperty().bind(elevator.getPayload().asString().concat(" kg"));
         currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
 
         payloadLabel.setStyle("-fx-font-size: 20;");
@@ -257,15 +257,15 @@ public class RemoteConsoleView {
         VBox downArrowWrapper = new VBox(downArrow);
         downArrowWrapper.setPadding(new Insets(5, 5, 15, 15));
 
-        upArrow.fillProperty().bind(Bindings.when(elevator.directionProperty.isEqualTo(0))
+        upArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(0))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
-        downArrow.fillProperty().bind(Bindings.when(elevator.directionProperty.isEqualTo(1))
+        downArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(1))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
-        uncomittedSquare.fillProperty().bind(Bindings.when(elevator.directionProperty.isEqualTo(2))
+        uncomittedSquare.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(2))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
@@ -303,10 +303,10 @@ public class RemoteConsoleView {
 
         elevatorFloorStatusPane.setBorder(this.getThinBlackBorder());
 
-        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.floorProperty.get().getFloorNumber()));
+        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor().getFloorNumber()));
 
         elevatorFloorStatusPane.backgroundProperty().bind(
-                Bindings.when(elevator.targetedElevatorFloorProperty.isEqualTo(elevatorFloor))
+                Bindings.when(elevator.getTargetedElevatorFloor().isEqualTo(elevatorFloor))
                         .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
@@ -332,12 +332,12 @@ public class RemoteConsoleView {
         rightDoorPart.setFill(Color.TRANSPARENT);
 
         leftDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.currentElevatorFloorProperty.isEqualTo(elevatorFloor))
+                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
 
         rightDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.currentElevatorFloorProperty.isEqualTo(elevatorFloor))
+                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
 
@@ -355,15 +355,15 @@ public class RemoteConsoleView {
         label.setTextAlignment(TextAlignment.CENTER);
 
         label.textProperty().bind(
-                Bindings.when(elevatorFloor.upRequestProperty)
+                Bindings.when(elevatorFloor.getUpRequest())
                         .then("UP\nRequest")
                         .otherwise(
-                                Bindings.when(elevatorFloor.downRequestProperty)
+                                Bindings.when(elevatorFloor.getDownRequest())
                                         .then("DOWN\nRequest")
                                         .otherwise("No\nRequest")));
 
         label.backgroundProperty().bind(
-                Bindings.when(elevatorFloor.upRequestProperty.or(elevatorFloor.downRequestProperty))
+                Bindings.when(elevatorFloor.getUpRequest().or(elevatorFloor.getDownRequest()))
                         .then(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
@@ -374,7 +374,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
-        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.floorProperty.get().getFloorNumber()));
+        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.getFloor().getFloorNumber()));
         floorLabel.setStyle("-fx-font-size: 20;");
 
         HBox wrapper = new HBox(floorLabel);
@@ -388,7 +388,7 @@ public class RemoteConsoleView {
         label.setTextAlignment(TextAlignment.CENTER);
 
         label.borderProperty().bind(
-                Bindings.when(elevatorFloor.serviceEnabled)
+                Bindings.when(elevatorFloor.getServiceEnabled())
                         .then(new Border(
                                 new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,
                                         null, new BorderWidths(1))))
@@ -399,7 +399,7 @@ public class RemoteConsoleView {
         );
 
         label.textFillProperty().bind(
-                Bindings.when(elevatorFloor.serviceEnabled)
+                Bindings.when(elevatorFloor.getServiceEnabled())
                         .then(Color.BLACK)
                         .otherwise(Color.GRAY));
 
@@ -407,7 +407,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorUpAndDownPane(ElevatorFloor elevatorFloor) {
-        elevatorFloor.setUpRequest();
+        elevatorFloor.setUpRequest(true);
         GridPane pane = new GridPane();
         Label upLabel = new Label();
         upLabel.setText("Up");
@@ -419,7 +419,7 @@ public class RemoteConsoleView {
 
         // bind border color to up property
         upLabel.borderProperty().bind(
-                Bindings.when(elevatorFloor.upRequestProperty)
+                Bindings.when(elevatorFloor.getUpRequest())
                         .then(new Border(
                                 new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID,
                                         null, new BorderWidths(2))))
@@ -431,7 +431,7 @@ public class RemoteConsoleView {
 
         // bind border color to down property
         downLabel.borderProperty().bind(
-                Bindings.when(elevatorFloor.downRequestProperty)
+                Bindings.when(elevatorFloor.getDownRequest())
                         .then(new Border(
                                 new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID,
                                         null, new BorderWidths(2))))
@@ -466,7 +466,7 @@ public class RemoteConsoleView {
 
         ListView<Alarm> alarmList = new ListView<>();
         alarmList.setBorder(this.getThinBlackBorder());
-        alarmList.itemsProperty().bind(elevator.alarmListProperty);
+        alarmList.itemsProperty().bind(elevator.getAlarmList());
 //        alarmList.setItems(remoteConsole.getAlarms());
         VBox.setVgrow(alarmList, Priority.SOMETIMES);
 

@@ -7,10 +7,10 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class ElevatorFloor implements Comparable<ElevatorFloor> {
 
-    public BooleanProperty downRequestProperty = new SimpleBooleanProperty();
-    public BooleanProperty upRequestProperty = new SimpleBooleanProperty();
-    public BooleanProperty serviceEnabled = new SimpleBooleanProperty();
-    public ObjectProperty<Floor> floorProperty = new SimpleObjectProperty<>();
+    private BooleanProperty downRequestProperty = new SimpleBooleanProperty();
+    private BooleanProperty upRequestProperty = new SimpleBooleanProperty();
+    private BooleanProperty serviceEnabled = new SimpleBooleanProperty();
+    private ObjectProperty<Floor> floorProperty = new SimpleObjectProperty<>();
 
     public ElevatorFloor(Floor floor) {
         this.floorProperty.set(floor);
@@ -20,24 +20,22 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
         return this.floorProperty.get();
     }
 
-    public boolean isUpRequest() {
-        return upRequestProperty.get();
+    public BooleanProperty getUpRequest() {
+        return upRequestProperty;
     }
 
-    public void setUpRequest() {
-        this.upRequestProperty.set(true);
+    public void setUpRequest(boolean upRequest) {
+        this.upRequestProperty.set(upRequest);
     }
 
-    public void unsetUpRequest() { this.downRequestProperty.set(false); }
+    public BooleanProperty getDownRequest() { return this.downRequestProperty; }
 
-    public boolean isDownRequest() { return this.downRequestProperty.get(); }
-
-    public void setDownRequest() { this.downRequestProperty.set(true); }
+    public void setDownRequest(boolean downRequest) { this.downRequestProperty.set(downRequest); }
 
     public void unsetDownRequest() { this.downRequestProperty.set(false); }
 
-    public boolean isServiceEnabled() {
-        return serviceEnabled.get();
+    public BooleanProperty getServiceEnabled() {
+        return serviceEnabled;
     }
 
     public void setServiceEnabled(boolean serviceEnabled) {
