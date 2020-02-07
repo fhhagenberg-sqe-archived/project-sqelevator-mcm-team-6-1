@@ -57,6 +57,7 @@ public class RemoteConsoleView {
 
     private Pane getElevatorStatusPane(Elevator elevator) {
 
+
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
         elevatorStatusPane.addColumn(0, this.getElevatorPositionArrowPane(elevator));
@@ -518,42 +519,6 @@ public class RemoteConsoleView {
     }
 
     private Pane getElevatorButtonPane(Elevator elevator) {
-
-        var floorButtons = Arrays.asList(elevator.getElevatorFloorButtons());
-        Collections.reverse(floorButtons);
-
-        var flowPane = new FlowPane();
-        flowPane.setOrientation(Orientation.VERTICAL);
-        flowPane.setAlignment(Pos.CENTER);
-        flowPane.setVgap(5.0);
-
-        for (var floorButton : floorButtons) {
-            Text text = new Text(String.format("%d", floorButton.getFloorNumber()));
-            text.setBoundsType(TextBoundsType.VISUAL);
-
-            Circle circle = new Circle();
-            circle.setRadius(12.0);
-            circle.setFill(Color.TRANSPARENT);
-            circle.setStroke(Color.BLACK);
-            circle.fillProperty().bind(Bindings
-                    .when(floorButton.hasBeenPressedProperty)
-                    .then(Color.YELLOW)
-                    .otherwise(Color.TRANSPARENT));
-
-            StackPane stack = new StackPane();
-            stack.getChildren().addAll(circle, text);
-            flowPane.getChildren().add(stack);
-        }
-
-        var box = new VBox();
-        box.setPadding(new Insets(10.0));
-        box.setBorder(this.getThinBlackBorder());
-
-        var elevatorButtonPaneText = new Text("Elevator Buttons");
-        elevatorButtonPaneText.setStyle("-fx-font-size: 20;");
-
-        box.getChildren().addAll(elevatorButtonPaneText, flowPane);
-
-        return box;
+        return new ElevatorButtonPane(elevator);
     }
 }

@@ -7,9 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import sqelevator.ElevatorClient;
 import sqelevator.IElevator;
-import sqelevator.IElevatorClient;
 
 import java.rmi.RemoteException;
 import java.util.List;
