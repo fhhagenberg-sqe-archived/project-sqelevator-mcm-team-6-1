@@ -2,17 +2,22 @@ package at.fhhagenberg.sqelevator.logic;
 
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class AutomaticElevatorMode implements Observer {
+public class AutomaticElevatorMode implements ElevatorObserver {
     private List<Elevator> elevators;
     private Mode mode;
     private boolean isConnected;
     private IElevatorClient client;
     private List<Integer> outsideRequests;
     private List<Floor>[] insideRequests;
+    private boolean isFullyInitialized = false;
 
     public AutomaticElevatorMode(IElevatorClient client) {
         this.client = client;
@@ -45,6 +50,9 @@ public class AutomaticElevatorMode implements Observer {
                     }
 
                     for (int i = 0; i < this.client.getFloorNum(); i++) {
+                        if (elevator.getFloorRequests() == null) {
+                            elevator.setFloorRequests(FXCollections.observableArrayList());
+                        }
                         if (elevator.isFloorRequested(i)) {
                             addInsideRequest(elevator, this.client.getFloorByNumber(elevator, i).get().getFloor());
                         }
@@ -134,10 +142,12 @@ public class AutomaticElevatorMode implements Observer {
         int distance = elevators.stream().map(e -> e.getElevatorFloors().size()).max(Integer::compare).get();
 
         for (Elevator availableElevator : availableElevators) {
-            int offset = Math.abs(availableElevator.getCurrentFloorNumber() - outsideRequest);
-            if (offset < distance) {
-                distance = offset;
-                elevator = availableElevator;
+            if (availableElevator.getCurrentElevatorFloor() != null) {
+                int offset = Math.abs(availableElevator.getCurrentFloorNumber() - outsideRequest);
+                if (offset < distance) {
+                    distance = offset;
+                    elevator = availableElevator;
+                }
             }
         }
 
@@ -186,7 +196,7 @@ public class AutomaticElevatorMode implements Observer {
         if (elevators != null) {
             // check if there is an elevator available whose target floor is already set on our target floor
             for (Elevator elevator : elevators) {
-                if (elevator.directionProperty.get() == Direction.UNCOMMITED &&
+                if (elevator.directionProperty.get() == Direction.UNCOMMITED && elevator.getCurrentElevatorFloor() != null &&
                         client.getCurrentFloor(elevator).getFloor().getFloorNumber() == toFloor) {
                     return elevator;
                 }
@@ -205,14 +215,28 @@ public class AutomaticElevatorMode implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Object arg) {
         if (arg instanceof Mode) {
             this.mode = (Mode) arg;
+            if (isFullyInitialized) {
+                this.elevatorsChanged();
+            }
         } else if (arg instanceof Boolean) {
             this.isConnected = (Boolean) arg;
         } else if (arg instanceof List) {
             this.elevators = (List<Elevator>) arg;
-            this.elevatorsChanged();
+            isFullyInitialized = this.isFullyInitialized();
+
+            if (this.mode == Mode.AUTOMATIC && isFullyInitialized)
+                this.elevatorsChanged();
         }
+    }
+
+    private boolean isFullyInitialized() {
+        if (this.isFullyInitialized) {
+            return true;
+        }
+
+        return !this.elevators.stream().anyMatch(e -> e.getCurrentElevatorFloor() == null);
     }
 }

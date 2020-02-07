@@ -20,7 +20,6 @@ public class Elevator {
     public DoubleProperty velocityProperty = new SimpleDoubleProperty();
     public DoubleProperty payloadProperty = new SimpleDoubleProperty();
     public ObjectProperty<Direction> directionProperty = new SimpleObjectProperty<>(Direction.UNCOMMITED);
-
     private ListProperty<Integer> floorRequests = new SimpleListProperty<>();
     public ListProperty<Alarm> alarmListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
@@ -89,6 +88,9 @@ public class Elevator {
     }
 
     public int getCurrentFloorNumber() {
+        if (this.getCurrentElevatorFloor() == null) {
+            return -1;
+        }
         return this.getCurrentElevatorFloor().getFloor().getFloorNumber();
     }
 

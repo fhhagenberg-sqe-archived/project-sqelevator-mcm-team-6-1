@@ -52,9 +52,8 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
         this.floor.set(floor);
     }
 
-
     @Override
     public int compareTo(ElevatorFloor o) {
-        return Integer.compare(this.floor.get().getFloorNumber(), o.floor.get().getFloorNumber());
+        return Integer.compare(this.floorProperty().get().getFloorNumber(), o.floorProperty().get().getFloorNumber());
     }
 }

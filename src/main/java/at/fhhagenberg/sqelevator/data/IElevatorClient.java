@@ -10,15 +10,7 @@ public interface IElevatorClient {
 
     void setTarget(Elevator elevator, Floor floor) throws RemoteException;
 
-    void setTarget(Elevator elevator, int floorNumber) throws RemoteException;
-
-    int getFloorNum() throws RemoteException;
-
     List<Elevator> getElevators();
-
-    boolean getFloorButtonUp(int floorNumber) throws RemoteException;
-
-    boolean getFloorButtonDown(int floorNumber) throws RemoteException;
 
     Optional<Elevator> getElevatorByNumber(int elevatorNumber);
 
@@ -41,4 +33,12 @@ public interface IElevatorClient {
     boolean hasFloorBeenRequestedDown(Floor floor) throws RemoteException;
 
     boolean isServiceEnabled(Elevator elevator, Floor floor) throws RemoteException;
+
+    void setTarget(Elevator elevator, int floorNumber) throws RemoteException;
+
+    int getFloorNum() throws RemoteException;
+
+    boolean getFloorButtonUp(int floorNumber) throws RemoteException;
+
+    boolean getFloorButtonDown(int floorNumber) throws RemoteException;
 }

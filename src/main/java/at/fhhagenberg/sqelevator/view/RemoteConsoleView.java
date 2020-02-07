@@ -373,7 +373,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
-        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.getFloor().getFloorNumber()));
+        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.floorProperty().get().getFloorNumber()));
         floorLabel.setStyle("-fx-font-size: 20;");
 
         HBox wrapper = new HBox(floorLabel);
