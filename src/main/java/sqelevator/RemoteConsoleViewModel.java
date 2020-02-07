@@ -1,12 +1,9 @@
 package sqelevator;
 
-import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
-import at.fhhagenberg.sqelevator.domain.Mode;
+import at.fhhagenberg.sqelevator.domain.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import sqelevator.IElevatorClient;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -16,13 +13,12 @@ public class RemoteConsoleViewModel {
     private IElevatorClient client;
     private Thread pollingStatusThread;
 
-    //    public ObjectProperty<Elevator> selectedElevatorProperty = new SimpleObjectProperty<>();
     public ListProperty<Elevator> elevatorListProperty;
     public ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.MANUAL);
     public BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
 
 
-    public RemoteConsoleViewModel(IElevatorClient client) throws RemoteException {
+    public RemoteConsoleViewModel(IElevatorClient client) {
         this.client = client;
 
         var elevators = this.client.getElevators();
@@ -52,12 +48,12 @@ public class RemoteConsoleViewModel {
         this.pollingStatusThread.interrupt();
     }
 
-    public void targetFloor(Elevator elevator, int floorNumber) {
-//        try {
-//            client.setTarget(elevator.getElevatorNumber(), floorNumber);
-//        } catch (RemoteException e) {
-//            isConnectedProperty.set(false);
-//        }
+    public void targetFloor(Elevator elevator, Floor floor) {
+        try {
+            client.setTarget(elevator, floor);
+        } catch (RemoteException e) {
+            isConnectedProperty.set(false);
+        }
     }
 
     private void pollStatus(Elevator elevator) {
@@ -77,6 +73,16 @@ public class RemoteConsoleViewModel {
                     elevatorFloor.setUpRequest(client.hasFloorBeenRequestedUp(elevatorFloor.getFloor()));
                     elevatorFloor.setDownRequest(client.hasFloorBeenRequestedDown(elevatorFloor.getFloor()));
                     elevatorFloor.setServiceEnabled(client.isServiceEnabled(elevator, elevatorFloor.getFloor()));
+                }
+
+                var elevatorFloorButtons = elevator.getElevatorFloorButtons();
+                var elevatorFloorButtonStatus = client.getElevatorFloorButtonsStatus(elevator);
+
+                for (int i = 0; i < elevatorFloorButtons.length; i++) {
+                    var elevatorFloorButton = elevatorFloorButtons[i];
+                    var hasButtonBeenPressed = elevatorFloorButtonStatus[i];
+
+                    elevatorFloorButton.setHasBeenPressed(hasButtonBeenPressed);
                 }
 
                 isConnectedProperty.set(true);

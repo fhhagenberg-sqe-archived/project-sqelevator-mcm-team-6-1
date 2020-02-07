@@ -1,6 +1,9 @@
 package at.fhhagenberg.sqelevator.view;
 
 import at.fhhagenberg.sqelevator.domain.*;
+import javafx.geometry.Orientation;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextBoundsType;
 import sqelevator.RemoteConsoleViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
@@ -14,6 +17,9 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class RemoteConsoleView {
 
@@ -32,17 +38,13 @@ public class RemoteConsoleView {
             tab.setText(String.format("Elevator %d", elevator.getElevatorNumber()));
             tab.setClosable(false);
 
-            VBox masterPane = new VBox();
+            var masterPane = new HBox();
 
             HBox statusControlPane = new HBox();
             statusControlPane.getChildren().addAll(this.getElevatorStatusPane(elevator), this.getElevatorStatusControlPane(elevator));
             statusControlPane.setSpacing(20);
 
-            HBox elevatorAndAlarmListPane = new HBox();
-            elevatorAndAlarmListPane.getChildren().addAll(this.getAlarmListPane(elevator));
-            elevatorAndAlarmListPane.setSpacing(20);
-
-            masterPane.getChildren().addAll(statusControlPane, elevatorAndAlarmListPane);
+            masterPane.getChildren().addAll(statusControlPane, this.getAlarmListPane(elevator));
             masterPane.setSpacing(20);
             masterPane.setPadding(new Insets(20));
 
@@ -54,6 +56,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getElevatorStatusPane(Elevator elevator) {
+
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
         elevatorStatusPane.addColumn(0, this.getElevatorPositionArrowPane(elevator));
@@ -62,19 +65,33 @@ public class RemoteConsoleView {
         elevatorStatusPane.setBorder(this.getThinBlackBorder());
         elevatorStatusPane.setPadding(new Insets(5));
 
-        return elevatorStatusPane;
+        var elevatorStatusPaneText = new Text("Elevator Status");
+        elevatorStatusPaneText.setStyle("-fx-font-size: 22;");
+
+        var box = new VBox(10.0);
+        box.getChildren().addAll(elevatorStatusPaneText, elevatorStatusPane);
+
+        return box;
     }
 
     private Pane getElevatorStatusControlPane(Elevator elevator) {
-        VBox pane = new VBox();
-        pane.setSpacing(10);
+        VBox elevatorStatusControlPane = new VBox();
+        elevatorStatusControlPane.setSpacing(10);
 
-        pane.getChildren().addAll(this.getModeControl(),
+        elevatorStatusControlPane.getChildren().addAll(this.getModeControl(),
                 this.getDoorsControl(elevator),
                 this.getSpeedAndPayloadControl(elevator),
                 this.getCurrentTargetFloorPane(),
+                this.getElevatorButtonPane(elevator),
                 this.getIsConnectedPane());
-        return pane;
+
+        var elevatorStatusControlPaneText = new Text("Elevator Control");
+        elevatorStatusControlPaneText.setStyle("-fx-font-size: 22;");
+
+        var box = new VBox(10.0);
+        box.getChildren().addAll(elevatorStatusControlPaneText, elevatorStatusControlPane);
+
+        return box;
     }
 
     private Pane getModeControl() {
@@ -257,15 +274,15 @@ public class RemoteConsoleView {
         VBox downArrowWrapper = new VBox(downArrow);
         downArrowWrapper.setPadding(new Insets(5, 5, 15, 15));
 
-        upArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(0))
+        upArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.UP))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
-        downArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(1))
+        downArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.DOWN))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
-        uncomittedSquare.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(2))
+        uncomittedSquare.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.UNCOMMITED))
                 .then(Color.BLUE)
                 .otherwise(Color.TRANSPARENT));
 
@@ -289,21 +306,18 @@ public class RemoteConsoleView {
         // column 0 - door sign
         elevatorFloorStatusPane.addColumn(0, this.getDoorSignForFloorPane(elevator, elevatorFloor));
 
-        // column 1 - floor request
-        elevatorFloorStatusPane.addColumn(1, this.getFloorRequestLabel(elevatorFloor));
+        // column 1 - floor label
+        elevatorFloorStatusPane.addColumn(1, this.getFloorNameLabel(elevatorFloor));
 
-        // column 2 - floor label
-        elevatorFloorStatusPane.addColumn(2, this.getFloorNameLabel(elevatorFloor));
+        // column 2 - service enabled
+        elevatorFloorStatusPane.addColumn(2, this.getServiceEnabledLabel(elevatorFloor));
 
-        // column 3 - service enabled
-        elevatorFloorStatusPane.addColumn(3, this.getServiceEnabledLabel(elevatorFloor));
-
-        // column 4 - up/down request
-        elevatorFloorStatusPane.addColumn(4, this.getFloorUpAndDownPane(elevatorFloor));
+        // column 3 - up/down request
+        elevatorFloorStatusPane.addColumn(3, this.getFloorUpAndDownPane(elevatorFloor));
 
         elevatorFloorStatusPane.setBorder(this.getThinBlackBorder());
 
-        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor().getFloorNumber()));
+        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor()));
 
         elevatorFloorStatusPane.backgroundProperty().bind(
                 Bindings.when(elevator.getTargetedElevatorFloor().isEqualTo(elevatorFloor))
@@ -459,7 +473,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getAlarmListPane(Elevator elevator) {
-        VBox pane = new VBox();
+        VBox pane = new VBox(10.0);
 
         Label alarmListLabel = new Label("Alarm List");
         alarmListLabel.setStyle("-fx-font-size: 22;");
@@ -488,7 +502,6 @@ public class RemoteConsoleView {
 
     private Pane getIsConnectedPane() {
         Circle isConnectedStatus = new Circle(8.0);
-//        isConnectedStatus.setFill(Color.GREEN);
 
         isConnectedStatus.fillProperty().bind(
                 Bindings.when(viewModel.isConnectedProperty)
@@ -502,5 +515,45 @@ public class RemoteConsoleView {
         isConnectedLabel.setStyle("-fx-font-size: 20;");
 
         return new HBox(connectedStatusBox, isConnectedLabel);
+    }
+
+    private Pane getElevatorButtonPane(Elevator elevator) {
+
+        var floorButtons = Arrays.asList(elevator.getElevatorFloorButtons());
+        Collections.reverse(floorButtons);
+
+        var flowPane = new FlowPane();
+        flowPane.setOrientation(Orientation.VERTICAL);
+        flowPane.setAlignment(Pos.CENTER);
+        flowPane.setVgap(5.0);
+
+        for (var floorButton : floorButtons) {
+            Text text = new Text(String.format("%d", floorButton.getFloorNumber()));
+            text.setBoundsType(TextBoundsType.VISUAL);
+
+            Circle circle = new Circle();
+            circle.setRadius(12.0);
+            circle.setFill(Color.TRANSPARENT);
+            circle.setStroke(Color.BLACK);
+            circle.fillProperty().bind(Bindings
+                    .when(floorButton.hasBeenPressedProperty)
+                    .then(Color.YELLOW)
+                    .otherwise(Color.TRANSPARENT));
+
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(circle, text);
+            flowPane.getChildren().add(stack);
+        }
+
+        var box = new VBox();
+        box.setPadding(new Insets(10.0));
+        box.setBorder(this.getThinBlackBorder());
+
+        var elevatorButtonPaneText = new Text("Elevator Buttons");
+        elevatorButtonPaneText.setStyle("-fx-font-size: 20;");
+
+        box.getChildren().addAll(elevatorButtonPaneText, flowPane);
+
+        return box;
     }
 }

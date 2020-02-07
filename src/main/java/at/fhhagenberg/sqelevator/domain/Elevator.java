@@ -6,6 +6,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Elevator {
 
@@ -13,15 +15,18 @@ public class Elevator {
     private int maximumPayload;
     private ElevatorStatus elevatorStatus;
 
-    private ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
-    private ObjectProperty<ElevatorFloor> currentElevatorFloorProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<ElevatorFloor> targetedElevatorFloorProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<DoorStatus> doorsStatusProperty = new SimpleObjectProperty<>(DoorStatus.OPEN);
-    private DoubleProperty velocityProperty = new SimpleDoubleProperty();
-    private DoubleProperty payloadProperty = new SimpleDoubleProperty();
-    private ObjectProperty<Direction> directionProperty = new SimpleObjectProperty<>(Direction.UNCOMMITED);
-    private ListProperty<Integer> floorRequestProperty = new SimpleListProperty<>();
-    private ListProperty<Alarm> alarmListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+    public ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
+    public ListProperty<ElevatorFloorButton> floorButtonsProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty = new SimpleObjectProperty<>();
+    public ObjectProperty<ElevatorFloor> targetedElevatorFloorProperty = new SimpleObjectProperty<>();
+
+    public ObjectProperty<DoorStatus> doorsStatusProperty = new SimpleObjectProperty<>(DoorStatus.OPEN);
+    public DoubleProperty velocityProperty = new SimpleDoubleProperty();
+    public DoubleProperty payloadProperty = new SimpleDoubleProperty();
+    public ObjectProperty<Direction> directionProperty = new SimpleObjectProperty<>(Direction.UNCOMMITED);
+    public ListProperty<Integer> floorRequestProperty = new SimpleListProperty<>();
+    public ListProperty<Alarm> alarmListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public int getElevatorNumber() {
         return elevatorNumber;
@@ -51,8 +56,29 @@ public class Elevator {
         return elevatorFloors;
     }
 
+    public void addElevatorFloor(ElevatorFloor elevatorFloor) {
+        this.elevatorFloors.add(elevatorFloor);
+    }
+
     public void setElevatorFloors(List<ElevatorFloor> elevatorFloors) {
         this.elevatorFloors.addAll(elevatorFloors);
+
+        createElevatorButtons(elevatorFloors.size());
+    }
+
+    private void createElevatorButtons(int numberOfFloors) {
+        this.floorButtonsProperty.clear();
+
+        var elevatorButtons = IntStream.range(0, numberOfFloors)
+                .boxed()
+                .map(index -> new ElevatorFloorButton(index))
+                .collect(Collectors.toList());
+
+        this.floorButtonsProperty.addAll(elevatorButtons);
+    }
+
+    public ElevatorFloorButton[] getElevatorFloorButtons() {
+        return this.floorButtonsProperty.get().toArray(ElevatorFloorButton[]::new);
     }
 
     @Override
