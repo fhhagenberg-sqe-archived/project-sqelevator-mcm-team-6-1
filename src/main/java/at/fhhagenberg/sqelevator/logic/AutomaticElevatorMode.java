@@ -39,14 +39,14 @@ public class AutomaticElevatorMode implements ElevatorObserver {
                 for (Elevator elevator : elevators) {
                     // if elevator is already in target floor: make sure direction gets set to uncommitted
                     if (insideRequests != null && insideRequests[elevator.getElevatorNumber()]
-                            .contains(elevator.getCurrentElevatorFloor().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
-                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().getFloor());
+                            .contains(elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
+                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
                         insideRequests[elevator.getElevatorNumber()].remove((Integer) elevator.getElevatorNumber());
                     }
                     if (outsideRequests != null &&
-                            outsideRequests.contains(elevator.getCurrentElevatorFloor().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
-                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().getFloor());
-                        outsideRequests.remove((Integer) elevator.getCurrentElevatorFloor().getFloor().getFloorNumber());
+                            outsideRequests.contains(elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
+                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
+                        outsideRequests.remove((Integer) elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber());
                     }
 
                     for (int i = 0; i < this.client.getFloorNum(); i++) {

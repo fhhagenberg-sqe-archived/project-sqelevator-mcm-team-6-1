@@ -28,6 +28,8 @@ public interface IElevatorClient {
 
     Direction getDirection(Elevator elevator) throws RemoteException;
 
+    boolean[] getElevatorFloorButtonsStatus(Elevator elevator) throws RemoteException;
+
     boolean hasFloorBeenRequestedUp(Floor floor) throws RemoteException;
 
     boolean hasFloorBeenRequestedDown(Floor floor) throws RemoteException;

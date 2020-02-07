@@ -1,4 +1,4 @@
-package sqelevator;
+package at.fhhagenberg.sqelevator;
 
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
@@ -7,8 +7,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import sqelevator.ElevatorClient;
+import sqelevator.IElevator;
+import sqelevator.IElevatorClient;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -195,7 +199,7 @@ class ElevatorClientTest {
         final int elevatorNumber = 0;
         final var elevator = getMockElevator(elevatorNumber);
 
-        when(client.getElevatorAccel(elevatorNumber)).thenReturn(7);
+        when(client.getElevatorSpeed(elevatorNumber)).thenReturn(7);
 
         var velocity = this.elevatorClient.getCurrentVelocity(elevator);
 
@@ -263,6 +267,30 @@ class ElevatorClientTest {
     @Test
     void testGetDirection_ElevatorIsNull() {
         assertThrows(IllegalArgumentException.class, () -> this.elevatorClient.getDirection(null));
+    }
+
+    @Test
+    void testGetElevatorFloorButtonsStatus() throws RemoteException {
+        final int elevatorNumber = 0;
+        final var elevator = mock(Elevator.class);
+
+        when(elevator.getElevatorNumber()).thenReturn(elevatorNumber);
+        when(elevator.getElevatorFloors()).thenReturn(List.of(mock(ElevatorFloor.class), mock(ElevatorFloor.class), mock(ElevatorFloor.class)));
+        when(client.getElevatorButton(elevatorNumber, 0)).thenReturn(true);
+        when(client.getElevatorButton(elevatorNumber, 1)).thenReturn(false);
+        when(client.getElevatorButton(elevatorNumber, 2)).thenReturn(true);
+
+        var floorButtons = elevatorClient.getElevatorFloorButtonsStatus(elevator);
+
+        assertEquals(3, floorButtons.length);
+        assertTrue(floorButtons[0]);
+        assertFalse(floorButtons[1]);
+        assertTrue(floorButtons[2]);
+    }
+
+    @Test
+    void testGetElevatorFloorButtonsStatus_ElevatorNull() {
+        assertThrows(IllegalArgumentException.class, () -> this.elevatorClient.getElevatorFloorButtonsStatus(null));
     }
 
     @Test

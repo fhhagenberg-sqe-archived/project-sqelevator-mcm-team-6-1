@@ -138,7 +138,7 @@ public class ElevatorClient implements IElevatorClient {
 
         var elevatorNumber = elevator.getElevatorNumber();
 
-        return this.client.getElevatorAccel(elevatorNumber);
+        return this.client.getElevatorSpeed(elevatorNumber);
     }
 
     @Override
@@ -171,6 +171,23 @@ public class ElevatorClient implements IElevatorClient {
             default:
                 return Direction.UNCOMMITED;
         }
+    }
+
+    @Override
+    public boolean[] getElevatorFloorButtonsStatus(Elevator elevator) throws RemoteException {
+        if(elevator == null) {
+            throw new IllegalArgumentException("Elevator must not be null!");
+        }
+        final int elevatorNumber = elevator.getElevatorNumber();
+        final int numberOfFloors = elevator.getElevatorFloors().size();
+        final boolean[] floorButtonStatus = new boolean[numberOfFloors];
+
+        for (int i = 0; i < numberOfFloors; i++) {
+            var hasBeenPressed = this.client.getElevatorButton(elevatorNumber, i);
+            floorButtonStatus[i] = hasBeenPressed;
+        }
+
+        return floorButtonStatus;
     }
 
     @Override
