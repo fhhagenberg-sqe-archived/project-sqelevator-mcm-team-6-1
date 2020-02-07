@@ -1,9 +1,9 @@
 package at.fhhagenberg.sqelevator;
 
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
-import sqelevator.ElevatorClient;
-import sqelevator.IElevatorClient;
-import sqelevator.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.data.ElevatorClient;
+import at.fhhagenberg.sqelevator.data.IElevatorClient;
+import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;

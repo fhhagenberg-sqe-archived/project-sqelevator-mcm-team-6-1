@@ -1,7 +1,7 @@
 package at.fhhagenberg.sqelevator.view;
 
 import at.fhhagenberg.sqelevator.domain.*;
-import sqelevator.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -303,7 +303,7 @@ public class RemoteConsoleView {
 
         elevatorFloorStatusPane.setBorder(this.getThinBlackBorder());
 
-        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.floorProperty.get().getFloorNumber()));
+        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.floorProperty().get().getFloorNumber()));
 
         elevatorFloorStatusPane.backgroundProperty().bind(
                 Bindings.when(elevator.targetedElevatorFloorProperty.isEqualTo(elevatorFloor))
@@ -332,12 +332,12 @@ public class RemoteConsoleView {
         rightDoorPart.setFill(Color.TRANSPARENT);
 
         leftDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.currentElevatorFloorProperty.isEqualTo(elevatorFloor))
+                Bindings.when(elevator.currentElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
 
         rightDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.currentElevatorFloorProperty.isEqualTo(elevatorFloor))
+                Bindings.when(elevator.currentElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
 
@@ -374,7 +374,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
-        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.floorProperty.get().getFloorNumber()));
+        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.floorProperty().get().getFloorNumber()));
         floorLabel.setStyle("-fx-font-size: 20;");
 
         HBox wrapper = new HBox(floorLabel);

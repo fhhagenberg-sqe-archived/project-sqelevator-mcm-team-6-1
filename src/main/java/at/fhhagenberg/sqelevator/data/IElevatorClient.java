@@ -1,4 +1,4 @@
-package sqelevator;
+package at.fhhagenberg.sqelevator.data;
 
 import at.fhhagenberg.sqelevator.domain.*;
 
@@ -33,4 +33,12 @@ public interface IElevatorClient {
     boolean hasFloorBeenRequestedDown(Floor floor) throws RemoteException;
 
     boolean isServiceEnabled(Elevator elevator, Floor floor) throws RemoteException;
+
+    void setTarget(Elevator elevator, int floorNumber) throws RemoteException;
+
+    int getFloorNum() throws RemoteException;
+
+    boolean getFloorButtonUp(int floorNumber) throws RemoteException;
+
+    boolean getFloorButtonDown(int floorNumber) throws RemoteException;
 }

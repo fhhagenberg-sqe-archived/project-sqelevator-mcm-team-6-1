@@ -2,6 +2,7 @@ package at.fhhagenberg.sqelevator.domain;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -13,13 +14,13 @@ public class Elevator {
 
     private ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<ElevatorFloor> currentElevatorFloor = new SimpleObjectProperty<>();
     public ObjectProperty<ElevatorFloor> targetedElevatorFloorProperty = new SimpleObjectProperty<>();
     public ObjectProperty<DoorStatus> doorsStatusProperty = new SimpleObjectProperty<>(DoorStatus.OPEN);
     public DoubleProperty velocityProperty = new SimpleDoubleProperty();
     public DoubleProperty payloadProperty = new SimpleDoubleProperty();
     public ObjectProperty<Direction> directionProperty = new SimpleObjectProperty<>(Direction.UNCOMMITED);
-    public ListProperty<Integer> floorRequestProperty = new SimpleListProperty<>();
+    private ListProperty<Integer> floorRequests = new SimpleListProperty<>();
     public ListProperty<Alarm> alarmListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public int getElevatorNumber() {
@@ -56,6 +57,41 @@ public class Elevator {
 
     public void addElevatorFloor(ElevatorFloor elevatorFloor) {
         this.elevatorFloors.add(elevatorFloor);
+    }
+
+    public ElevatorFloor getCurrentElevatorFloor() {
+        return currentElevatorFloor.get();
+    }
+
+    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty() {
+        return currentElevatorFloor;
+    }
+
+    public void setCurrentElevatorFloor(ElevatorFloor currentElevatorFloor) {
+        this.currentElevatorFloor.set(currentElevatorFloor);
+    }
+
+    public ObservableList<Integer> getFloorRequests() {
+        return floorRequests.get();
+    }
+
+    public ListProperty<Integer> floorRequestsProperty() {
+        return floorRequests;
+    }
+
+    public void setFloorRequests(ObservableList<Integer> floorRequests) {
+        this.floorRequests.set(floorRequests);
+    }
+
+    public boolean isFloorRequested(Integer floor) {
+        return this.getFloorRequests().contains(floor);
+    }
+
+    public int getCurrentFloorNumber() {
+        if (this.getCurrentElevatorFloor() == null) {
+            return -1;
+        }
+        return this.getCurrentElevatorFloor().getFloor().getFloorNumber();
     }
 
     @Override

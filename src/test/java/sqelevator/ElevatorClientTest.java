@@ -1,5 +1,7 @@
 package sqelevator;
 
+import at.fhhagenberg.sqelevator.data.ElevatorClient;
+import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

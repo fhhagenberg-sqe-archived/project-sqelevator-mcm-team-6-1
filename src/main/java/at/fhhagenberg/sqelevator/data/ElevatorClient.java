@@ -1,6 +1,7 @@
-package sqelevator;
+package at.fhhagenberg.sqelevator.data;
 
 import at.fhhagenberg.sqelevator.domain.*;
+import sqelevator.IElevator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -208,5 +209,30 @@ public class ElevatorClient implements IElevatorClient {
         var floorNumber = floor.getFloorNumber();
 
         return this.client.getServicesFloors(elevatorNumber, floorNumber);
+    }
+
+    @Override
+    public void setTarget(Elevator elevator, int floorNumber) throws RemoteException {
+        if (elevator == null) {
+            throw new IllegalArgumentException("Elevator must not be null!");
+        }
+
+        this.client.setTarget(elevator.getElevatorNumber(), floorNumber);
+    }
+
+    @Override
+    public int getFloorNum() throws RemoteException {
+        return this.client.getFloorNum();
+    }
+
+
+    @Override
+    public boolean getFloorButtonUp(int floorNumber) throws RemoteException {
+        return this.client.getFloorButtonUp(floorNumber);
+    }
+
+    @Override
+    public boolean getFloorButtonDown(int floorNumber) throws RemoteException {
+        return this.client.getFloorButtonDown(floorNumber);
     }
 }
