@@ -5,6 +5,8 @@ import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.controls.ControlLabel;
 import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
+import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
+import at.fhhagenberg.sqelevator.view.controls.SpeedControl;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -132,36 +134,11 @@ public class RemoteConsoleView {
     }
 
     private Pane getSpeedControl(Elevator elevator) {
-        Label speedLabel = new Label("Speed: ");
-        Label currentSpeedLabel = new Label("0 km/h");
-        currentSpeedLabel.textProperty().bind(elevator.getVelocity().asString().concat(" km/h"));
-        currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
-
-        speedLabel.setStyle("-fx-font-size: 20;");
-        currentSpeedLabel.setStyle("-fx-font-size: 20;");
-
-        BorderPane pane = new BorderPane();
-        pane.setLeft(speedLabel);        pane.setRight(currentSpeedLabel);
-        pane.setBorder(BorderStyle.THIN_BLACK.value());
-        pane.setPadding(new Insets(15, 5, 15, 5));
-        return pane;
+        return new SpeedControl(elevator);
     }
 
     private Pane getPayloadControl(Elevator elevator) {
-        Label payloadLabel = new Label("Payload: ");
-        Label currentPayloadLabel = new Label("0 kg");
-        currentPayloadLabel.textProperty().bind(elevator.getPayload().asString().concat(" kg"));
-        currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
-
-        payloadLabel.setStyle("-fx-font-size: 20;");
-        currentPayloadLabel.setStyle("-fx-font-size: 20;");
-
-        BorderPane pane = new BorderPane();
-        pane.setLeft(payloadLabel);
-        pane.setRight(currentPayloadLabel);
-        pane.setBorder(BorderStyle.THIN_BLACK.value());
-        pane.setPadding(new Insets(15, 5, 15, 5));
-        return pane;
+        return new PayloadControl(elevator);
     }
 
     private Pane getCurrentTargetFloorPane() {
