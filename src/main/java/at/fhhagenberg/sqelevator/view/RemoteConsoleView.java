@@ -1,12 +1,10 @@
 package at.fhhagenberg.sqelevator.view;
 
+import at.fhhagenberg.sqelevator.view.controls.*;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.style.ControlLabel;
-import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
-import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
-import at.fhhagenberg.sqelevator.view.controls.SpeedControl;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -320,33 +318,11 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
-        Label floorLabel = new Label(String.format("Floor %d", elevatorFloor.floorProperty().get().getFloorNumber()));
-
-        floorLabel.setStyle("-fx-font-size: 20;");
-
-        HBox wrapper = new HBox(floorLabel);
-        wrapper.setPadding(new Insets(25, 50, 25, 50));
-        return wrapper;
+        return new FloorNameLabel(elevatorFloor.getFloor().getFloorNumber());
     }
 
     private Label getServiceEnabledLabel(ElevatorFloor elevatorFloor) {
-        Label label = new Label("Service\nenabled");
-        label.setPadding(new Insets(5));
-        label.setTextAlignment(TextAlignment.CENTER);
-
-        label.borderProperty().bind(
-                Bindings.when(elevatorFloor.getServiceEnabled())
-                        .then(BorderStyle.THIN_GREEN.value())
-                        .otherwise(BorderStyle.THIN_GREY.value())
-
-        );
-
-        label.textFillProperty().bind(
-                Bindings.when(elevatorFloor.getServiceEnabled())
-                        .then(Color.BLACK)
-                        .otherwise(Color.GRAY));
-
-        return label;
+        return new ServiceEnabledLabel(elevatorFloor.getServiceEnabled());
     }
 
     private Pane getFloorUpAndDownPane(ElevatorFloor elevatorFloor) {
