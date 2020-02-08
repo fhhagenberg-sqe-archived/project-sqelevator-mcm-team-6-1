@@ -1,9 +1,7 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.control;
 
-import at.fhhagenberg.sqelevator.domain.ElevatorFloorButton;
+import at.fhhagenberg.sqelevator.view.controls.ElevatorFloorButton;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,16 +21,14 @@ public class ElevatorFloorButtonTest {
         assertFalse(button.hasBeenPressed());
     }
 
-    @ParameterizedTest
-    @CsvSource({
-            "1,false, false",
-            "1,true"
-    })
+    @Test
     public void testElevatorFloorButtonPressed() {
         var button = new ElevatorFloorButton(1);
         assertFalse(button.hasBeenPressed());
         button.setHasBeenPressed(true);
 
         assertTrue(button.hasBeenPressed());
+        button.setHasBeenPressed(false);
+        assertFalse(button.hasBeenPressed());
     }
 }

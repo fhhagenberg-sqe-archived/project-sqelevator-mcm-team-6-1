@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator.domain;
 
-import javafx.beans.binding.BooleanExpression;
+import at.fhhagenberg.sqelevator.view.controls.ElevatorFloorButton;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

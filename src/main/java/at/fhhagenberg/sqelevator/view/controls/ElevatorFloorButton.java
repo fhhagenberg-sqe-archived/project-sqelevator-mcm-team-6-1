@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.domain;
+package at.fhhagenberg.sqelevator.view.controls;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
