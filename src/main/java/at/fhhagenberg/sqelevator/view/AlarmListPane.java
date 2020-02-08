@@ -35,6 +35,7 @@ public class AlarmListPane extends VBox {
                 }
             }
         });
+        alarmList.setId("AlarmList");
 
         this.getChildren().addAll(alarmListLabel, alarmList);
     }
