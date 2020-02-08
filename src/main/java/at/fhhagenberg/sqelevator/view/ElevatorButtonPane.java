@@ -5,6 +5,7 @@ import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -26,10 +27,11 @@ public class ElevatorButtonPane extends VBox {
         flowPane.setVgap(5.0);
 
         for (var floorButton : floorButtons) {
-            Text text = new Text(String.format("%d", floorButton.getFloorNumber()));
-            text.setBoundsType(TextBoundsType.VISUAL);
+            Label label = new Label();
+            label.textProperty().set(String.format("%d", floorButton.getFloorNumber()));
 
             Circle circle = new Circle();
+            circle.setId(String.format("%d", floorButton.getFloorNumber()));
             circle.setRadius(12.0);
             circle.setFill(Color.TRANSPARENT);
             circle.setStroke(Color.BLACK);
@@ -39,7 +41,7 @@ public class ElevatorButtonPane extends VBox {
                     .otherwise(Color.TRANSPARENT));
 
             StackPane stack = new StackPane();
-            stack.getChildren().addAll(circle, text);
+            stack.getChildren().addAll(circle, label);
             flowPane.getChildren().add(stack);
         }
 
