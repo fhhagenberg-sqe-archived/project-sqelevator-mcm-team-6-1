@@ -1,11 +1,10 @@
 package at.fhhagenberg.sqelevator.view.controls;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 
 public class PayloadControl extends BorderPane {
     public PayloadControl(Elevator elevator) {

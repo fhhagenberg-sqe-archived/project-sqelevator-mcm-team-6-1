@@ -1,9 +1,9 @@
 package at.fhhagenberg.sqelevator.view;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-import at.fhhagenberg.sqelevator.view.controls.ControlLabel;
+import at.fhhagenberg.sqelevator.view.style.ControlLabel;
 import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
 import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
 import at.fhhagenberg.sqelevator.view.controls.SpeedControl;
@@ -127,10 +127,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getSpeedAndPayloadControl(Elevator elevator) {
-        BorderPane speedAndPayloadControl = new BorderPane();
-        speedAndPayloadControl.setLeft(this.getSpeedControl(elevator));
-        speedAndPayloadControl.setRight(this.getPayloadControl(elevator));
-        return speedAndPayloadControl;
+        return new SpeedPayloadPane(elevator);
     }
 
     private Pane getSpeedControl(Elevator elevator) {
@@ -401,20 +398,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getIsConnectedPane() {
-        Circle isConnectedStatus = new Circle(8.0);
-
-        isConnectedStatus.fillProperty().bind(
-                Bindings.when(viewModel.isConnectedProperty)
-                        .then(Color.GREEN)
-                        .otherwise(Color.RED));
-
-        VBox connectedStatusBox = new VBox(isConnectedStatus);
-        connectedStatusBox.setPadding(new Insets(6, 5, 0, 0));
-
-        Label isConnectedLabel = new Label(" connected to system");
-        isConnectedLabel.setStyle("-fx-font-size: 20;");
-
-        return new HBox(connectedStatusBox, isConnectedLabel);
+        return new IsConnectedPane(viewModel.isConnectedProperty);
     }
 
     private Pane getElevatorButtonPane(Elevator elevator) {

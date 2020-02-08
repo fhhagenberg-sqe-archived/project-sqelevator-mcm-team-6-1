@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator.view;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
@@ -11,7 +11,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
 
 import java.util.Arrays;
 import java.util.Collections;

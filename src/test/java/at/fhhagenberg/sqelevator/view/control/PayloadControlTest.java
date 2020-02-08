@@ -38,7 +38,8 @@ public class PayloadControlTest {
     @Test
     public void testChangePayload(FxRobot robot) {
         var label = (Label)robot.lookup("#PayloadControlLabel").queryAll().iterator().next();
-        label.textProperty().addListener((observableValue, s, t1) -> assertEquals("1.212 kg", observableValue.getValue()));
         Platform.runLater(() -> elevator.setPayload(1.212));
+        robot.interrupt();
+        assertEquals("1.212 kg", label.textProperty().get());
     }
 }

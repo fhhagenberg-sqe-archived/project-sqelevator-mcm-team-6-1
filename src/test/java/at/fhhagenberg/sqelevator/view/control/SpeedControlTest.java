@@ -37,14 +37,17 @@ public class SpeedControlTest {
     @Test
     public void testChangeSpeed(FxRobot robot) {
         var label = (Label)robot.lookup("#SpeedControlLabel").queryAll().iterator().next();
-        label.textProperty().addListener((observableValue, s, t1) -> assertEquals("12.9 km/h", observableValue.getValue()));
         Platform.runLater(() -> elevator.setVelocity(12.9));
+        robot.interrupt();
+        assertEquals("12.9 km/h", label.textProperty().get());
+
     }
 
     @Test
     public void testChangeNegativeSpeed(FxRobot robot) {
         var label = (Label)robot.lookup("#SpeedControlLabel").queryAll().iterator().next();
-        label.textProperty().addListener((observableValue, s, t1) -> assertEquals("-12.9 km/h", observableValue.getValue()));
         Platform.runLater(() -> elevator.setVelocity(-12.9));
+        robot.interrupt();
+        assertEquals("-12.9 km/h", label.textProperty().get());
     }
 }

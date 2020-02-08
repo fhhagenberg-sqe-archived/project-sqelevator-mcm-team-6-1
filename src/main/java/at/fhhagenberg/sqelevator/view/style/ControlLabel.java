@@ -1,9 +1,8 @@
-package at.fhhagenberg.sqelevator.view.controls;
+package at.fhhagenberg.sqelevator.view.style;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 
 public class ControlLabel extends Label {

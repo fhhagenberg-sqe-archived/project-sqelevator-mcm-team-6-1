@@ -1,9 +1,9 @@
 package at.fhhagenberg.sqelevator.view.controls;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.DoorStatus;
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.view.controls.ControlLabel;
+import at.fhhagenberg.sqelevator.view.style.ControlLabel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

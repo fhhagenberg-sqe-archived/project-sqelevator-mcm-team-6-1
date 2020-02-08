@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator;
+package at.fhhagenberg.sqelevator.view.style;
 
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;

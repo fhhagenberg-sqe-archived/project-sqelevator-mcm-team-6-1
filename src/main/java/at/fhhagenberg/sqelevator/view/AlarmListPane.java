@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator.view;
 
-import at.fhhagenberg.sqelevator.BorderStyle;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.Alarm;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import javafx.scene.control.Label;
