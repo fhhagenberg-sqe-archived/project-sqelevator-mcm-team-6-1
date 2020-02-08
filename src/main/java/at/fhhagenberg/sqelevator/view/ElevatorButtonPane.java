@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.view;
 
+import at.fhhagenberg.sqelevator.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
@@ -46,9 +47,7 @@ public class ElevatorButtonPane extends VBox {
         }
 
         this.setPadding(new Insets(10.0));
-        this.setBorder(new Border(
-                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
-                        null, new BorderWidths(1))));
+        this.setBorder(BorderStyle.THIN_BLACK.value());
 
         var elevatorButtonPaneText = new Text("Elevator Buttons");
         elevatorButtonPaneText.setStyle("-fx-font-size: 20;");

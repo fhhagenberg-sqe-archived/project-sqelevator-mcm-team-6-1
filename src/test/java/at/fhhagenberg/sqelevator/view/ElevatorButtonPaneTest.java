@@ -71,6 +71,9 @@ public class ElevatorButtonPaneTest {
 
         assertEquals(Color.YELLOW, ((Circle)robot.lookup("#" + testId).queryAll().iterator().next()).getFill());
         assertEquals(Color.TRANSPARENT, ((Circle)robot.lookup("#" + verificationId).queryAll().iterator().next()).getFill());
+
         elevator.getElevatorFloorButtons()[testId].hasBeenPressedProperty.setValue(false);
+        
+        assertEquals(Color.TRANSPARENT, ((Circle)robot.lookup("#" + testId).queryAll().iterator().next()).getFill());
     }
 }

@@ -474,31 +474,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getAlarmListPane(Elevator elevator) {
-        VBox pane = new VBox(10.0);
-
-        Label alarmListLabel = new Label("Alarm List");
-        alarmListLabel.setStyle("-fx-font-size: 22;");
-
-        ListView<Alarm> alarmList = new ListView<>();
-        alarmList.setBorder(this.getThinBlackBorder());
-        alarmList.itemsProperty().bind(elevator.getAlarmList());
-//        alarmList.setItems(remoteConsole.getAlarms());
-        VBox.setVgrow(alarmList, Priority.SOMETIMES);
-
-        alarmList.setCellFactory(cell -> new ListCell<>() {
-            @Override
-            protected void updateItem(Alarm alarm, boolean b) {
-                super.updateItem(alarm, b);
-
-                if (alarm != null) {
-                    setText(alarm.getTimestamp() + " " + alarm.getMessage());
-                    setFont(Font.font(14.0));
-                }
-            }
-        });
-
-        pane.getChildren().addAll(alarmListLabel, alarmList);
-        return pane;
+        return new AlarmListPane(elevator);
     }
 
     private Pane getIsConnectedPane() {
