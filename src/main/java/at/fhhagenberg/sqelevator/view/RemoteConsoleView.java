@@ -1,10 +1,12 @@
 package at.fhhagenberg.sqelevator.view;
 
+import at.fhhagenberg.sqelevator.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.view.controls.ControlLabel;
+import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.*;
@@ -13,13 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextBoundsType;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 public class RemoteConsoleView {
 
@@ -63,7 +60,7 @@ public class RemoteConsoleView {
         elevatorStatusPane.addColumn(0, this.getElevatorPositionArrowPane(elevator));
         elevatorStatusPane.addColumn(1, this.getFloorsStatusPane(elevator));
 
-        elevatorStatusPane.setBorder(this.getThinBlackBorder());
+        elevatorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
         elevatorStatusPane.setPadding(new Insets(5));
 
         var elevatorStatusPaneText = new Text("Elevator Status");
@@ -103,14 +100,14 @@ public class RemoteConsoleView {
         modeLabel.setStyle("-fx-font-size: 20;");
         modeLabel.setPadding(new Insets(20, 0, 20, 0));
 
-        Label automatic = this.getControlLabelStyled("Automatic");
+        Label automatic = new ControlLabel("Automatic");
         automatic.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.AUTOMATIC));
         automatic.backgroundProperty().bind(
                 Bindings.when(viewModel.modeProperty.isEqualTo(Mode.AUTOMATIC))
                         .then(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
-        Label manual = this.getControlLabelStyled("Manual");
+        Label manual = new ControlLabel("Manual");
         manual.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.MANUAL));
         manual.backgroundProperty().bind(
                 Bindings.when(viewModel.modeProperty.isEqualTo(Mode.MANUAL))
@@ -119,35 +116,12 @@ public class RemoteConsoleView {
 
         box.getChildren().addAll(modeLabel, automatic, manual);
         box.setPadding(new Insets(10));
-        box.setBorder(this.getThinBlackBorder());
+        box.setBorder(BorderStyle.THIN_BLACK.value());
         return box;
     }
 
     private Pane getDoorsControl(Elevator elevator) {
-        HBox box = new HBox();
-
-        Label modeLabel = new Label("Doors");
-        modeLabel.setPrefWidth(100.0);
-        modeLabel.setStyle("-fx-font-size: 20;");
-        modeLabel.setPadding(new Insets(20, 0, 20, 0));
-
-        Label open = this.getControlLabelStyled("Open");
-        Label closed = this.getControlLabelStyled("Closed");
-
-        open.backgroundProperty().bind(
-                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.OPEN))
-                        .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        closed.backgroundProperty().bind(
-                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.CLOSED))
-                        .then(new Background(new BackgroundFill(Color.rgb(255, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        box.getChildren().addAll(modeLabel, open, closed);
-        box.setPadding(new Insets(10));
-        box.setBorder(this.getThinBlackBorder());
-        return box;
+        return new DoorsControl(elevator);
     }
 
     private Pane getSpeedAndPayloadControl(Elevator elevator) {
@@ -168,7 +142,7 @@ public class RemoteConsoleView {
 
         BorderPane pane = new BorderPane();
         pane.setLeft(speedLabel);        pane.setRight(currentSpeedLabel);
-        pane.setBorder(this.getThinBlackBorder());
+        pane.setBorder(BorderStyle.THIN_BLACK.value());
         pane.setPadding(new Insets(15, 5, 15, 5));
         return pane;
     }
@@ -185,7 +159,7 @@ public class RemoteConsoleView {
         BorderPane pane = new BorderPane();
         pane.setLeft(payloadLabel);
         pane.setRight(currentPayloadLabel);
-        pane.setBorder(this.getThinBlackBorder());
+        pane.setBorder(BorderStyle.THIN_BLACK.value());
         pane.setPadding(new Insets(15, 5, 15, 5));
         return pane;
     }
@@ -210,19 +184,9 @@ public class RemoteConsoleView {
         pane.setPadding(new Insets(0, 5, 0, 5));
         pane.setLeft(label);
         pane.setRight(valueWrapper);
-        pane.setBorder(this.getThinBlackBorder());
+        pane.setBorder(BorderStyle.THIN_BLACK.value());
 
         return pane;
-    }
-
-    private Label getControlLabelStyled(String text) {
-        Label label = new Label(text);
-        label.setAlignment(Pos.CENTER);
-        label.setBorder(this.getThinBlackBorder());
-        label.setStyle("-fx-font-size: 20;");
-        label.setPrefWidth(120.0);
-        label.setPadding(new Insets(20, 0, 20, 0));
-        return label;
     }
 
     private Pane getElevatorPositionArrowPane(Elevator elevator) {
@@ -315,7 +279,7 @@ public class RemoteConsoleView {
         // column 3 - up/down request
         elevatorFloorStatusPane.addColumn(3, this.getFloorUpAndDownPane(elevatorFloor));
 
-        elevatorFloorStatusPane.setBorder(this.getThinBlackBorder());
+        elevatorFloorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
 
         elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor()));
 
@@ -325,12 +289,6 @@ public class RemoteConsoleView {
                         .otherwise(Background.EMPTY));
 
         return elevatorFloorStatusPane;
-    }
-
-    private Border getThinBlackBorder() {
-        return new Border(
-                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
-                        null, new BorderWidths(1)));
     }
 
     private Pane getDoorSignForFloorPane(Elevator elevator, ElevatorFloor elevatorFloor) {
@@ -363,7 +321,7 @@ public class RemoteConsoleView {
 
     private Pane getFloorRequestLabel(ElevatorFloor elevatorFloor) {
         Label label = new Label("No\nRequest");
-        label.setBorder(this.getThinBlackBorder());
+        label.setBorder(BorderStyle.THIN_BLACK.value());
 
         label.setPadding(new Insets(5));
         label.setTextAlignment(TextAlignment.CENTER);
@@ -404,12 +362,8 @@ public class RemoteConsoleView {
 
         label.borderProperty().bind(
                 Bindings.when(elevatorFloor.getServiceEnabled())
-                        .then(new Border(
-                                new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(1))))
-                        .otherwise(new Border(
-                                new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(1))))
+                        .then(BorderStyle.THIN_GREEN.value())
+                        .otherwise(BorderStyle.THIN_GREY.value())
 
         );
 
@@ -435,24 +389,16 @@ public class RemoteConsoleView {
         // bind border color to up property
         upLabel.borderProperty().bind(
                 Bindings.when(elevatorFloor.getUpRequest())
-                        .then(new Border(
-                                new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(2))))
-                        .otherwise(new Border(
-                                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(1))))
+                        .then(BorderStyle.STANDARD_DARKBLUE.value())
+                        .otherwise(BorderStyle.THIN_BLACK.value())
 
         );
 
         // bind border color to down property
         downLabel.borderProperty().bind(
                 Bindings.when(elevatorFloor.getDownRequest())
-                        .then(new Border(
-                                new BorderStroke(Color.DARKBLUE, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(2))))
-                        .otherwise(new Border(
-                                new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
-                                        null, new BorderWidths(1))))
+                        .then(BorderStyle.STANDARD_DARKBLUE.value())
+                        .otherwise(BorderStyle.THIN_BLACK.value())
 
         );
 
