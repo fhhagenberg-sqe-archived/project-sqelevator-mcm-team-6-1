@@ -17,6 +17,10 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private Integer[] currentInsideRequests;
     private boolean isFullyInitialized = false;
 
+    public AutomaticElevatorMode(IElevatorClient client) {
+        this.client = client;
+    }
+
     @Override
     public void execute(List<Elevator> elevators) {
         this.elevators = elevators;
@@ -29,7 +33,8 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 this.setOutsideRequestsFromClient();
                 this.handleAndGetAllRequests();
                 startElevatorRoutine();
-            } catch (RemoteException e) { }
+            } catch (RemoteException e) {
+            }
         }
     }
 
@@ -144,11 +149,16 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
                     // target closest elevator to outsideRequest floor
                     if (elevator != null) {
-                        client.setTarget(elevator, outsideRequest);
+                        var maybeElevatorFloor = client.getFloorByNumber(elevator, outsideRequest);
+
+                        if(maybeElevatorFloor.isPresent()) {
+                            client.setTarget(elevator, maybeElevatorFloor.get().getFloor());
+                        }
                     }
                 }
             }
         }
+
     }
 
     private List<Elevator> findAvailableElevators() {
@@ -195,7 +205,11 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
             currentInsideRequests[index] = nearestFloor;
         }
 
-        client.setTarget(elevator, nearestOutsideRequestFloor);
+        var maybeElevatorFloor = client.getFloorByNumber(elevator, nearestOutsideRequestFloor);
+
+        if(maybeElevatorFloor.isPresent()) {
+            client.setTarget(elevator, maybeElevatorFloor.get().getFloor());
+        }
     }
 
     private Integer findNearestInsideRequest(int index, Elevator elevator) {

@@ -229,19 +229,9 @@ public class ElevatorClient implements IElevatorClient {
     }
 
     @Override
-    public void setTarget(Elevator elevator, int floorNumber) throws RemoteException {
-        if (elevator == null) {
-            throw new IllegalArgumentException("Elevator must not be null!");
-        }
-
-        this.client.setTarget(elevator.getElevatorNumber(), floorNumber);
-    }
-
-    @Override
     public int getFloorNum() throws RemoteException {
         return this.client.getFloorNum();
     }
-
 
     @Override
     public boolean getFloorButtonUp(int floorNumber) throws RemoteException {
