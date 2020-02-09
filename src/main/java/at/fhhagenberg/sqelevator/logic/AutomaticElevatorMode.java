@@ -29,30 +29,32 @@ public class AutomaticElevatorMode implements ElevatorObserver {
         if (isConnected) {
             try {
                 this.setOutsideRequestsFromClient();
-
-                for (Elevator elevator : elevators) {
-                    // if the elevator is already on the floor of an inside or outside request, process that first
-                    if (this.hasInsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
-                        this.handleInsideRequestOnCurrentFloor(elevator);
-                    }
-                    if (this.hasOutsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
-                        this.handleOutsideRequestOnCurrentFloor(elevator);
-                    }
-
-                    // otherwise find new inside requests
-                    for (int i = 0; i < this.client.getFloorNum(); i++) {
-                        if (elevator.getFloorRequests() == null) {
-                            elevator.setFloorRequests(FXCollections.observableArrayList());
-                        }
-                        if (elevator.isFloorRequested(i)) {
-                            addInsideRequest(elevator, this.client.getFloorByNumber(elevator, i).get().getFloor());
-                        }
-                    }
-                }
-
+                this.handleAndGetAllRequests();
                 startElevatorRoutine();
             } catch (RemoteException e) {
                 isConnected = false;
+            }
+        }
+    }
+
+    private void handleAndGetAllRequests() throws RemoteException {
+        for (Elevator elevator : elevators) {
+            // if the elevator is already on the floor of an inside or outside request, process that first
+            if (this.hasInsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
+                this.handleInsideRequestOnCurrentFloor(elevator);
+            }
+            if (this.hasOutsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
+                this.handleOutsideRequestOnCurrentFloor(elevator);
+            }
+
+            // otherwise find new inside requests
+            for (int i = 0; i < this.client.getFloorNum(); i++) {
+                if (elevator.getFloorRequests() == null) {
+                    elevator.setFloorRequests(FXCollections.observableArrayList());
+                }
+                if (elevator.isFloorRequested(i)) {
+                    addInsideRequest(elevator, this.client.getFloorByNumber(elevator, i).get().getFloor());
+                }
             }
         }
     }
