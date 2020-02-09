@@ -1,23 +1,16 @@
-package at.fhhagenberg.sqelevator.view.control;
+package at.fhhagenberg.sqelevator.view.controls;
 
-import at.fhhagenberg.sqelevator.domain.Alarm;
 import at.fhhagenberg.sqelevator.domain.DoorStatus;
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.view.AlarmListPane;
-import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;

@@ -1,11 +1,7 @@
-package at.fhhagenberg.sqelevator.view.control;
+package at.fhhagenberg.sqelevator.view.controls;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.view.controls.DoorsControl;
-import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;

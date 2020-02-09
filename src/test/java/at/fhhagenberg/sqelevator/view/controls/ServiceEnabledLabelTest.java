@@ -1,23 +1,17 @@
-package at.fhhagenberg.sqelevator.view.control;
+package at.fhhagenberg.sqelevator.view.controls;
 
-import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
-import at.fhhagenberg.sqelevator.view.controls.ServiceEnabledLabel;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-
-import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -1,6 +1,5 @@
-package at.fhhagenberg.sqelevator.view.control;
+package at.fhhagenberg.sqelevator.view.controls;
 
-import at.fhhagenberg.sqelevator.view.controls.ElevatorFloorButton;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

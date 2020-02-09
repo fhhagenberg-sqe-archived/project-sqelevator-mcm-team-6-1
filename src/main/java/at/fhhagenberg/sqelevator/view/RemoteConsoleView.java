@@ -292,29 +292,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorRequestLabel(ElevatorFloor elevatorFloor) {
-        Label label = new Label("No\nRequest");
-        label.setBorder(BorderStyle.THIN_BLACK.value());
-
-        label.setPadding(new Insets(5));
-        label.setTextAlignment(TextAlignment.CENTER);
-
-        label.textProperty().bind(
-                Bindings.when(elevatorFloor.getUpRequest())
-                        .then("UP\nRequest")
-                        .otherwise(
-                                Bindings.when(elevatorFloor.getDownRequest())
-                                        .then("DOWN\nRequest")
-                                        .otherwise("No\nRequest")));
-
-        label.backgroundProperty().bind(
-                Bindings.when(elevatorFloor.getUpRequest().or(elevatorFloor.getDownRequest()))
-                        .then(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        HBox wrapper = new HBox(label);
-        wrapper.setPrefHeight(60.0);
-        wrapper.setPadding(new Insets(10));
-        return wrapper;
+        return new FloorRequestLabel(elevatorFloor);
     }
 
     private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
