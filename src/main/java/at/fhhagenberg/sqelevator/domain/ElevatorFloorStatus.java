@@ -5,12 +5,6 @@ public class ElevatorFloorStatus {
     private boolean isDownRequested;
     private boolean isServiced;
 
-    public ElevatorFloorStatus(boolean isUpRequested, boolean isDownRequested, boolean isServiced) {
-        this.isUpRequested = isUpRequested;
-        this.isDownRequested = isDownRequested;
-        this.isServiced = isServiced;
-    }
-
     public boolean isUpRequested() {
         return isUpRequested;
     }
@@ -28,7 +22,7 @@ public class ElevatorFloorStatus {
     }
 
     public static class ElevatorFloorStatusBuilder {
-        private ElevatorFloorStatus status;
+        private ElevatorFloorStatus status = new ElevatorFloorStatus();
 
         public ElevatorFloorStatusBuilder upRequested(boolean isUpRequested) {
             status.isUpRequested = isUpRequested;
