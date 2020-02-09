@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.model;
+package at.fhhagenberg.sqelevator.domain;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
