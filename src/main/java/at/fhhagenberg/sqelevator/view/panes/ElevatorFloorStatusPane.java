@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
@@ -8,7 +8,6 @@ import at.fhhagenberg.sqelevator.view.controls.ServiceEnabledLabel;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 

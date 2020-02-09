@@ -1,11 +1,9 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 
 import at.fhhagenberg.sqelevator.domain.Alarm;
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
-import at.fhhagenberg.sqelevator.domain.Floor;
-import javafx.collections.FXCollections;
+import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;

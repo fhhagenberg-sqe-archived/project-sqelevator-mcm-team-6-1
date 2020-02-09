@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

@@ -1,7 +1,7 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.view.controls.PayloadControl;
+import at.fhhagenberg.sqelevator.view.panes.SpeedPayloadPane;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

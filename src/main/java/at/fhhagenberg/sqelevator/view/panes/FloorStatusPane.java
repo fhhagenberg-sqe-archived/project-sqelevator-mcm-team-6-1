@@ -1,12 +1,8 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
-import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-import javafx.geometry.Insets;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-
-import java.awt.*;
+        import at.fhhagenberg.sqelevator.domain.Elevator;
+        import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
+        import javafx.scene.layout.*;
 
 public class FloorStatusPane extends VBox {
     public FloorStatusPane(Elevator elevator, RemoteConsoleViewModel viewModel) {

@@ -1,10 +1,11 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.view.panes.ElevatorFloorStatusPane;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;

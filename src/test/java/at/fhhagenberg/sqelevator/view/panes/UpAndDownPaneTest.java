@@ -1,9 +1,9 @@
-package at.fhhagenberg.sqelevator.view;
+package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
+import at.fhhagenberg.sqelevator.view.panes.UpAndDownPane;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;

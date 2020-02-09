@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator.view;
 
 import at.fhhagenberg.sqelevator.view.controls.*;
+import at.fhhagenberg.sqelevator.view.panes.*;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
@@ -8,15 +9,11 @@ import at.fhhagenberg.sqelevator.view.style.ControlLabel;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 
 public class RemoteConsoleView {
 
@@ -54,10 +51,8 @@ public class RemoteConsoleView {
 
     private Pane getElevatorStatusPane(Elevator elevator) {
 
-
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
-        elevatorStatusPane.addColumn(0, this.getElevatorPositionArrowPane(elevator));
         elevatorStatusPane.addColumn(1, this.getFloorsStatusPane(elevator));
 
         elevatorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
@@ -151,70 +146,6 @@ public class RemoteConsoleView {
         pane.setBorder(BorderStyle.THIN_BLACK.value());
 
         return pane;
-    }
-
-    private Pane getElevatorPositionArrowPane(Elevator elevator) {
-        Label positionLabel = new Label("Position");
-        positionLabel.setStyle("-fx-font-size: 20;");
-        positionLabel.setPadding(new Insets(5));
-
-        Polygon upArrow = new Polygon();
-        upArrow.getPoints().addAll(30.0, 20.0,
-                10.0, 45.0,
-                23.0, 45.0,
-                23.0, 120.0,
-                37.0, 120.0,
-                37.0, 45.0,
-                50.0, 45.0,
-                30.0, 20.0);
-
-        upArrow.setFill(Color.TRANSPARENT);
-        upArrow.setStroke(Color.BLACK);
-
-        VBox upArrowWrapper = new VBox(upArrow);
-        upArrowWrapper.setPadding(new Insets(45, 5, 5, 15));
-
-        Polygon uncomittedSquare = new Polygon();
-        uncomittedSquare.getPoints().addAll(23.0, 20.0,
-                37.0, 20.0,
-                37.0, 30.0,
-                23.0, 30.0,
-                23.0, 20.0);
-
-        uncomittedSquare.setFill(Color.LIGHTGRAY);
-        uncomittedSquare.setStroke(Color.BLACK);
-
-        VBox uncomittedSquareWrapper = new VBox(uncomittedSquare);
-        uncomittedSquareWrapper.setPadding(new Insets(0, 5, 0, 29));
-
-        Polygon downArrow = new Polygon();
-        downArrow.getPoints().addAll(23.0, 20.0,
-                23.0, 95.0,
-                10.0, 95.0,
-                30.0, 120.0,
-                50.0, 95.0,
-                37.0, 95.0,
-                37.0, 20.0,
-                23.0, 20.0);
-
-        downArrow.setFill(Color.TRANSPARENT);
-        downArrow.setStroke(Color.BLACK);
-        VBox downArrowWrapper = new VBox(downArrow);
-        downArrowWrapper.setPadding(new Insets(5, 5, 15, 15));
-
-        upArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.UP))
-                .then(Color.BLUE)
-                .otherwise(Color.TRANSPARENT));
-
-        downArrow.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.DOWN))
-                .then(Color.BLUE)
-                .otherwise(Color.TRANSPARENT));
-
-        uncomittedSquare.fillProperty().bind(Bindings.when(elevator.getDirection().isEqualTo(Direction.UNCOMMITED))
-                .then(Color.BLUE)
-                .otherwise(Color.TRANSPARENT));
-
-        return new VBox(positionLabel, upArrowWrapper, uncomittedSquareWrapper, downArrowWrapper);
     }
 
     private Pane getFloorsStatusPane(Elevator elevator) {
