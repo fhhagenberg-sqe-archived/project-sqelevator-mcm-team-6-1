@@ -36,7 +36,7 @@ public class ElevatorButtonPane extends VBox {
             circle.setFill(Color.TRANSPARENT);
             circle.setStroke(Color.BLACK);
             circle.fillProperty().bind(Bindings
-                    .when(floorButton.hasBeenPressedProperty)
+                    .when(floorButton.hasBeenPressedProperty())
                     .then(Color.YELLOW)
                     .otherwise(Color.TRANSPARENT));
 

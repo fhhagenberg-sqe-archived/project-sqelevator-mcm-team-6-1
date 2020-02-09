@@ -7,7 +7,7 @@ public class ElevatorFloorButton {
 
     private int floorNumber;
 
-    public BooleanProperty hasBeenPressedProperty;
+    private BooleanProperty hasBeenPressedProperty;
 
     public ElevatorFloorButton(int floorNumber) {
         this(floorNumber, false);
@@ -28,5 +28,9 @@ public class ElevatorFloorButton {
 
     public void setHasBeenPressed(boolean hasBeenPressed) {
         this.hasBeenPressedProperty.set(hasBeenPressed);
+    }
+
+    public BooleanProperty hasBeenPressedProperty() {
+        return hasBeenPressedProperty;
     }
 }
