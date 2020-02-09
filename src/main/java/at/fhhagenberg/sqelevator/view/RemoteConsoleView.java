@@ -128,14 +128,6 @@ public class RemoteConsoleView {
         return new SpeedPayloadPane(elevator);
     }
 
-    private Pane getSpeedControl(Elevator elevator) {
-        return new SpeedControl(elevator);
-    }
-
-    private Pane getPayloadControl(Elevator elevator) {
-        return new PayloadControl(elevator);
-    }
-
     private Pane getCurrentTargetFloorPane() {
         Label label = new Label("Current Target Floor: ");
         label.setStyle("-fx-font-size: 20;");
@@ -226,62 +218,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getFloorsStatusPane(Elevator elevator) {
-        VBox floorsStatusPane = new VBox();
-
-        elevator.getElevatorFloors().forEach(elevatorFloor ->
-                floorsStatusPane.getChildren().add(this.getElevatorFloorStatusPane(elevator, elevatorFloor))
-        );
-
-        floorsStatusPane.setSpacing(5);
-        return floorsStatusPane;
-    }
-
-    private Pane getElevatorFloorStatusPane(Elevator elevator, ElevatorFloor elevatorFloor) {
-        GridPane elevatorFloorStatusPane = new GridPane();
-
-        // column 0 - door sign
-        elevatorFloorStatusPane.addColumn(0, this.getDoorSignForFloorPane(elevator, elevatorFloor));
-
-        // column 1 - floor label
-        elevatorFloorStatusPane.addColumn(1, this.getFloorNameLabel(elevatorFloor));
-
-        // column 2 - service enabled
-        elevatorFloorStatusPane.addColumn(2, this.getServiceEnabledLabel(elevatorFloor));
-
-        // column 3 - up/down request
-        elevatorFloorStatusPane.addColumn(3, this.getFloorUpAndDownPane(elevatorFloor));
-
-        elevatorFloorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
-
-        elevatorFloorStatusPane.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor()));
-
-        elevatorFloorStatusPane.backgroundProperty().bind(
-                Bindings.when(elevator.getTargetedElevatorFloor().isEqualTo(elevatorFloor))
-                        .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        return elevatorFloorStatusPane;
-    }
-
-    private Pane getDoorSignForFloorPane(Elevator elevator, ElevatorFloor elevatorFloor) {
-
-        return new DoorSignPane(elevator, elevatorFloor);
-    }
-
-    private Pane getFloorRequestLabel(ElevatorFloor elevatorFloor) {
-        return new FloorRequestLabel(elevatorFloor);
-    }
-
-    private Pane getFloorNameLabel(ElevatorFloor elevatorFloor) {
-        return new FloorNameLabel(elevatorFloor.getFloor().getFloorNumber());
-    }
-
-    private Label getServiceEnabledLabel(ElevatorFloor elevatorFloor) {
-        return new ServiceEnabledLabel(elevatorFloor.getServiceEnabled());
-    }
-
-    private Pane getFloorUpAndDownPane(ElevatorFloor elevatorFloor) {
-        return new UpAndDownPane(elevatorFloor);
+        return new FloorStatusPane(elevator, viewModel);
     }
 
     private Pane getAlarmListPane(Elevator elevator) {

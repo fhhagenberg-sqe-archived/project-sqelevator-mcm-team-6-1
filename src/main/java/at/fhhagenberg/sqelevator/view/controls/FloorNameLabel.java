@@ -7,7 +7,7 @@ import javafx.scene.layout.HBox;
 public class FloorNameLabel extends HBox {
     public FloorNameLabel(int floorNumber) {
         Label floorLabel = new Label(String.format("Floor %d", floorNumber));
-
+        floorLabel.setId("FloorNameNumber");
         floorLabel.setStyle("-fx-font-size: 20;");
         this.getChildren().add(floorLabel);
 
