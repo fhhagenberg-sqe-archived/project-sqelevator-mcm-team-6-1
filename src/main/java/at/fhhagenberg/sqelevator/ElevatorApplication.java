@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator;
 
+import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
@@ -21,7 +22,7 @@ public class ElevatorApplication extends Application {
     public void start(Stage primaryStage) throws Exception {
         IElevator controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
         IElevatorClient client = new ElevatorClient(controller);
-        this.viewModel = new RemoteConsoleViewModel(client);
+        this.viewModel = new RemoteConsoleViewModel(client, new AutomaticElevatorMode());
         this.view = new RemoteConsoleView(viewModel);
 
         primaryStage.setTitle("Elevator Remote Console");
