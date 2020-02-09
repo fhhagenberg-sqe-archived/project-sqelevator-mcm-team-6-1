@@ -88,31 +88,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getModeControl() {
-        HBox box = new HBox();
-
-        Label modeLabel = new Label("Mode");
-        modeLabel.setPrefWidth(100.0);
-        modeLabel.setStyle("-fx-font-size: 20;");
-        modeLabel.setPadding(new Insets(20, 0, 20, 0));
-
-        Label automatic = new ControlLabel("Automatic");
-        automatic.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.AUTOMATIC));
-        automatic.backgroundProperty().bind(
-                Bindings.when(viewModel.modeProperty.isEqualTo(Mode.AUTOMATIC))
-                        .then(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        Label manual = new ControlLabel("Manual");
-        manual.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.MANUAL));
-        manual.backgroundProperty().bind(
-                Bindings.when(viewModel.modeProperty.isEqualTo(Mode.MANUAL))
-                        .then(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)))
-                        .otherwise(Background.EMPTY));
-
-        box.getChildren().addAll(modeLabel, automatic, manual);
-        box.setPadding(new Insets(10));
-        box.setBorder(BorderStyle.THIN_BLACK.value());
-        return box;
+        return new ModeControl(viewModel.modeProperty);
     }
 
     private Pane getDoorsControl(Elevator elevator) {
