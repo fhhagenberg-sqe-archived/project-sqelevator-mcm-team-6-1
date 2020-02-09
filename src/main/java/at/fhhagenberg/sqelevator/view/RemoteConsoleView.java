@@ -38,7 +38,7 @@ public class RemoteConsoleView {
             statusControlPane.getChildren().addAll(this.getElevatorStatusPane(elevator), this.getElevatorStatusControlPane(elevator));
             statusControlPane.setSpacing(20);
 
-            masterPane.getChildren().addAll(statusControlPane, this.getAlarmListPane(elevator));
+            masterPane.getChildren().addAll(statusControlPane, new AlarmListPane(elevator));
             masterPane.setSpacing(20);
             masterPane.setPadding(new Insets(20));
 
@@ -53,7 +53,7 @@ public class RemoteConsoleView {
 
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
-        elevatorStatusPane.addColumn(1, this.getFloorsStatusPane(elevator));
+        elevatorStatusPane.addColumn(1, new FloorStatusPane(elevator, viewModel));
 
         elevatorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
         elevatorStatusPane.setPadding(new Insets(5));
@@ -71,12 +71,13 @@ public class RemoteConsoleView {
         VBox elevatorStatusControlPane = new VBox();
         elevatorStatusControlPane.setSpacing(10);
 
-        elevatorStatusControlPane.getChildren().addAll(this.getModeControl(),
-                this.getDoorsControl(elevator),
-                this.getSpeedAndPayloadControl(elevator),
-                this.getCurrentTargetFloorPane(),
-                this.getElevatorButtonPane(elevator),
-                this.getIsConnectedPane());
+        elevatorStatusControlPane.getChildren().addAll(
+                new ModeControl(viewModel.modeProperty),
+                new DoorsControl(elevator),
+                new SpeedPayloadPane(elevator),
+                new ElevatorButtonPane(elevator),
+                new IsConnectedPane(viewModel.isConnectedProperty)
+        );
 
         var elevatorStatusControlPaneText = new Text("Elevator Control");
         elevatorStatusControlPaneText.setStyle("-fx-font-size: 22;");
@@ -85,58 +86,5 @@ public class RemoteConsoleView {
         box.getChildren().addAll(elevatorStatusControlPaneText, elevatorStatusControlPane);
 
         return box;
-    }
-
-    private Pane getModeControl() {
-        return new ModeControl(viewModel.modeProperty);
-    }
-
-    private Pane getDoorsControl(Elevator elevator) {
-        return new DoorsControl(elevator);
-    }
-
-    private Pane getSpeedAndPayloadControl(Elevator elevator) {
-        return new SpeedPayloadPane(elevator);
-    }
-
-    private Pane getCurrentTargetFloorPane() {
-        Label label = new Label("Current Target Floor: ");
-        label.setStyle("-fx-font-size: 20;");
-
-        TextField value = new TextField("1");
-        value.editableProperty().bind(viewModel.modeProperty.isEqualTo(Mode.MANUAL));
-
-        value.setStyle("-fx-font-size: 20;");
-
-        label.setPadding(new Insets(20, 5, 20, 5));
-        value.setMaxWidth(80.0);
-        value.setAlignment(Pos.CENTER_RIGHT);
-
-        VBox valueWrapper = new VBox(value);
-        valueWrapper.setPadding(new Insets(15, 5, 15, 5));
-
-        BorderPane pane = new BorderPane();
-        pane.setPadding(new Insets(0, 5, 0, 5));
-        pane.setLeft(label);
-        pane.setRight(valueWrapper);
-        pane.setBorder(BorderStyle.THIN_BLACK.value());
-
-        return pane;
-    }
-
-    private Pane getFloorsStatusPane(Elevator elevator) {
-        return new FloorStatusPane(elevator, viewModel);
-    }
-
-    private Pane getAlarmListPane(Elevator elevator) {
-        return new AlarmListPane(elevator);
-    }
-
-    private Pane getIsConnectedPane() {
-        return new IsConnectedPane(viewModel.isConnectedProperty);
-    }
-
-    private Pane getElevatorButtonPane(Elevator elevator) {
-        return new ElevatorButtonPane(elevator);
     }
 }

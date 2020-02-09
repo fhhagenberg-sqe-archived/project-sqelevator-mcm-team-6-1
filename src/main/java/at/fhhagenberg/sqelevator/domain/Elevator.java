@@ -56,10 +56,6 @@ public class Elevator {
         return elevatorFloors;
     }
 
-    public void addElevatorFloor(ElevatorFloor elevatorFloor) {
-        this.elevatorFloors.add(elevatorFloor);
-    }
-
     public void setElevatorFloors(List<ElevatorFloor> elevatorFloors) {
         this.elevatorFloors.addAll(elevatorFloors);
 
@@ -81,17 +77,8 @@ public class Elevator {
         return this.floorButtonsProperty.get().toArray(ElevatorFloorButton[]::new);
     }
 
-
-    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty() {
-        return currentElevatorFloor;
-    }
-
     public ObservableList<Integer> getFloorRequests() {
         return floorRequests.get();
-    }
-
-    public ListProperty<Integer> floorRequestsProperty() {
-        return floorRequests;
     }
 
     public void setFloorRequests(ObservableList<Integer> floorRequests) {

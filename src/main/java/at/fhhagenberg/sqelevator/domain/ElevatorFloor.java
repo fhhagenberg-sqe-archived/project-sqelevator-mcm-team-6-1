@@ -28,8 +28,6 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
 
     public void setDownRequest(boolean downRequest) { this.downRequestProperty.set(downRequest); }
 
-    public void unsetDownRequest() { this.downRequestProperty.set(false); }
-
     public BooleanProperty getServiceEnabled() {
         return serviceEnabled;
     }
