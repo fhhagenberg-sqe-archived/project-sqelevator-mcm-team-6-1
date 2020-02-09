@@ -17,8 +17,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private Integer[] currentInsideRequests;
     private boolean isFullyInitialized = false;
 
-    public AutomaticElevatorMode() { }
-
     @Override
     public void execute(List<Elevator> elevators) {
         this.elevators = elevators;
