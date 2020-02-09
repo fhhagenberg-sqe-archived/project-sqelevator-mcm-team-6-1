@@ -13,6 +13,7 @@
 
         <sonar.organization>fhhagenberg-sqe</sonar.organization>
         <sonar.projectKey>project-sqelevator-mcm-team-6-1</sonar.projectKey>
+        <sonar.projectName>ElevatorCC - Team 6</sonar.projectName>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
@@ -23,7 +24,22 @@
 			<version>5.5.2</version>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>13</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
