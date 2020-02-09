@@ -4,41 +4,30 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Mode;
-import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.*;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Observable;
 
-public class RemoteConsoleViewModel extends Observable {
+public class RemoteConsoleViewModel {
 
     private IElevatorClient client;
     private Thread pollingStatusThread;
-    private ElevatorObservable elevatorObservable = new ElevatorObservable();
+    private IAutomaticModeStrategy automaticModeStrategy;
 
     public ListProperty<Elevator> elevatorListProperty;
     public ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.MANUAL);
     public BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
 
 
-    public RemoteConsoleViewModel(IElevatorClient client) {
+    public RemoteConsoleViewModel(IElevatorClient client, IAutomaticModeStrategy automaticModeStrategy) {
         this.client = client;
-
-        var automaticElevatorMode = new AutomaticElevatorMode(this.client);
-
-        elevatorObservable.addObserver(automaticElevatorMode);
-        this.modeProperty.addListener(
-                (observable, oldvalue, newvalue) ->
-                elevatorObservable.notifyObservers(newvalue)
-        );
+        this.automaticModeStrategy = automaticModeStrategy;
+        this.automaticModeStrategy.setClient(client);
 
         var elevators = this.client.getElevators();
-        this.setChanged();
-        this.notifyObservers(elevators);
 
         elevatorListProperty = new SimpleListProperty<>(FXCollections.observableList(elevators));
     }
@@ -54,7 +43,10 @@ public class RemoteConsoleViewModel extends Observable {
                         e.printStackTrace();
                     }
                 }
-                elevatorObservable.notifyObservers(elevatorListProperty.get());
+
+                if (modeProperty.get() == Mode.AUTOMATIC) {
+                    automaticModeStrategy.execute(elevatorListProperty.get());
+                }
             }
         });
 

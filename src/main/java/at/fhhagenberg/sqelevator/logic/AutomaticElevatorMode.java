@@ -9,32 +9,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AutomaticElevatorMode implements ElevatorObserver {
+public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private List<Elevator> elevators;
-    private Mode mode;
-    private boolean isConnected;
     private IElevatorClient client;
     private List<Integer> outsideRequests;
     private List<Floor>[] insideRequests;
     private Integer[] currentInsideRequests;
     private boolean isFullyInitialized = false;
 
-    public AutomaticElevatorMode(IElevatorClient client) {
-        this.client = client;
-    }
+    public AutomaticElevatorMode() { }
 
-    private void onElevatorsChanged() {
-        initialize();
+    @Override
+    public void execute(List<Elevator> elevators) {
+        this.elevators = elevators;
+        isFullyInitialized = this.isFullyInitialized();
 
-        if (isConnected) {
+        if (isFullyInitialized) {
+            initialize();
+
             try {
                 this.setOutsideRequestsFromClient();
                 this.handleAndGetAllRequests();
                 startElevatorRoutine();
-            } catch (RemoteException e) {
-                isConnected = false;
-            }
+            } catch (RemoteException e) { }
         }
+    }
+
+    @Override
+    public void setClient(IElevatorClient client) {
+        this.client = client;
     }
 
     private void handleAndGetAllRequests() throws RemoteException {
@@ -101,10 +104,6 @@ public class AutomaticElevatorMode implements ElevatorObserver {
 
         if (outsideRequests == null) {
             outsideRequests = new ArrayList();
-        }
-
-        if (!isConnected && client != null && elevators != null && !elevators.isEmpty()) {
-            isConnected = true;
         }
     }
 
@@ -275,24 +274,6 @@ public class AutomaticElevatorMode implements ElevatorObserver {
         }
 
         return null;
-    }
-
-    @Override
-    public void update(Object arg) {
-        if (arg instanceof Mode) {
-            this.mode = (Mode) arg;
-            if (isFullyInitialized) {
-                this.onElevatorsChanged();
-            }
-        } else if (arg instanceof Boolean) {
-            this.isConnected = (Boolean) arg;
-        } else if (arg instanceof List) {
-            this.elevators = (List<Elevator>) arg;
-            isFullyInitialized = this.isFullyInitialized();
-
-            if (this.mode == Mode.AUTOMATIC && isFullyInitialized)
-                this.onElevatorsChanged();
-        }
     }
 
     private boolean isFullyInitialized() {
