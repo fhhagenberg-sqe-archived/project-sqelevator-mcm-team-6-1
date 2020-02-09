@@ -3,7 +3,6 @@ package at.fhhagenberg.sqelevator.logic;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,38 +16,30 @@ public class AutomaticElevatorMode implements ElevatorObserver {
     private IElevatorClient client;
     private List<Integer> outsideRequests;
     private List<Floor>[] insideRequests;
+    private Integer[] currentInsideRequests;
     private boolean isFullyInitialized = false;
 
     public AutomaticElevatorMode(IElevatorClient client) {
         this.client = client;
     }
 
-    private void elevatorsChanged() {
+    private void onElevatorsChanged() {
         initialize();
 
         if (isConnected) {
             try {
-                // set outside requests
-                for (int i = 0; i < this.client.getFloorNum(); i++) {
-                    if (client.getFloorButtonDown(i) || client.getFloorButtonUp(i)) {
-                        addOutsideRequestIfNew(i);
-                    }
-                }
+                this.setOutsideRequestsFromClient();
 
-                // handle button presses inside elevators
                 for (Elevator elevator : elevators) {
-                    // if elevator is already in target floor: make sure direction gets set to uncommitted
-                    if (insideRequests != null && insideRequests[elevator.getElevatorNumber()]
-                            .contains(elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
-                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
-                        insideRequests[elevator.getElevatorNumber()].remove((Integer) elevator.getElevatorNumber());
+                    // if the elevator is already on the floor of an inside or outside request, process that first
+                    if (this.hasInsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
+                        this.handleInsideRequestOnCurrentFloor(elevator);
                     }
-                    if (outsideRequests != null &&
-                            outsideRequests.contains(elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber()) && elevator.directionProperty.get() == Direction.UNCOMMITED) {
-                        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
-                        outsideRequests.remove((Integer) elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber());
+                    if (this.hasOutsideRequestOnCurrentFloorAndIsAvailable(elevator)) {
+                        this.handleOutsideRequestOnCurrentFloor(elevator);
                     }
 
+                    // otherwise find new inside requests
                     for (int i = 0; i < this.client.getFloorNum(); i++) {
                         if (elevator.getFloorRequests() == null) {
                             elevator.setFloorRequests(FXCollections.observableArrayList());
@@ -58,8 +49,40 @@ public class AutomaticElevatorMode implements ElevatorObserver {
                         }
                     }
                 }
+
+                startElevatorRoutine();
             } catch (RemoteException e) {
                 isConnected = false;
+            }
+        }
+    }
+
+    private boolean hasInsideRequestOnCurrentFloorAndIsAvailable(Elevator elevator) {
+        return insideRequests != null &&
+                insideRequests[elevator.getElevatorNumber()].contains(elevator.getCurrentFloorNumber()) &&
+                elevator.directionProperty.get() == Direction.UNCOMMITED;
+    }
+
+    private boolean hasOutsideRequestOnCurrentFloorAndIsAvailable(Elevator elevator) {
+        return outsideRequests != null &&
+                outsideRequests.contains(elevator.getCurrentFloorNumber()) &&
+                elevator.directionProperty.get() == Direction.UNCOMMITED;
+    }
+
+    private void handleInsideRequestOnCurrentFloor(Elevator elevator) throws RemoteException {
+        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
+        insideRequests[elevator.getElevatorNumber()].remove((Integer) elevator.getElevatorNumber());
+    }
+
+    private void handleOutsideRequestOnCurrentFloor(Elevator elevator) throws RemoteException {
+        client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
+        outsideRequests.remove((Integer) elevator.getCurrentElevatorFloor().get().getFloor().getFloorNumber());
+    }
+
+    private void setOutsideRequestsFromClient() throws RemoteException {
+        for (int i = 0; i < this.client.getFloorNum(); i++) {
+            if (client.getFloorButtonDown(i) || client.getFloorButtonUp(i)) {
+                addOutsideRequestIfNew(i);
             }
         }
     }
@@ -67,6 +90,8 @@ public class AutomaticElevatorMode implements ElevatorObserver {
     private void initialize() {
         if (client != null && insideRequests == null) {
             insideRequests = new List[client.getElevators().size()];
+            currentInsideRequests = new Integer[insideRequests.length];
+
             for (int i = 0; i < client.getElevators().size(); i++) {
                 insideRequests[i] = new ArrayList();
             }
@@ -83,26 +108,22 @@ public class AutomaticElevatorMode implements ElevatorObserver {
 
 
     private void addInsideRequest(Elevator e, Floor floor) throws RemoteException {
-        // if current request is not on respective list: add it
         if (!insideRequests[e.getElevatorNumber()].contains(floor)) {
             insideRequests[e.getElevatorNumber()].add(floor);
         }
-        startElevatorRoutine();
     }
 
     private void addOutsideRequestIfNew(int floor) throws RemoteException {
         if (!outsideRequests.contains(floor)) {
             outsideRequests.add(floor);
         }
-
-        startElevatorRoutine();
     }
 
     private void startElevatorRoutine() throws RemoteException {
         if (client != null && elevators != null && !elevators.isEmpty()) {
             for (int i = 0; i < elevators.size(); i++) {
                 if (!insideRequests[i].isEmpty()) {
-                    targetNearestElevatorToInsideRequest(i, elevators.get(i));
+                    targetElevatorToNextInsideRequest(i, elevators.get(i));
                 }
             }
 
@@ -154,23 +175,62 @@ public class AutomaticElevatorMode implements ElevatorObserver {
         return elevator;
     }
 
-    private void targetNearestElevatorToInsideRequest(int index, Elevator elevator) throws RemoteException {
-        int nearestFloor = 0;
-        int floorNumber = client.getFloorNum();
+    private void targetElevatorToNextInsideRequest(int index, Elevator elevator) throws RemoteException {
+        int nearestFloor;
+        Integer currentInsideRequest = currentInsideRequests[index];
+        boolean intermediateInsideRequestFound = false;
 
-        // get nearest requested floor
+        if (currentInsideRequest != null) {
+            nearestFloor = this.findNearestInsideRequestToCurrentRequest(index, elevator, currentInsideRequest);
+            intermediateInsideRequestFound = true;
+        } else {
+            nearestFloor = this.findNearestInsideRequest(index, elevator);
+        }
+
+        int nearestOutsideRequestFloor = findNearestIntermediateOutsideRequest(elevator, nearestFloor);
+        if (intermediateInsideRequestFound) {
+            currentInsideRequests[index] = nearestFloor;
+        } else if (nearestFloor == nearestOutsideRequestFloor) {
+            currentInsideRequests[index] = null;
+        } else {
+            currentInsideRequests[index] = nearestFloor;
+        }
+
+        client.setTarget(elevator, nearestOutsideRequestFloor);
+    }
+
+    private Integer findNearestInsideRequest(int index, Elevator elevator) {
+        Integer nearestFloor = null;
         for (int j = 0; j < insideRequests[index].size(); j++) {
-            int offset = Math.abs(insideRequests[index].get(j).getFloorNumber() - elevator.getCurrentFloorNumber());
-            if (offset < floorNumber) {
-                floorNumber = offset;
+            int request = insideRequests[index].get(j).getFloorNumber();
+            if (isRequestBetweenExistingRequestAndCurrentFloor(elevator.getCurrentFloorNumber(), nearestFloor, request)) {
                 nearestFloor = insideRequests[index].get(j).getFloorNumber();
             }
         }
 
-        // go to the next outside request instead if it is before toFloor
-        nearestFloor = findNearestIntermediateOutsideRequest(elevator, nearestFloor);
+        return nearestFloor;
+    }
 
-        client.setTarget(elevator, nearestFloor);
+    private Integer findNearestInsideRequestToCurrentRequest(int index, Elevator elevator, int currentRequest) {
+        int nearestFloor = currentRequest;
+        for (int j = 0; j < insideRequests[index].size(); j++) {
+            int request = insideRequests[index].get(j).getFloorNumber();
+            if (request != currentRequest &&
+                    isRequestBetweenExistingRequestAndCurrentFloor(elevator.getCurrentFloorNumber(), nearestFloor, request)) {
+                nearestFloor = insideRequests[index].get(j).getFloorNumber();
+            }
+        }
+
+        return nearestFloor;
+    }
+
+    private boolean isRequestBetweenExistingRequestAndCurrentFloor(int currentFloor, Integer existingRequest, int newRequest) {
+        if (existingRequest == null) {
+            return true;
+        }
+
+        return (newRequest > currentFloor && newRequest < existingRequest) ||
+                (newRequest < currentFloor && newRequest > existingRequest);
     }
 
     private Integer findNearestIntermediateOutsideRequest(Elevator e, Integer nearestFloor) throws RemoteException {
@@ -189,6 +249,7 @@ public class AutomaticElevatorMode implements ElevatorObserver {
                 nearestFloor = outsideRequest;
             }
         }
+
         return nearestFloor;
     }
 
@@ -219,7 +280,7 @@ public class AutomaticElevatorMode implements ElevatorObserver {
         if (arg instanceof Mode) {
             this.mode = (Mode) arg;
             if (isFullyInitialized) {
-                this.elevatorsChanged();
+                this.onElevatorsChanged();
             }
         } else if (arg instanceof Boolean) {
             this.isConnected = (Boolean) arg;
@@ -228,7 +289,7 @@ public class AutomaticElevatorMode implements ElevatorObserver {
             isFullyInitialized = this.isFullyInitialized();
 
             if (this.mode == Mode.AUTOMATIC && isFullyInitialized)
-                this.elevatorsChanged();
+                this.onElevatorsChanged();
         }
     }
 
