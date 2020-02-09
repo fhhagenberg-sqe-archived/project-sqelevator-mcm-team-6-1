@@ -1,19 +1,13 @@
 package at.fhhagenberg.sqelevator.view;
 
-import at.fhhagenberg.sqelevator.view.controls.*;
-import at.fhhagenberg.sqelevator.view.panes.*;
-import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-import at.fhhagenberg.sqelevator.view.style.ControlLabel;
-import javafx.beans.binding.Bindings;
+import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
+import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusControlPane;
+import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusPane;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 
 public class RemoteConsoleView {
 
@@ -23,7 +17,7 @@ public class RemoteConsoleView {
         this.viewModel = viewModel;
     }
 
-    public Control createView() {
+    public TabPane createView() {
 
         TabPane tabPane = new TabPane();
 
@@ -35,7 +29,7 @@ public class RemoteConsoleView {
             var masterPane = new HBox();
 
             HBox statusControlPane = new HBox();
-            statusControlPane.getChildren().addAll(this.getElevatorStatusPane(elevator), new ElevatorStatusControlPane(elevator, viewModel));
+            statusControlPane.getChildren().addAll(new ElevatorStatusPane(elevator, viewModel), new ElevatorStatusControlPane(elevator, viewModel));
             statusControlPane.setSpacing(20);
 
             masterPane.getChildren().addAll(statusControlPane, new AlarmListPane(elevator));
@@ -47,23 +41,5 @@ public class RemoteConsoleView {
         }
 
         return tabPane;
-    }
-
-    private Pane getElevatorStatusPane(Elevator elevator) {
-
-        GridPane elevatorStatusPane = new GridPane();
-        elevatorStatusPane.setPadding(new Insets(10));
-        elevatorStatusPane.addColumn(1, new FloorStatusPane(elevator, viewModel));
-
-        elevatorStatusPane.setBorder(BorderStyle.THIN_BLACK.value());
-        elevatorStatusPane.setPadding(new Insets(5));
-
-        var elevatorStatusPaneText = new Text("Elevator Status");
-        elevatorStatusPaneText.setStyle("-fx-font-size: 22;");
-
-        var box = new VBox(10.0);
-        box.getChildren().addAll(elevatorStatusPaneText, elevatorStatusPane);
-
-        return box;
     }
 }
