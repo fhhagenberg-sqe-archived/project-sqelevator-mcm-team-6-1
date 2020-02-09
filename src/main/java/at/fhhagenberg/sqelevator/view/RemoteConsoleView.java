@@ -35,7 +35,7 @@ public class RemoteConsoleView {
             var masterPane = new HBox();
 
             HBox statusControlPane = new HBox();
-            statusControlPane.getChildren().addAll(this.getElevatorStatusPane(elevator), this.getElevatorStatusControlPane(elevator));
+            statusControlPane.getChildren().addAll(this.getElevatorStatusPane(elevator), new ElevatorStatusControlPane(elevator, viewModel));
             statusControlPane.setSpacing(20);
 
             masterPane.getChildren().addAll(statusControlPane, new AlarmListPane(elevator));
@@ -63,27 +63,6 @@ public class RemoteConsoleView {
 
         var box = new VBox(10.0);
         box.getChildren().addAll(elevatorStatusPaneText, elevatorStatusPane);
-
-        return box;
-    }
-
-    private Pane getElevatorStatusControlPane(Elevator elevator) {
-        VBox elevatorStatusControlPane = new VBox();
-        elevatorStatusControlPane.setSpacing(10);
-
-        elevatorStatusControlPane.getChildren().addAll(
-                new ModeControl(viewModel.modeProperty),
-                new DoorsControl(elevator),
-                new SpeedPayloadPane(elevator),
-                new ElevatorButtonPane(elevator),
-                new IsConnectedPane(viewModel.isConnectedProperty)
-        );
-
-        var elevatorStatusControlPaneText = new Text("Elevator Control");
-        elevatorStatusControlPaneText.setStyle("-fx-font-size: 22;");
-
-        var box = new VBox(10.0);
-        box.getChildren().addAll(elevatorStatusControlPaneText, elevatorStatusControlPane);
 
         return box;
     }
