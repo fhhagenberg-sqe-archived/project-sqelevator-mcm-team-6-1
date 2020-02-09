@@ -264,31 +264,8 @@ public class RemoteConsoleView {
     }
 
     private Pane getDoorSignForFloorPane(Elevator elevator, ElevatorFloor elevatorFloor) {
-        Rectangle doorOutline = new Rectangle(60, 60);
-        doorOutline.setFill(Color.TRANSPARENT);
-        doorOutline.setStroke(Color.GRAY);
-        doorOutline.getStrokeDashArray().addAll(2.0, 2.0);
 
-        Rectangle leftDoorPart = new Rectangle(5, 10, 24, 40);
-        leftDoorPart.setFill(Color.TRANSPARENT);
-
-        Rectangle rightDoorPart = new Rectangle(31, 10, 24, 40);
-        rightDoorPart.setFill(Color.TRANSPARENT);
-
-        leftDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
-                        .then(Color.GRAY)
-                        .otherwise(Color.TRANSPARENT));
-
-        rightDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
-                        .then(Color.GRAY)
-                        .otherwise(Color.TRANSPARENT));
-
-        Group group = new Group(doorOutline, leftDoorPart, rightDoorPart);
-        HBox groupWrapper = new HBox(group);
-        groupWrapper.setPadding(new Insets(10));
-        return new VBox(groupWrapper);
+        return new DoorSignPane(elevator, elevatorFloor);
     }
 
     private Pane getFloorRequestLabel(ElevatorFloor elevatorFloor) {
