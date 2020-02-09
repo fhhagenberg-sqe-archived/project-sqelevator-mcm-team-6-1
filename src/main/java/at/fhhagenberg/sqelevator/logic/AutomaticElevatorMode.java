@@ -59,7 +59,7 @@ public class AutomaticElevatorMode implements ElevatorObserver {
 
     private boolean hasInsideRequestOnCurrentFloorAndIsAvailable(Elevator elevator) {
         return insideRequests != null &&
-                insideRequests[elevator.getElevatorNumber()].contains(elevator.getCurrentFloorNumber()) &&
+                insideRequests[elevator.getElevatorNumber()].contains(elevator.getCurrentElevatorFloor().get().getFloor()) &&
                 elevator.directionProperty.get() == Direction.UNCOMMITED;
     }
 
@@ -71,7 +71,7 @@ public class AutomaticElevatorMode implements ElevatorObserver {
 
     private void handleInsideRequestOnCurrentFloor(Elevator elevator) throws RemoteException {
         client.setTarget(elevator, elevator.getCurrentElevatorFloor().get().getFloor());
-        insideRequests[elevator.getElevatorNumber()].remove((Integer) elevator.getElevatorNumber());
+        insideRequests[elevator.getElevatorNumber()].remove(elevator.getCurrentElevatorFloor().get().getFloor());
     }
 
     private void handleOutsideRequestOnCurrentFloor(Elevator elevator) throws RemoteException {
