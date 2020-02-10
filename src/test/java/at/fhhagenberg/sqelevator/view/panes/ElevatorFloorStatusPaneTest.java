@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
@@ -35,6 +36,7 @@ public class ElevatorFloorStatusPaneTest {
     private Elevator elevator;
     private ElevatorFloor elevatorFloor;
 
+    @Mock
     private RemoteConsoleViewModel viewModel;
     private List<Elevator> elevators;
 
@@ -49,9 +51,9 @@ public class ElevatorFloorStatusPaneTest {
         elevators = new ArrayList<>();
         elevator = new Elevator();
         elevators.add(elevator);
+        Mockito.mockitoSession().initMocks(this).strictness(Strictness.LENIENT).startMocking();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
         elevatorFloor = new ElevatorFloor(new Floor(1));
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         var pane = new ElevatorFloorStatusPane(elevator, elevatorFloor, viewModel);
         var scene = new Scene(pane, 500, 550);

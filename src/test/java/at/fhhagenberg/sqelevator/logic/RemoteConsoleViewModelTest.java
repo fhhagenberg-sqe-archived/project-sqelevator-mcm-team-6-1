@@ -5,6 +5,7 @@ import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
 import at.fhhagenberg.sqelevator.domain.Mode;
+import at.fhhagenberg.sqelevator.logic.automaticmode.IAutomaticModeStrategy;
 import javafx.beans.property.SimpleObjectProperty;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

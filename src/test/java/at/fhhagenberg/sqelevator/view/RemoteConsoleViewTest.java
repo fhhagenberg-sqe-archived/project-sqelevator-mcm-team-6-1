@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(ApplicationExtension.class)
 public class RemoteConsoleViewTest {
 
-
+    @Mock
     private RemoteConsoleViewModel viewModel;
     private List<Elevator> elevators;
     private Elevator elevator;
@@ -60,7 +60,7 @@ public class RemoteConsoleViewTest {
     public void start(Stage stage) {
         this.dataSetup();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        //viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         var pane = new RemoteConsoleView(viewModel).createView();
         Scene scene = new Scene(pane, 1000, 600);
