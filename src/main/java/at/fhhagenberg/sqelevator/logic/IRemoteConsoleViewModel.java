@@ -7,7 +7,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 
-public interface IRemoteConsoleViewModel {
+public interface IRemoteConsoleViewModel extends ElevatorStatusObserver {
     void targetFloor(Elevator elevator, Floor floor);
 
     ListProperty<Elevator> getElevatorListProperty();

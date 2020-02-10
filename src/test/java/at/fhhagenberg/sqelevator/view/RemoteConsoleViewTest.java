@@ -40,9 +40,6 @@ public class RemoteConsoleViewTest {
     @Mock
     private IAutomaticModeStrategy automaticModeStrategy;
 
-    @Mock
-    private IElevatorStatusPollingService elevatorStatusPollingService;
-
     private void dataSetup() {
         elevators = new ArrayList<>();
         ElevatorFloor elevatorFloor = new ElevatorFloor(new Floor(0));
@@ -64,7 +61,7 @@ public class RemoteConsoleViewTest {
     public void start(Stage stage) {
         this.dataSetup();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         var pane = new RemoteConsoleView(viewModel).createView();
         Scene scene = new Scene(pane, 1000, 600);

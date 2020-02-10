@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 public class Elevator {
 
     private int elevatorNumber;
-    private int maximumPayload;
+    private double maximumPayload;
     private ElevatorStatus elevatorStatus;
 
     private ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -36,11 +36,11 @@ public class Elevator {
         this.elevatorNumber = elevatorNumber;
     }
 
-    public int getMaximumPayload() {
+    public double getMaximumPayload() {
         return maximumPayload;
     }
 
-    public void setMaximumPayload(int maximumPayload) {
+    public void setMaximumPayload(double maximumPayload) {
         this.maximumPayload = maximumPayload;
     }
 
