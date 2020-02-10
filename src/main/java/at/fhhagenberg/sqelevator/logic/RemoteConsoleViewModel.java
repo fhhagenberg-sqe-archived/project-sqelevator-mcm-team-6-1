@@ -7,10 +7,8 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import at.fhhagenberg.sqelevator.domain.*;
-import javafx.collections.ObservableList;
 
 import java.rmi.RemoteException;
-import java.util.List;
 
 public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, ElevatorStatusObserver {
 
@@ -68,7 +66,7 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, Elevator
     }
 
     private void updateElevator(Elevator elevator, ElevatorStatus elevatorStatus) {
-        elevatorStatus.getTargetedFloor().ifPresent(targetedFloor -> elevator.setTargetedElevatorFloor(targetedFloor));
+        elevatorStatus.getTargetedFloor().ifPresent(elevator::setTargetedElevatorFloor);
 
         elevator.setCurrentElevatorFloor(elevatorStatus.getCurrentFloor());
         elevator.setDoorsStatus(elevatorStatus.getDoorStatus());

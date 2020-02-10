@@ -38,6 +38,8 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
                         Thread.sleep(pollingInterval);
                     } catch (InterruptedException | RemoteException e) {
                         notifyAll(elevator, ElevatorStatus.build().notConnected());
+
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
