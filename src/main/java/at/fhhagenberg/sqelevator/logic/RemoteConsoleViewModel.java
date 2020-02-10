@@ -7,17 +7,19 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import at.fhhagenberg.sqelevator.domain.*;
+import javafx.collections.ObservableList;
+
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class RemoteConsoleViewModel implements ElevatorStatusObserver {
+public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, ElevatorStatusObserver {
 
     private IElevatorClient client;
     private IAutomaticModeStrategy automaticModeStrategy;
 
-    public ListProperty<Elevator> elevatorListProperty;
-    public ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.MANUAL);
-    public BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
+    private ListProperty<Elevator> elevatorListProperty;
+    private ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.AUTOMATIC);
+    private BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
 
     public RemoteConsoleViewModel(IElevatorClient client, IAutomaticModeStrategy automaticModeStrategy, IElevatorStatusPollingService pollingService) {
         this.client = client;
@@ -29,7 +31,16 @@ public class RemoteConsoleViewModel implements ElevatorStatusObserver {
         pollingService.addObserver(this);
     }
 
+    @Override
     public void targetFloor(Elevator elevator, Floor floor) {
+        if (elevator == null) {
+            throw new IllegalArgumentException("Elevator must not be null!");
+        }
+
+        if (floor == null) {
+            throw new IllegalArgumentException("Floor must not be null!");
+        }
+
         try {
             client.setTarget(elevator, floor);
         } catch (RemoteException e) {
@@ -40,7 +51,7 @@ public class RemoteConsoleViewModel implements ElevatorStatusObserver {
     @Override
     public void update(Elevator elevator, ElevatorStatus elevatorStatus) {
         Platform.runLater(() -> {
-            if(elevatorStatus.isConnected()) {
+            if (elevatorStatus.isConnected()) {
                 this.isConnectedProperty.set(true);
 
                 this.updateElevator(elevator, elevatorStatus);
@@ -50,8 +61,7 @@ public class RemoteConsoleViewModel implements ElevatorStatusObserver {
                 if (modeProperty.get() == Mode.AUTOMATIC) {
                     automaticModeStrategy.execute(elevatorListProperty.get());
                 }
-            }
-            else {
+            } else {
                 isConnectedProperty.set(false);
             }
         });
@@ -67,7 +77,7 @@ public class RemoteConsoleViewModel implements ElevatorStatusObserver {
         elevator.setDirection(elevatorStatus.getDirection());
     }
 
-    private void updateElevatorFloors(Elevator elevator, ElevatorStatus elevatorStatus)  {
+    private void updateElevatorFloors(Elevator elevator, ElevatorStatus elevatorStatus) {
         final var elevatorFloors = elevator.getElevatorFloors().toArray(ElevatorFloor[]::new);
         final var floorStatuses = elevatorStatus.getElevatorFloorStatuses();
 
@@ -91,5 +101,20 @@ public class RemoteConsoleViewModel implements ElevatorStatusObserver {
 
             elevatorFloorButton.setHasBeenPressed(hasButtonBeenPressed);
         }
+    }
+
+    @Override
+    public ListProperty<Elevator> getElevatorListProperty() {
+        return elevatorListProperty;
+    }
+
+    @Override
+    public BooleanProperty getIsConnectedProperty() {
+        return isConnectedProperty;
+    }
+
+    @Override
+    public ObjectProperty<Mode> getModeProperty() {
+        return modeProperty;
     }
 }

@@ -52,16 +52,18 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
     }
 
     private ElevatorStatus pollElevatorStatus(Elevator elevator) throws RemoteException {
-        return ElevatorStatus.build()
+        var elevatorStatusBuilder = ElevatorStatus.build()
                 .velocity(client.getCurrentVelocity(elevator))
                 .payload(client.getCurrentWeightLoad(elevator))
                 .buttonStatus(client.getElevatorFloorButtonsStatus(elevator))
-                .targetedFloor(client.getTargetedFloor(elevator).get())
                 .currentFloor(client.getCurrentFloor(elevator))
                 .elevatorFloorStatus(pollElevatorFloorStatuses(elevator))
                 .direction(client.getDirection(elevator))
-                .doorStatus(client.getElevatorDoorStatus(elevator))
-                .get();
+                .doorStatus(client.getElevatorDoorStatus(elevator));
+
+        client.getTargetedFloor(elevator).ifPresent(elevatorStatusBuilder::targetedFloor);
+
+        return elevatorStatusBuilder.get();
     }
 
     private ElevatorFloorStatus[] pollElevatorFloorStatuses(Elevator elevator) throws RemoteException {
