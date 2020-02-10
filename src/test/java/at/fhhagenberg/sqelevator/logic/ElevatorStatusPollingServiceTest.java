@@ -37,7 +37,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.addObserver(elevatorStatusObserver);
         elevatorStatusPollingService.startPollingService();
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -208,7 +208,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -244,7 +244,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 
     @Test
@@ -292,6 +292,6 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
 
-        verify(elevatorStatusObserver, timeout(150)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
     }
 }
