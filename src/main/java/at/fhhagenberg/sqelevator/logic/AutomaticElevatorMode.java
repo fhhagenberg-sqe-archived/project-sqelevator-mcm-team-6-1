@@ -27,7 +27,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
             try {
                 initialize();
 
-                this.freeUpTargets();
+                this.freeUpTargetsAndWorkaroundForStuckElevators();
 
                 this.setOutsideRequestsFromClient();
                 this.setInsideRequestsFromClient();
@@ -43,7 +43,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
     private void setInsideRequestsFromClient() throws RemoteException {
         for (Elevator elevator : elevators) {
-            // otherwise find new inside requests
             boolean[] floorButtonsStatus = client.getElevatorFloorButtonsStatus(elevator);
             for (int i = 0; i < this.client.getFloorNum(); i++) {
                 if (floorButtonsStatus[i]) {
@@ -61,27 +60,10 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         }
     }
 
-    private void freeUpTargets() throws RemoteException {
+    private void freeUpTargetsAndWorkaroundForStuckElevators() throws RemoteException {
         for (int i = 0; i < elevators.size(); i++) {
             int currentFloorNumber = client.getCurrentFloor(elevators.get(i)).getFloor().getFloorNumber();
-
-            if (lastKnownPosition[i] != currentFloorNumber) {
-                lastKnownPosition[i] = currentFloorNumber;
-                systemMilliSecSinceLastMoved[i] = System.currentTimeMillis();
-            }
-
-            long notMovedTime = System.currentTimeMillis() - systemMilliSecSinceLastMoved[i];
-            if (notMovedTime > 300) {
-                client.setTarget(elevators.get(i), currentFloorNumber);
-                try {
-                    Thread.sleep(100);
-                    if (currentTargets[i] != null) {
-                        client.setTarget(elevators.get(i), currentTargets[i]);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            this.workaroundForStuckElevators(currentFloorNumber, i);
 
             if (currentTargets[i] != null
                 && currentFloorNumber == currentTargets[i]
@@ -92,6 +74,26 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
             if (client.getElevatorDoorStatus(elevators.get(i)) == DoorStatus.OPEN) {
                 insideRequests[i] = insideRequests[i].stream().filter(r -> r == currentFloorNumber)
                         .collect(Collectors.toList());
+            }
+        }
+    }
+
+    private void workaroundForStuckElevators(int currentFloorNumber, int i) throws RemoteException {
+        if (lastKnownPosition[i] != currentFloorNumber) {
+            lastKnownPosition[i] = currentFloorNumber;
+            systemMilliSecSinceLastMoved[i] = System.currentTimeMillis();
+        }
+
+        long notMovedTime = System.currentTimeMillis() - systemMilliSecSinceLastMoved[i];
+        if (notMovedTime > 300) {
+            client.setTarget(elevators.get(i), currentFloorNumber);
+            try {
+                Thread.sleep(100);
+                if (currentTargets[i] != null) {
+                    client.setTarget(elevators.get(i), currentTargets[i]);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -124,13 +126,13 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     }
 
 
-    private void addInsideRequest(Elevator e, int floor) throws RemoteException {
+    private void addInsideRequest(Elevator e, int floor) {
         if (!insideRequests[e.getElevatorNumber()].contains(floor)) {
             insideRequests[e.getElevatorNumber()].add(floor);
         }
     }
 
-    private void addOutsideRequestIfNew(int floor) throws RemoteException {
+    private void addOutsideRequestIfNew(int floor) {
         if (!outsideRequests.contains(floor)) {
             outsideRequests.add(floor);
         }
@@ -159,7 +161,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 if (availableElevators != null && !availableElevators.isEmpty()) {
                     elevator = this.findClosestElevator(availableElevators, outsideRequest);
 
-                    // target closest elevator to outsideRequest floor
                     if (elevator != null) {
                         client.setTarget(elevator, outsideRequest);
                     }
