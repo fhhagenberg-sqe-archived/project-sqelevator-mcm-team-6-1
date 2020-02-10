@@ -1,10 +1,8 @@
 package at.fhhagenberg.sqelevator;
 
-import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
-import at.fhhagenberg.sqelevator.logic.ElevatorStatusPollingService;
+import at.fhhagenberg.sqelevator.logic.*;
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -15,7 +13,7 @@ import java.rmi.Naming;
 
 public class ElevatorApplication extends Application {
 
-    RemoteConsoleViewModel viewModel;
+    IRemoteConsoleViewModel viewModel;
     RemoteConsoleView view;
 
     @Override
@@ -27,8 +25,13 @@ public class ElevatorApplication extends Application {
 
         pollingService.startPollingService();
 
-        this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode, pollingService);
+        this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode);
         this.view = new RemoteConsoleView(viewModel);
+
+        var weightAlarmObservable = new WeightAlarmObservable();
+
+        pollingService.addObserver(weightAlarmObservable);
+        pollingService.addObserver(viewModel);
 
         primaryStage.setTitle("Elevator Remote Console");
         primaryStage.setScene( new Scene(this.view.createView(), 1200, 900, Color.WHITE));

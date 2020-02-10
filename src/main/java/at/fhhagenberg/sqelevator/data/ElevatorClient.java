@@ -13,6 +13,8 @@ import java.util.stream.IntStream;
 
 public class ElevatorClient implements IElevatorClient {
 
+    private static final double AVERAGE_PASSENGER_WEIGHT = 80.0;
+
     private IElevator client;
     private List<Elevator> elevators;
 
@@ -33,7 +35,7 @@ public class ElevatorClient implements IElevatorClient {
         for (int i = 0; i < client.getElevatorNum(); i++) {
             Elevator elevator = new Elevator();
             elevator.setElevatorNumber(i);
-            elevator.setMaximumPayload(client.getElevatorCapacity(i));
+            elevator.setMaximumPayload(client.getElevatorCapacity(i) * AVERAGE_PASSENGER_WEIGHT);
             elevator.setElevatorFloors(floors);
 
             elevators.add(elevator);

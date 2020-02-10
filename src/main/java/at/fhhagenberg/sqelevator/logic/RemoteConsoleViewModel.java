@@ -9,8 +9,9 @@ import javafx.collections.FXCollections;
 import at.fhhagenberg.sqelevator.domain.*;
 
 import java.rmi.RemoteException;
+import java.util.concurrent.CompletableFuture;
 
-public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, ElevatorStatusObserver {
+public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
 
     private IElevatorClient client;
     private IAutomaticModeStrategy automaticModeStrategy;
@@ -19,14 +20,12 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, Elevator
     private ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.AUTOMATIC);
     private BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
 
-    public RemoteConsoleViewModel(IElevatorClient client, IAutomaticModeStrategy automaticModeStrategy, IElevatorStatusPollingService pollingService) {
+    public RemoteConsoleViewModel(IElevatorClient client, IAutomaticModeStrategy automaticModeStrategy) {
         this.client = client;
         this.automaticModeStrategy = automaticModeStrategy;
 
         var elevators = this.client.getElevators();
         elevatorListProperty = new SimpleListProperty<>(FXCollections.observableList(elevators));
-
-        pollingService.addObserver(this);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, Elevator
                 this.updateElevatorFloorButtons(elevator, elevatorStatus);
 
                 if (modeProperty.get() == Mode.AUTOMATIC) {
-                    automaticModeStrategy.execute(elevatorListProperty.get());
+                    CompletableFuture.runAsync(() -> automaticModeStrategy.execute(elevatorListProperty.get()));
                 }
             } else {
                 isConnectedProperty.set(false);
