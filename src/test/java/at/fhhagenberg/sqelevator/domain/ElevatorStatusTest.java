@@ -27,6 +27,26 @@ public class ElevatorStatusTest {
     }
 
     @Test
+    void testNotConnected() {
+        var elevatorStatusBuilder = ElevatorStatus.build();
+
+        assertNotNull(elevatorStatusBuilder);
+
+        var elevatorStatus = elevatorStatusBuilder.notConnected();
+
+        assertFalse(elevatorStatus.isConnected());
+        assertEquals(0, elevatorStatus.getPosition());
+        assertEquals(0.0, elevatorStatus.getVelocity());
+        assertEquals(0.0, elevatorStatus.getPayload());
+        assertNull(elevatorStatus.getCurrentFloor());
+        assertFalse(elevatorStatus.getTargetedFloor().isPresent());
+        assertNull(elevatorStatus.getElevatorButtonStatuses());
+        assertNull(elevatorStatus.getElevatorFloorStatuses());
+        assertNull(elevatorStatus.getDirection());
+        assertNull(elevatorStatus.getDoorStatus());
+    }
+
+    @Test
     void testSetPosition() {
         var elevatorStatusBuilder = ElevatorStatus.build();
 
