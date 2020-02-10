@@ -15,4 +15,5 @@ public interface IRemoteConsoleViewModel {
     BooleanProperty getIsConnectedProperty();
 
     ObjectProperty<Mode> getModeProperty();
+
 }

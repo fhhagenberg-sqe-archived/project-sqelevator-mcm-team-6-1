@@ -2,7 +2,7 @@ package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.controls.FloorNameLabel;
 import at.fhhagenberg.sqelevator.view.controls.ServiceEnabledLabel;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
@@ -12,7 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 public class ElevatorFloorStatusPane extends GridPane {
-    public ElevatorFloorStatusPane(Elevator elevator, ElevatorFloor elevatorFloor, RemoteConsoleViewModel viewModel) {
+    public ElevatorFloorStatusPane(Elevator elevator, ElevatorFloor elevatorFloor, IRemoteConsoleViewModel viewModel) {
         // column 0 - door sign
         this.addColumn(0, new DoorSignPane(elevator, elevatorFloor));
 
