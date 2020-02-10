@@ -17,11 +17,14 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private boolean isFullyInitialized = false;
     private long[] systemMilliSecSinceLastMoved;
     private Integer[] lastKnownPosition;
+    private OutsideRequestManager outsideRequestManager;
+    private InsideRequestManager insideRequestManager;
+    private RequestHelper helper;
 
     @Override
     public void execute(List<Elevator> elevators) {
         this.elevators = elevators;
-        isFullyInitialized = this.isFullyInitialized();
+        isFullyInitialized = this.helper.areAllElevatorsInitialized(isFullyInitialized, elevators);
 
         if (isFullyInitialized) {
             try {
@@ -29,8 +32,8 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
                 this.freeUpTargetsAndWorkaroundForStuckElevators();
 
-                this.setOutsideRequestsFromClient();
-                this.setInsideRequestsFromClient();
+                this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
+                this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
                 startElevatorRoutine();
             } catch (RemoteException e) { }
         }
@@ -39,25 +42,9 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     @Override
     public void setClient(IElevatorClient client) {
         this.client = client;
-    }
-
-    private void setInsideRequestsFromClient() throws RemoteException {
-        for (Elevator elevator : elevators) {
-            boolean[] floorButtonsStatus = client.getElevatorFloorButtonsStatus(elevator);
-            for (int i = 0; i < this.client.getFloorNum(); i++) {
-                if (floorButtonsStatus[i]) {
-                    addInsideRequest(elevator, i);
-                }
-            }
-        }
-    }
-
-    private void setOutsideRequestsFromClient() throws RemoteException {
-        for (int i = 0; i < this.client.getFloorNum(); i++) {
-            if (client.getFloorButtonDown(i) || client.getFloorButtonUp(i)) {
-                addOutsideRequestIfNew(i);
-            }
-        }
+        this.helper = new RequestHelper(client);
+        this.outsideRequestManager = new OutsideRequestManager(client, helper);
+        this.insideRequestManager = new InsideRequestManager(client, helper);
     }
 
     private void freeUpTargetsAndWorkaroundForStuckElevators() throws RemoteException {
@@ -100,7 +87,8 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
     private void initialize() throws RemoteException {
         if (client != null && insideRequests == null) {
-            insideRequests = new List[client.getElevators().size()];
+            this.insideRequests = this.insideRequestManager.initialize();
+
             if (currentTargets == null) {
                 currentTargets = new Integer[insideRequests.length];
             }
@@ -111,8 +99,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
             }
 
             for (int i = 0; i < client.getElevators().size(); i++) {
-                insideRequests[i] = new ArrayList();
-
                 if (lastKnownPosition[i] == null) {
                     lastKnownPosition[i] = client.getCurrentFloor(elevators.get(i)).getFloor().getFloorNumber();
                     systemMilliSecSinceLastMoved[i] = System.currentTimeMillis();
@@ -122,19 +108,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
         if (outsideRequests == null) {
             outsideRequests = new ArrayList();
-        }
-    }
-
-
-    private void addInsideRequest(Elevator e, int floor) {
-        if (!insideRequests[e.getElevatorNumber()].contains(floor)) {
-            insideRequests[e.getElevatorNumber()].add(floor);
-        }
-    }
-
-    private void addOutsideRequestIfNew(int floor) {
-        if (!outsideRequests.contains(floor)) {
-            outsideRequests.add(floor);
         }
     }
 
@@ -154,12 +127,12 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
     private void targetNearestElevatorToOutsideRequest() throws RemoteException {
         for (Integer outsideRequest : outsideRequests) {
-            Elevator elevator = checkElevatorAlreadyAddressed(outsideRequest);
+            Elevator elevator = this.helper.checkElevatorAlreadyAddressed(outsideRequest, elevators);
             if (elevator == null) {
-                List<Elevator> availableElevators = this.findAvailableElevators();
+                List<Elevator> availableElevators = this.helper.findAvailableElevators();
 
                 if (availableElevators != null && !availableElevators.isEmpty()) {
-                    elevator = this.findClosestElevator(availableElevators, outsideRequest);
+                    elevator = this.outsideRequestManager.findClosestElevator(availableElevators, outsideRequest, elevators);
 
                     if (elevator != null) {
                         client.setTarget(elevator, outsideRequest);
@@ -169,173 +142,24 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         }
     }
 
-    private List<Elevator> findAvailableElevators() throws RemoteException {
-        List<Elevator> elevators = new ArrayList<>();
-
-        for (int i = 0; i < elevators.size(); i++) {
-            if (client.getDirection(elevators.get(i)) == Direction.UNCOMMITED) {
-                elevators.add(elevators.get(i));
-            }
-        }
-
-        return elevators;
-    }
-
-    private Elevator findClosestElevator(List<Elevator> availableElevators, Integer outsideRequest) throws RemoteException {
-        Elevator elevator = null;
-        int distance = elevators.stream().map(e -> e.getElevatorFloors().size()).max(Integer::compare).get();
-
-        for (Elevator availableElevator : availableElevators) {
-            if (availableElevator.getCurrentElevatorFloor() != null) {
-                int offset = Math.abs(client.getCurrentFloor(availableElevator).getFloor().getFloorNumber() - outsideRequest);
-                if (offset < distance) {
-                    distance = offset;
-                    elevator = availableElevator;
-                }
-            }
-        }
-
-        return elevator;
-    }
-
     private void targetElevatorToNextInsideRequest(int index, Elevator elevator) throws RemoteException {
         Integer nearestFloor = currentTargets[index];
         int currentFloor = this.client.getCurrentFloor(elevator).getFloor().getFloorNumber();
 
         if (nearestFloor == null) {
-            nearestFloor = this.findNearestInsideRequest(index, elevator);
+            nearestFloor = this.insideRequestManager.findNearestInsideRequest(index, elevator, insideRequests);
             currentTargets[index] = nearestFloor;
         }
 
-        nearestFloor = findNearestInsideRequestToCurrentRequest(index, nearestFloor, currentFloor);
-        nearestFloor = findNearestIntermediateOutsideRequest(nearestFloor, currentFloor);
+        nearestFloor = insideRequestManager.findNearestInsideRequestToCurrentRequest(
+                index, nearestFloor, currentFloor, insideRequests, elevators);
+        nearestFloor = outsideRequestManager.findNearestIntermediateOutsideRequest(
+                nearestFloor, currentFloor, outsideRequests, elevators);
 
         if (nearestFloor != null) {
             currentTargets[index] = nearestFloor;
             client.setTarget(elevator, currentFloor);
             client.setTarget(elevator, nearestFloor);
         }
-    }
-
-    private Integer findNearestInsideRequest(int index, Elevator elevator) throws RemoteException {
-        Integer nearestFloor = null;
-        for (int j = 0; j < insideRequests[index].size(); j++) {
-            int request = insideRequests[index].get(j);
-            int currentFloor = client.getCurrentFloor(elevator).getFloor().getFloorNumber();
-
-            if (request != currentFloor &&
-                    isRequestBetweenExistingRequestAndCurrentFloor(currentFloor, nearestFloor, request)) {
-                nearestFloor = insideRequests[index].get(j);
-            }
-        }
-
-        return nearestFloor;
-    }
-
-    private Integer findNearestInsideRequestToCurrentRequest(int index, Integer nearestFloor, int currentFloor) throws RemoteException {
-        int dist;
-        if (nearestFloor != null) {
-            dist = Math.abs(nearestFloor - currentFloor);
-        } else {
-            dist = client.getFloorNum();
-        }
-
-        for (int j = 0; j < insideRequests[index].size(); j++) {
-            int request = insideRequests[index].get(j);
-            int offset = Math.abs(request - currentFloor);
-            if (offset < dist &&
-                    (nearestFloor == null ||
-                            calculateDirection(currentFloor, nearestFloor)
-                                    .equals(calculateDirection(currentFloor, request))) &&
-                    checkElevatorAlreadyAddressed(request) == null) {
-                dist = offset;
-                nearestFloor = request;
-            }
-        }
-
-        return nearestFloor;
-    }
-
-    private boolean isRequestBetweenExistingRequestAndCurrentFloor(int currentFloor, Integer existingRequest, int newRequest) {
-        if (existingRequest == null) {
-            return true;
-        }
-
-        return (newRequest > currentFloor && newRequest < existingRequest) ||
-                (newRequest < currentFloor && newRequest > existingRequest);
-    }
-
-    private Integer findNearestIntermediateOutsideRequest(Integer nearestFloor, int currentFloor) throws RemoteException {
-        int dist;
-        if (nearestFloor != null) {
-            dist = Math.abs(nearestFloor - currentFloor);
-        } else {
-            dist = client.getFloorNum();
-        }
-
-        for (Integer outsideRequest : outsideRequests) {
-            int offset = Math.abs(outsideRequest - currentFloor);
-
-
-            if ((nearestFloor == null ||
-                    isOutsideRequestOnWay(currentFloor, nearestFloor, outsideRequest) && offset < dist) &&
-                    checkElevatorAlreadyAddressed(outsideRequest) == null)
-            {
-                dist = offset;
-                nearestFloor = outsideRequest;
-            }
-        }
-
-        return nearestFloor;
-    }
-
-    private boolean isOutsideRequestOnWay(int currentFloor, int nearestFloor, int outsideRequest) throws RemoteException {
-        Direction currentDirection = calculateDirection(currentFloor, nearestFloor);
-        return currentDirection.equals(calculateDirection(currentFloor, outsideRequest)) &&
-                isCurrentDirectionAndFloorButtonDirectionEqual(currentDirection, nearestFloor);
-    }
-
-    private boolean isCurrentDirectionAndFloorButtonDirectionEqual(Direction currentDirection,
-                                                                   int floorNumber) throws RemoteException {
-        return (currentDirection == Direction.UP && client.getFloorButtonUp(floorNumber)) ||
-                (currentDirection == Direction.DOWN && client.getFloorButtonDown(floorNumber));
-    }
-
-    private Direction calculateDirection(int currentFloor, int nearestFloor) {
-        if (currentFloor < nearestFloor) {
-            return Direction.UP;
-        } else {
-            return Direction.DOWN;
-        }
-    }
-
-    private Elevator checkElevatorAlreadyAddressed(Integer toFloor) throws RemoteException {
-        if (elevators != null) {
-            // check if there is an elevator available whose target floor is already set on our target floor
-            for (Elevator elevator : elevators) {
-                if (elevator.directionProperty.get() == Direction.UNCOMMITED && elevator.getCurrentElevatorFloor() != null &&
-                        client.getCurrentFloor(elevator).getFloor().getFloorNumber() == toFloor) {
-                    return elevator;
-                }
-            }
-
-            // check if there is an elevator already on the way to this floor
-            for (Elevator elevator : elevators) {
-                if (!(elevator.directionProperty.get() == Direction.UNCOMMITED) &&
-                        client.getTargetedFloor(elevator).get().getFloor().getFloorNumber() == toFloor) {
-                    return elevator;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private boolean isFullyInitialized() {
-        if (this.isFullyInitialized) {
-            return true;
-        }
-
-        return !this.elevators.stream().anyMatch(e -> e.getCurrentElevatorFloor() == null);
     }
 }
