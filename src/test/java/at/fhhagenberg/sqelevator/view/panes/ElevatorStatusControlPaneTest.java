@@ -62,7 +62,7 @@ public class ElevatorStatusControlPaneTest {
     public void start(Stage stage) {
         this.dataSetup();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         var pane = new ElevatorStatusControlPane(elevator, viewModel);
         var scene = new Scene(pane, 500, 550);

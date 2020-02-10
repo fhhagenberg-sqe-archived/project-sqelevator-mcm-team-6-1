@@ -24,8 +24,7 @@ class RemoteConsoleViewModelTest {
     void testSetTarget() throws RemoteException {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         viewModel.targetFloor(mock(Elevator.class), mock(Floor.class));
 
@@ -36,9 +35,8 @@ class RemoteConsoleViewModelTest {
     void testSetTarget_ElevatorNull() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
 
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         assertThrows(IllegalArgumentException.class, () -> viewModel.targetFloor(null, mock(Floor.class)));
     }
@@ -47,9 +45,8 @@ class RemoteConsoleViewModelTest {
     void testSetTarget_FloorNull() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
 
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         assertThrows(IllegalArgumentException.class, () -> viewModel.targetFloor(mock(Elevator.class), null));
     }
@@ -58,9 +55,8 @@ class RemoteConsoleViewModelTest {
     void testGetMode_InitialMode() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
 
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         assertEquals(Mode.AUTOMATIC, viewModel.getModeProperty().get());
     }
@@ -69,9 +65,8 @@ class RemoteConsoleViewModelTest {
     void testIsConnected_InitialValue() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
 
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         assertTrue(viewModel.getIsConnectedProperty().get());
     }
@@ -80,14 +75,13 @@ class RemoteConsoleViewModelTest {
     void testGetElevatorListProperty() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
-        var elevatorStatusPollingService = mock(IElevatorStatusPollingService.class);
 
         var elevator = new Elevator();
         elevator.setElevatorNumber(1);
 
         when(elevatorClient.getElevators()).thenReturn(List.of(elevator));
 
-        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
         assertEquals(1, viewModel.getElevatorListProperty().get().size());
         assertEquals(elevator.getElevatorNumber(), viewModel.getElevatorListProperty().get().get(0).getElevatorNumber());
