@@ -13,8 +13,6 @@ public class WeightAlarmObserver implements AlarmObserver {
 
     private static final double WEIGHT_THRESHOLD = 100;
 
-    private List<AlarmObserver> observers = new LinkedList<>();
-
     @Override
     public void update(Elevator elevator, ElevatorStatus elevatorStatus) {
         if (isOverThreshold(elevatorStatus.getPayload(), elevator.getMaximumPayload())) {
