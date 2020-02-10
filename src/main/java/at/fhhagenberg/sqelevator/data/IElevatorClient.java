@@ -10,6 +10,8 @@ public interface IElevatorClient extends IElevatorStatusClient {
 
     void setTarget(Elevator elevator, Floor floor) throws RemoteException;
 
+    void setTarget(Elevator elevator, int floorNumber) throws RemoteException;
+
     List<Elevator> getElevators();
 
     Optional<Elevator> getElevatorByNumber(int elevatorNumber);
