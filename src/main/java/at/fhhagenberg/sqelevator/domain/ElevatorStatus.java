@@ -1,77 +1,123 @@
 package at.fhhagenberg.sqelevator.domain;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-
+import java.util.Optional;
 
 public class ElevatorStatus {
 
-    // lookup further information on databinding with JavaFx on https://docs.oracle.com/javafx/2/binding/jfxpub-binding.htm
-    private IntegerProperty position = new SimpleIntegerProperty();
-    private IntegerProperty speed = new SimpleIntegerProperty();
-    private IntegerProperty doorStatus = new SimpleIntegerProperty();
-    private IntegerProperty currentPayload = new SimpleIntegerProperty();
-    private ObjectProperty<Direction> direction = new SimpleObjectProperty<>();
+    private boolean isConnected = true;
 
-    public final int getPosition() {
-        return position.get();
+    private int position;
+    private double velocity;
+    private double payload;
+    private boolean[] elevatorButtonStatuses;
+
+    private ElevatorFloor targetedFloor;
+    private ElevatorFloor currentFloor;
+    private ElevatorFloorStatus[] elevatorFloorStatuses;
+    private Direction direction;
+    private DoorStatus doorStatus;
+
+    public boolean isConnected() {
+        return isConnected;
     }
 
-    public IntegerProperty positionProperty() {
+    public int getPosition() {
         return position;
     }
 
-    public final void setPosition(int position) {
-        this.position.set(position);
+    public double getVelocity() {
+        return velocity;
     }
 
-    public int getSpeed() {
-        return speed.get();
+    public double getPayload() {
+        return payload;
     }
 
-    public IntegerProperty speedProperty() {
-        return speed;
+    public boolean[] getElevatorButtonStatuses() {
+        return elevatorButtonStatuses;
     }
 
-    public void setSpeed(int speed) {
-        this.speed.set(speed);
+    public Optional<ElevatorFloor> getTargetedFloor() {
+        return Optional.ofNullable(targetedFloor);
     }
 
-    public int getDoorStatus() {
-        return doorStatus.get();
+    public ElevatorFloor getCurrentFloor() {
+        return currentFloor;
     }
 
-    public IntegerProperty doorStatusProperty() {
-        return doorStatus;
-    }
-
-    public void setDoorStatus(int doorStatus) {
-        this.doorStatus.set(doorStatus);
-    }
-
-    public int getCurrentPayload() {
-        return currentPayload.get();
-    }
-
-    public IntegerProperty currentPayloadProperty() {
-        return currentPayload;
-    }
-
-    public void setCurrentPayload(int currentPayload) {
-        this.currentPayload.set(currentPayload);
+    public ElevatorFloorStatus[] getElevatorFloorStatuses() {
+        return elevatorFloorStatuses;
     }
 
     public Direction getDirection() {
-        return direction.get();
-    }
-
-    public ObjectProperty<Direction> directionProperty() {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction.set(direction);
+    public DoorStatus getDoorStatus() {
+        return doorStatus;
+    }
+
+    public static ElevatorStatusBuilder build() {
+        return new ElevatorStatusBuilder();
+    }
+
+    public static class ElevatorStatusBuilder {
+
+        private ElevatorStatus status = new ElevatorStatus();
+
+        public ElevatorStatusBuilder position(int position) {
+            status.position = position;
+            return this;
+        }
+
+        public ElevatorStatusBuilder velocity(double velocity) {
+            status.velocity = velocity;
+            return this;
+        }
+
+        public ElevatorStatusBuilder payload(double payload) {
+            status.payload = payload;
+            return this;
+        }
+
+        public ElevatorStatusBuilder buttonStatus(boolean[] buttonStatus) {
+            status.elevatorButtonStatuses = buttonStatus;
+            return this;
+        }
+
+        public ElevatorStatusBuilder targetedFloor(ElevatorFloor targetedFloor) {
+            status.targetedFloor = targetedFloor;
+            return this;
+        }
+
+        public ElevatorStatusBuilder currentFloor(ElevatorFloor currentFloor) {
+            status.currentFloor = currentFloor;
+            return this;
+        }
+
+        public ElevatorStatusBuilder elevatorFloorStatus(ElevatorFloorStatus[] floorStatuses) {
+            status.elevatorFloorStatuses = floorStatuses;
+            return this;
+        }
+
+        public ElevatorStatusBuilder direction(Direction direction) {
+            status.direction = direction;
+            return this;
+        }
+
+        public ElevatorStatusBuilder doorStatus(DoorStatus doorStatus) {
+            status.doorStatus = doorStatus;
+            return this;
+        }
+
+        public ElevatorStatus notConnected() {
+            status = new ElevatorStatus();
+            status.isConnected = false;
+            return status;
+        }
+
+        public ElevatorStatus get() {
+            return status;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.view;
 
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.controls.*;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import at.fhhagenberg.sqelevator.domain.*;
@@ -20,9 +21,9 @@ import javafx.scene.text.TextAlignment;
 
 public class RemoteConsoleView {
 
-    private RemoteConsoleViewModel viewModel;
+    private IRemoteConsoleViewModel viewModel;
 
-    public RemoteConsoleView(RemoteConsoleViewModel viewModel) {
+    public RemoteConsoleView(IRemoteConsoleViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
@@ -30,7 +31,7 @@ public class RemoteConsoleView {
 
         TabPane tabPane = new TabPane();
 
-        for (Elevator elevator : viewModel.elevatorListProperty) {
+        for (Elevator elevator : viewModel.getElevatorListProperty()) {
             Tab tab = new Tab();
             tab.setText(String.format("Elevator %d", elevator.getElevatorNumber()));
             tab.setClosable(false);
@@ -101,16 +102,16 @@ public class RemoteConsoleView {
         modeLabel.setPadding(new Insets(20, 0, 20, 0));
 
         Label automatic = new ControlLabel("Automatic");
-        automatic.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.AUTOMATIC));
+        automatic.setOnMouseClicked(handler -> viewModel.getModeProperty().set(Mode.AUTOMATIC));
         automatic.backgroundProperty().bind(
-                Bindings.when(viewModel.modeProperty.isEqualTo(Mode.AUTOMATIC))
+                Bindings.when(viewModel.getModeProperty().isEqualTo(Mode.AUTOMATIC))
                         .then(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
         Label manual = new ControlLabel("Manual");
-        manual.setOnMouseClicked(handler -> viewModel.modeProperty.set(Mode.MANUAL));
+        manual.setOnMouseClicked(handler -> viewModel.getModeProperty().set(Mode.MANUAL));
         manual.backgroundProperty().bind(
-                Bindings.when(viewModel.modeProperty.isEqualTo(Mode.MANUAL))
+                Bindings.when(viewModel.getModeProperty().isEqualTo(Mode.MANUAL))
                         .then(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
@@ -141,7 +142,7 @@ public class RemoteConsoleView {
         label.setStyle("-fx-font-size: 20;");
 
         TextField value = new TextField("1");
-        value.editableProperty().bind(viewModel.modeProperty.isEqualTo(Mode.MANUAL));
+        value.editableProperty().bind(viewModel.getModeProperty().isEqualTo(Mode.MANUAL));
 
         value.setStyle("-fx-font-size: 20;");
 
@@ -329,7 +330,7 @@ public class RemoteConsoleView {
     }
 
     private Pane getIsConnectedPane() {
-        return new IsConnectedPane(viewModel.isConnectedProperty);
+        return new IsConnectedPane(viewModel.getIsConnectedProperty());
     }
 
     private Pane getElevatorButtonPane(Elevator elevator) {

@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator;
 
 import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
+import at.fhhagenberg.sqelevator.logic.ElevatorStatusPollingService;
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
@@ -20,15 +21,18 @@ public class ElevatorApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        IElevator controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
-        IElevatorClient client = new ElevatorClient(controller);
-        this.viewModel = new RemoteConsoleViewModel(client, new AutomaticElevatorMode());
+        var controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
+        var client = new ElevatorClient(controller);
+        var automaticElevatorMode = new AutomaticElevatorMode(client);
+        var pollingService = new ElevatorStatusPollingService(client, client.getElevators(), 100);
+
+        pollingService.startPollingService();
+
+        this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode, pollingService);
         this.view = new RemoteConsoleView(viewModel);
 
         primaryStage.setTitle("Elevator Remote Console");
         primaryStage.setScene( new Scene(this.view.createView(), 1200, 900, Color.WHITE));
-
-        viewModel.startPollingStatus();
 
         primaryStage.show();
     }
