@@ -1,11 +1,11 @@
 package at.fhhagenberg.sqelevator.view.panes;
 
-        import at.fhhagenberg.sqelevator.domain.Elevator;
-        import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-        import javafx.scene.layout.*;
+import at.fhhagenberg.sqelevator.domain.Elevator;
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
+import javafx.scene.layout.*;
 
 public class FloorStatusPane extends VBox {
-    public FloorStatusPane(Elevator elevator, RemoteConsoleViewModel viewModel) {
+    public FloorStatusPane(Elevator elevator, IRemoteConsoleViewModel viewModel) {
         elevator.getElevatorFloors().forEach(elevatorFloor ->
                 this.getChildren().add(new ElevatorFloorStatusPane(elevator, elevatorFloor, viewModel))
         );

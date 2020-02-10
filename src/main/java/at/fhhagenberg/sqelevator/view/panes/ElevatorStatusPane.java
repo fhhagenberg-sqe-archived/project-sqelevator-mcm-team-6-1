@@ -1,17 +1,15 @@
 package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-import at.fhhagenberg.sqelevator.view.panes.FloorStatusPane;
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class ElevatorStatusPane extends VBox {
-    public ElevatorStatusPane(Elevator elevator, RemoteConsoleViewModel viewModel) {
+    public ElevatorStatusPane(Elevator elevator, IRemoteConsoleViewModel viewModel) {
         GridPane elevatorStatusPane = new GridPane();
         elevatorStatusPane.setPadding(new Insets(10));
         elevatorStatusPane.addColumn(1, new FloorStatusPane(elevator, viewModel));

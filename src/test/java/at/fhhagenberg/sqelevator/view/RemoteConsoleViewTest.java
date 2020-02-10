@@ -5,6 +5,7 @@ import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
 import at.fhhagenberg.sqelevator.logic.IAutomaticModeStrategy;
+import at.fhhagenberg.sqelevator.logic.IElevatorStatusPollingService;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -21,7 +22,6 @@ import org.testfx.framework.junit5.Start;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,6 +38,9 @@ public class RemoteConsoleViewTest {
 
     @Mock
     private IAutomaticModeStrategy automaticModeStrategy;
+
+    @Mock
+    private IElevatorStatusPollingService elevatorStatusPollingService;
 
     private void dataSetup() {
         elevators = new ArrayList<>();
@@ -60,7 +63,7 @@ public class RemoteConsoleViewTest {
     public void start(Stage stage) {
         this.dataSetup();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
 
         var pane = new RemoteConsoleView(viewModel).createView();
         Scene scene = new Scene(pane, 1000, 600);

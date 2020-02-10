@@ -1,13 +1,7 @@
 package at.fhhagenberg.sqelevator.view;
 
-<<<<<<< HEAD
-=======
 import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
-import at.fhhagenberg.sqelevator.view.controls.*;
-import at.fhhagenberg.sqelevator.view.style.BorderStyle;
->>>>>>> develop
 import at.fhhagenberg.sqelevator.domain.*;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
 import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusControlPane;
 import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusPane;

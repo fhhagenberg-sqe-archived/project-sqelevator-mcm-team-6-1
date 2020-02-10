@@ -4,6 +4,7 @@ package at.fhhagenberg.sqelevator.view.panes;
 import at.fhhagenberg.sqelevator.domain.Alarm;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -32,7 +33,7 @@ public class AlarmListPaneTest {
         ArrayList<Alarm> list = new ArrayList<Alarm>();
         list.add(alarm);
         list.add(alarm2);
-        elevator.setAlarmList(list);
+        elevator.setAlarms(FXCollections.observableList(list));
     }
 
     @Start

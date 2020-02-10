@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-public class ModeControl extends VBox {
+public class ModeControl extends HBox {
     public ModeControl(ObjectProperty<Mode> modeProperty) {
 
         Label modeLabel = new Label("Mode");
