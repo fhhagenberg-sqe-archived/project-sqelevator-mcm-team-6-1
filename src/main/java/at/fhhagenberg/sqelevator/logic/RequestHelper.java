@@ -28,6 +28,7 @@ public class RequestHelper {
             // check if there is an elevator already on the way to this floor
             for (Elevator elevator : elevators) {
                 if (!(elevator.directionProperty.get() == Direction.UNCOMMITED) &&
+                        client.getTargetedFloor(elevator).isPresent() &&
                         client.getTargetedFloor(elevator).get().getFloor().getFloorNumber() == toFloor) {
                     return elevator;
                 }

@@ -75,9 +75,10 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         if (notMovedTime > 300) {
             client.setTarget(elevators.get(i), currentFloorNumber);
             try {
-                Thread.sleep(100);
+                Thread.sleep(300);
                 if (currentTargets[i] != null) {
                     client.setTarget(elevators.get(i), currentTargets[i]);
+                    Thread.sleep(300);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

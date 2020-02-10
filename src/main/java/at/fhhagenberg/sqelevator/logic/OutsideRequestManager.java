@@ -7,6 +7,7 @@ import at.fhhagenberg.sqelevator.domain.Elevator;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OutsideRequestManager {
     IElevatorClient client;
@@ -60,18 +61,19 @@ public class OutsideRequestManager {
             List<Elevator> availableElevators, Integer outsideRequest, List<Elevator> elevators)
             throws RemoteException {
         Elevator elevator = null;
-        int distance = elevators.stream().map(e -> e.getElevatorFloors().size()).max(Integer::compare).get();
-
-        for (Elevator availableElevator : availableElevators) {
-            if (availableElevator.getCurrentElevatorFloor() != null) {
-                int offset = Math.abs(client.getCurrentFloor(availableElevator).getFloor().getFloorNumber() - outsideRequest);
-                if (offset < distance) {
-                    distance = offset;
-                    elevator = availableElevator;
+        Optional<Integer> distanceOptional = elevators.stream().map(e -> e.getElevatorFloors().size()).max(Integer::compare);
+        if (distanceOptional.isPresent()) {
+            int distance = distanceOptional.get();
+            for (Elevator availableElevator : availableElevators) {
+                if (availableElevator.getCurrentElevatorFloor() != null) {
+                    int offset = Math.abs(client.getCurrentFloor(availableElevator).getFloor().getFloorNumber() - outsideRequest);
+                    if (offset < distance) {
+                        distance = offset;
+                        elevator = availableElevator;
+                    }
                 }
             }
         }
-
         return elevator;
     }
 
