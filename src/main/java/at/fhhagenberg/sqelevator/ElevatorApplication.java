@@ -1,6 +1,6 @@
 package at.fhhagenberg.sqelevator;
 
-import at.fhhagenberg.sqelevator.logic.AutomaticElevatorMode;
+import at.fhhagenberg.sqelevator.logic.automaticmode.AutomaticElevatorMode;
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;

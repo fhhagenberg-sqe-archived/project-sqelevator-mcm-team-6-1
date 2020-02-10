@@ -4,7 +4,7 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
-import at.fhhagenberg.sqelevator.logic.IAutomaticModeStrategy;
+import at.fhhagenberg.sqelevator.logic.automaticmode.IAutomaticModeStrategy;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
