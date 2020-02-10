@@ -20,7 +20,7 @@ public class AlarmListPane extends VBox {
 
         ListView<Alarm> alarmList = new ListView<>();
         alarmList.setBorder(BorderStyle.THIN_BLACK.value());
-        alarmList.itemsProperty().bind(elevator.getAlarmList());
+        alarmList.itemsProperty().bind(elevator.alarmsProperty());
 //        alarmList.setItems(remoteConsole.getAlarms());
         VBox.setVgrow(alarmList, Priority.SOMETIMES);
 

@@ -5,11 +5,11 @@ import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
 import at.fhhagenberg.sqelevator.logic.IAutomaticModeStrategy;
+import at.fhhagenberg.sqelevator.logic.IElevatorStatusPollingService;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +39,9 @@ public class ElevatorStatusControlPaneTest {
     @Mock
     private IAutomaticModeStrategy automaticModeStrategy;
 
+    @Mock
+    private IElevatorStatusPollingService elevatorStatusPollingService;
+
     private void dataSetup() {
         elevators = new ArrayList<>();
         ElevatorFloor elevatorFloor = new ElevatorFloor(new Floor(0));
@@ -59,7 +62,7 @@ public class ElevatorStatusControlPaneTest {
     public void start(Stage stage) {
         this.dataSetup();
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
-        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy, elevatorStatusPollingService);
 
         var pane = new ElevatorStatusControlPane(elevator, viewModel);
         var scene = new Scene(pane, 500, 550);

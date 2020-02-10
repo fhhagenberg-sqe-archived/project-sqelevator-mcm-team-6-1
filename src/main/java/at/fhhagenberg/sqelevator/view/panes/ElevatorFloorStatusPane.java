@@ -2,7 +2,7 @@ package at.fhhagenberg.sqelevator.view.panes;
 
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.controls.FloorNameLabel;
 import at.fhhagenberg.sqelevator.view.controls.ServiceEnabledLabel;
 import at.fhhagenberg.sqelevator.view.style.BorderStyle;
@@ -12,7 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 public class ElevatorFloorStatusPane extends GridPane {
-    public ElevatorFloorStatusPane(Elevator elevator, ElevatorFloor elevatorFloor, RemoteConsoleViewModel viewModel) {
+    public ElevatorFloorStatusPane(Elevator elevator, ElevatorFloor elevatorFloor, IRemoteConsoleViewModel viewModel) {
         // column 0 - door sign
         this.addColumn(0, new DoorSignPane(elevator, elevatorFloor));
 
@@ -30,7 +30,7 @@ public class ElevatorFloorStatusPane extends GridPane {
         this.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor()));
 
         this.backgroundProperty().bind(
-                Bindings.when(elevator.getTargetedElevatorFloor().isEqualTo(elevatorFloor))
+                Bindings.when(elevator.targetedElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
         this.setId("ElevatorFloorStatus");

@@ -24,12 +24,12 @@ public class DoorsControl extends HBox {
         closed.setId("Closed");
 
         open.backgroundProperty().bind(
-                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.OPEN))
+                Bindings.when(elevator.doorStatusProperty().isEqualTo(DoorStatus.OPEN))
                         .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
         closed.backgroundProperty().bind(
-                Bindings.when(elevator.getDoorsStatus().isEqualTo(DoorStatus.CLOSED))
+                Bindings.when(elevator.doorStatusProperty().isEqualTo(DoorStatus.CLOSED))
                         .then(new Background(new BackgroundFill(Color.rgb(255, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
 
