@@ -30,7 +30,7 @@ public class ElevatorFloorStatusPane extends GridPane {
         this.setOnMouseClicked(handler -> viewModel.targetFloor(elevator, elevatorFloor.getFloor()));
 
         this.backgroundProperty().bind(
-                Bindings.when(elevator.getTargetedElevatorFloor().isEqualTo(elevatorFloor))
+                Bindings.when(elevator.targetedElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(new Background(new BackgroundFill(Color.rgb(0, 255, 0), CornerRadii.EMPTY, Insets.EMPTY)))
                         .otherwise(Background.EMPTY));
         this.setId("ElevatorFloorStatus");

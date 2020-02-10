@@ -25,12 +25,12 @@ public class DoorSignPane extends VBox {
         rightDoorPart.setFill(Color.TRANSPARENT);
 
         leftDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
+                Bindings.when(elevator.currentElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
 
         rightDoorPart.strokeProperty().bind(
-                Bindings.when(elevator.getCurrentElevatorFloor().isEqualTo(elevatorFloor))
+                Bindings.when(elevator.currentElevatorFloorProperty().isEqualTo(elevatorFloor))
                         .then(Color.GRAY)
                         .otherwise(Color.TRANSPARENT));
         rightDoorPart.setId("RightDoorPart");

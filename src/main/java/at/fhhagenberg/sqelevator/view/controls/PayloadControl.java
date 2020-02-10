@@ -10,7 +10,7 @@ public class PayloadControl extends BorderPane {
     public PayloadControl(Elevator elevator) {
         Label payloadLabel = new Label("Payload: ");
         Label currentPayloadLabel = new Label("0 kg");
-        currentPayloadLabel.textProperty().bind(elevator.getPayload().asString().concat(" kg"));
+        currentPayloadLabel.textProperty().bind(elevator.payloadProperty().asString().concat(" kg"));
         currentPayloadLabel.setPadding(new Insets(0, 5, 0, 15));
 
         currentPayloadLabel.setId("PayloadControlLabel");

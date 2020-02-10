@@ -22,7 +22,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private RequestHelper helper;
 
     public AutomaticElevatorMode(IElevatorClient client) {
-        this.client = client;
+        this.setClient(client);
     }
 
     @Override

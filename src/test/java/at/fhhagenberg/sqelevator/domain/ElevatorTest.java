@@ -52,73 +52,73 @@ public class ElevatorTest {
     @Test
     public void testCurrentElevatorFloor() {
         Elevator elevator = new Elevator();
-        assertNull(elevator.getCurrentElevatorFloor().get());
+        assertNull(elevator.getCurrentElevatorFloor());
         ElevatorFloor elevatorFloor = new ElevatorFloor(new Floor(1));
         elevator.setCurrentElevatorFloor(elevatorFloor);
-        assertEquals(elevatorFloor, elevator.getCurrentElevatorFloor().get());
+        assertEquals(elevatorFloor, elevator.getCurrentElevatorFloor());
     }
 
     @Test
     public void testTargetedElevatorFloor() {
         Elevator elevator = new Elevator();
-        assertNull(elevator.getTargetedElevatorFloor().get());
+        assertNull(elevator.getTargetedElevatorFloor());
         ElevatorFloor elevatorFloor = new ElevatorFloor(new Floor(1));
         elevator.setTargetedElevatorFloor(elevatorFloor);
-        assertEquals(elevatorFloor, elevator.getTargetedElevatorFloor().get());
+        assertEquals(elevatorFloor, elevator.getTargetedElevatorFloor());
     }
 
     @Test
     public void testDoorStatus() {
         Elevator elevator = new Elevator();
-        assertEquals(DoorStatus.OPEN, elevator.getDoorsStatus().get());
+        assertEquals(DoorStatus.OPEN, elevator.getDoorStatus());
 
-        elevator.setDoorsStatus(DoorStatus.CLOSED);
-        assertEquals(DoorStatus.CLOSED, elevator.getDoorsStatus().get());
+        elevator.setDoorStatus(DoorStatus.CLOSED);
+        assertEquals(DoorStatus.CLOSED, elevator.getDoorStatus());
     }
 
     @Test
     public void testVelocity() {
         Elevator elevator = new Elevator();
-        assertEquals(0.0, elevator.getVelocity().get());
+        assertEquals(0.0, elevator.getVelocity());
         elevator.setVelocity(1.234);
-        assertEquals(1.234, elevator.getVelocity().get());
+        assertEquals(1.234, elevator.getVelocity());
     }
 
     @Test
     public void testPayload() {
         Elevator elevator = new Elevator();
-        assertEquals(0.0, elevator.getPayload().get());
+        assertEquals(0.0, elevator.getPayload());
         elevator.setPayload(1.432);
-        assertEquals(1.432, elevator.getPayload().get());
+        assertEquals(1.432, elevator.getPayload());
     }
 
     @Test
     public void testDirection() {
         Elevator elevator = new Elevator();
-        assertEquals(Direction.UNCOMMITED, elevator.getDirection().get());
+        assertEquals(Direction.UNCOMMITED, elevator.getDirection());
         elevator.setDirection(Direction.DOWN);
-        assertEquals(Direction.DOWN, elevator.getDirection().get());
+        assertEquals(Direction.DOWN, elevator.getDirection());
     }
 
     @Test
     public void testAlarms() {
         Elevator elevator = new Elevator();
-        assertEquals(List.of(), elevator.getAlarmList().get());
+        assertEquals(List.of(), elevator.getAlarms());
         Alarm alarm = new Alarm("test", LocalDateTime.now());
-        ArrayList list = new ArrayList<Alarm>();
+        ArrayList<Alarm> list = new ArrayList<Alarm>();
         list.add(alarm);
-        elevator.setAlarmList(list);
-        assertEquals(list, elevator.getAlarmList().get());
+        elevator.setAlarms(FXCollections.observableList(list));
+        assertEquals(list, elevator.getAlarms());
     }
 
     @Test
     public void testFloorRequests() {
         Elevator elevator = new Elevator();
-        assertNull(elevator.getFloorRequest().get());
+        assertNull(elevator.getFloorRequests());
 
-        ArrayList list = new ArrayList<Integer>();
+        ArrayList<Integer> list = new ArrayList<>();
         list.add(1);
-        elevator.setFloorRequest(list);
-        assertEquals(list, elevator.getFloorRequest().get());
+        elevator.setFloorRequests(FXCollections.observableList(list));
+        assertEquals(list, elevator.getFloorRequests());
     }
 }

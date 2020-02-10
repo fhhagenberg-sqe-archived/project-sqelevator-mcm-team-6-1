@@ -70,7 +70,7 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel, Elevator
         elevatorStatus.getTargetedFloor().ifPresent(elevator::setTargetedElevatorFloor);
 
         elevator.setCurrentElevatorFloor(elevatorStatus.getCurrentFloor());
-        elevator.setDoorsStatus(elevatorStatus.getDoorStatus());
+        elevator.setDoorStatus(elevatorStatus.getDoorStatus());
         elevator.setVelocity(elevatorStatus.getVelocity());
         elevator.setPayload(elevatorStatus.getPayload());
         elevator.setDirection(elevatorStatus.getDirection());

@@ -15,18 +15,18 @@ public class Elevator {
     private int maximumPayload;
     private ElevatorStatus elevatorStatus;
 
-    public ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
-    public ListProperty<ElevatorFloorButton> floorButtonsProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<ElevatorFloorButton> floorButtons = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private ObjectProperty<ElevatorFloor> currentElevatorFloor = new SimpleObjectProperty<>();
-    public ObjectProperty<ElevatorFloor> targetedElevatorFloorProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<ElevatorFloor> targetedElevatorFloor = new SimpleObjectProperty<>();
 
-    public ObjectProperty<DoorStatus> doorsStatusProperty = new SimpleObjectProperty<>(DoorStatus.OPEN);
-    public DoubleProperty velocityProperty = new SimpleDoubleProperty();
-    public DoubleProperty payloadProperty = new SimpleDoubleProperty();
-    public ObjectProperty<Direction> directionProperty = new SimpleObjectProperty<>(Direction.UNCOMMITED);
+    private ObjectProperty<DoorStatus> doorStatus = new SimpleObjectProperty<>(DoorStatus.OPEN);
+    private DoubleProperty velocity = new SimpleDoubleProperty();
+    private DoubleProperty payload = new SimpleDoubleProperty();
+    private ObjectProperty<Direction> direction = new SimpleObjectProperty<>(Direction.UNCOMMITED);
     private ListProperty<Integer> floorRequests = new SimpleListProperty<>();
-    public ListProperty<Alarm> alarmListProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private ListProperty<Alarm> alarms = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public int getElevatorNumber() {
         return elevatorNumber;
@@ -63,18 +63,18 @@ public class Elevator {
     }
 
     private void createElevatorButtons(int numberOfFloors) {
-        this.floorButtonsProperty.clear();
+        this.floorButtons.clear();
 
         var elevatorButtons = IntStream.range(0, numberOfFloors)
                 .boxed()
                 .map(index -> new ElevatorFloorButton(index))
                 .collect(Collectors.toList());
 
-        this.floorButtonsProperty.addAll(elevatorButtons);
+        this.floorButtons.addAll(elevatorButtons);
     }
 
     public ElevatorFloorButton[] getElevatorFloorButtons() {
-        return this.floorButtonsProperty.get().toArray(ElevatorFloorButton[]::new);
+        return this.floorButtons.get().toArray(ElevatorFloorButton[]::new);
     }
 
     public ObservableList<Integer> getFloorRequests() {
@@ -93,7 +93,7 @@ public class Elevator {
         if (this.getCurrentElevatorFloor() == null) {
             return -1;
         }
-        return this.getCurrentElevatorFloor().get().getFloor().getFloorNumber();
+        return this.getCurrentElevatorFloor().getFloor().getFloorNumber();
     }
 
     @Override
@@ -101,67 +101,111 @@ public class Elevator {
         return "Elevator " + elevatorNumber;
     }
 
-    public ObjectProperty<ElevatorFloor> getCurrentElevatorFloor() {
-        return this.currentElevatorFloor;
+    public ListProperty<ElevatorFloor> elevatorFloorsProperty() {
+        return elevatorFloors;
     }
 
-    public void setCurrentElevatorFloor(ElevatorFloor currentFloor) {
-        this.currentElevatorFloor.setValue(currentFloor);
+    public void setElevatorFloors(ObservableList<ElevatorFloor> elevatorFloors) {
+        this.elevatorFloors.set(elevatorFloors);
     }
 
-    public ObjectProperty<ElevatorFloor> getTargetedElevatorFloor() {
-        return targetedElevatorFloorProperty;
+    public ObservableList<ElevatorFloorButton> getFloorButtons() {
+        return floorButtons.get();
+    }
+
+    public ListProperty<ElevatorFloorButton> floorButtonsProperty() {
+        return floorButtons;
+    }
+
+    public void setFloorButtons(ObservableList<ElevatorFloorButton> floorButtons) {
+        this.floorButtons.set(floorButtons);
+    }
+
+    public ElevatorFloor getCurrentElevatorFloor() {
+        return currentElevatorFloor.get();
+    }
+
+    public ObjectProperty<ElevatorFloor> currentElevatorFloorProperty() {
+        return currentElevatorFloor;
+    }
+
+    public void setCurrentElevatorFloor(ElevatorFloor currentElevatorFloor) {
+        this.currentElevatorFloor.set(currentElevatorFloor);
+    }
+
+    public ElevatorFloor getTargetedElevatorFloor() {
+        return targetedElevatorFloor.get();
+    }
+
+    public ObjectProperty<ElevatorFloor> targetedElevatorFloorProperty() {
+        return targetedElevatorFloor;
     }
 
     public void setTargetedElevatorFloor(ElevatorFloor targetedElevatorFloor) {
-        this.targetedElevatorFloorProperty.set(targetedElevatorFloor);
+        this.targetedElevatorFloor.set(targetedElevatorFloor);
     }
 
-    public ObjectProperty<DoorStatus> getDoorsStatus() {
-        return doorsStatusProperty;
+    public DoorStatus getDoorStatus() {
+        return doorStatus.get();
     }
 
-    public void setDoorsStatus(DoorStatus doorsStatus) {
-        this.doorsStatusProperty.set(doorsStatus);
+    public ObjectProperty<DoorStatus> doorStatusProperty() {
+        return doorStatus;
     }
 
-    public DoubleProperty getVelocity() {
-        return velocityProperty;
+    public void setDoorStatus(DoorStatus doorStatus) {
+        this.doorStatus.set(doorStatus);
+    }
+
+    public double getVelocity() {
+        return velocity.get();
+    }
+
+    public DoubleProperty velocityProperty() {
+        return velocity;
     }
 
     public void setVelocity(double velocity) {
-        this.velocityProperty.set(velocity);
+        this.velocity.set(velocity);
     }
 
-    public DoubleProperty getPayload() {
-        return payloadProperty;
+    public double getPayload() {
+        return payload.get();
+    }
+
+    public DoubleProperty payloadProperty() {
+        return payload;
     }
 
     public void setPayload(double payload) {
-        this.payloadProperty.set(payload);
+        this.payload.set(payload);
     }
 
-    public ObjectProperty<Direction> getDirection() {
-        return directionProperty;
+    public Direction getDirection() {
+        return direction.get();
+    }
+
+    public ObjectProperty<Direction> directionProperty() {
+        return direction;
     }
 
     public void setDirection(Direction direction) {
-        this.directionProperty.set(direction);
+        this.direction.set(direction);
     }
 
-    public ListProperty<Integer> getFloorRequest() {
+    public ListProperty<Integer> floorRequestsProperty() {
         return floorRequests;
     }
 
-    public void setFloorRequest(List<Integer> floorRequest) {
-        this.floorRequests.set(FXCollections.observableList(floorRequest));
+    public ObservableList<Alarm> getAlarms() {
+        return alarms.get();
     }
 
-    public ListProperty<Alarm> getAlarmList() {
-        return alarmListProperty;
+    public ListProperty<Alarm> alarmsProperty() {
+        return alarms;
     }
 
-    public void setAlarmList(List<Alarm> alarmList) {
-        this.alarmListProperty.set(FXCollections.observableList(alarmList));
+    public void setAlarms(ObservableList<Alarm> alarms) {
+        this.alarms.set(alarms);
     }
 }
