@@ -28,7 +28,7 @@ public class ElevatorApplication extends Application {
         this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode);
         this.view = new RemoteConsoleView(viewModel);
 
-        var weightAlarmObservable = new WeightAlarmObservable();
+        var weightAlarmObservable = new WeightAlarmObserver();
 
         pollingService.addObserver(weightAlarmObservable);
         pollingService.addObserver(viewModel);

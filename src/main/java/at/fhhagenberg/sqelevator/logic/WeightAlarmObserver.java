@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WeightAlarmObservable implements ElevatorStatusObserver {
+public class WeightAlarmObserver implements AlarmObserver {
 
     private static final double WEIGHT_THRESHOLD = 100;
 

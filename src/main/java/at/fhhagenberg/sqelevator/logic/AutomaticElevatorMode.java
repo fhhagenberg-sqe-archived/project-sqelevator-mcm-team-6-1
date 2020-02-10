@@ -25,16 +25,20 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         this.setClient(client);
     }
 
+    private boolean isElevatorAvailable(Elevator elevator) {
+        return elevator.getCurrentElevatorFloor() == elevator.getTargetedElevatorFloor() && elevator.getDoorStatus() == DoorStatus.OPEN;
+    }
+
     @Override
     public void execute(List<Elevator> elevators) {
-        this.elevators = elevators;
+        this.elevators = elevators.stream().filter(this::isElevatorAvailable).collect(Collectors.toList());
         isFullyInitialized = this.helper.areAllElevatorsInitialized(isFullyInitialized, elevators);
 
         if (isFullyInitialized) {
             try {
                 initialize();
 
-                this.freeUpTargetsAndWorkaroundForStuckElevators();
+//                this.freeUpTargetsAndWorkaroundForStuckElevators();
 
                 this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
                 this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
@@ -79,6 +83,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         long notMovedTime = System.currentTimeMillis() - systemMilliSecSinceLastMoved[i];
         if (notMovedTime > 300) {
             client.setTarget(elevators.get(i), currentFloorNumber);
+
             try {
                 Thread.sleep(300);
                 if (currentTargets[i] != null) {
@@ -113,7 +118,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         }
 
         if (outsideRequests == null) {
-            outsideRequests = new ArrayList();
+            outsideRequests = new ArrayList<>();
         }
     }
 
