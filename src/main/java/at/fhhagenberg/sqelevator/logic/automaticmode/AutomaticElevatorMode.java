@@ -21,6 +21,10 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
     private InsideRequestManager insideRequestManager;
     private RequestHelper helper;
 
+    public AutomaticElevatorMode(IElevatorClient client) {
+        this.client = client;
+    }
+
     @Override
     public void execute(List<Elevator> elevators) {
         this.elevators = elevators;
@@ -35,7 +39,8 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
                 this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
                 startElevatorRoutine();
-            } catch (RemoteException e) { }
+            } catch (RemoteException e) {
+            }
         }
     }
 
@@ -136,11 +141,16 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                     elevator = this.outsideRequestManager.findClosestElevator(availableElevators, outsideRequest, elevators);
 
                     if (elevator != null) {
-                        client.setTarget(elevator, outsideRequest);
+                        var maybeElevatorFloor = client.getFloorByNumber(elevator, outsideRequest);
+
+                        if(maybeElevatorFloor.isPresent()) {
+                            client.setTarget(elevator, maybeElevatorFloor.get().getFloor());
+                        }
                     }
                 }
             }
         }
+
     }
 
     private void targetElevatorToNextInsideRequest(int index, Elevator elevator) throws RemoteException {

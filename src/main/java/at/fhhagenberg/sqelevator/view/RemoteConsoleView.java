@@ -1,5 +1,11 @@
 package at.fhhagenberg.sqelevator.view;
 
+<<<<<<< HEAD
+=======
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
+import at.fhhagenberg.sqelevator.view.controls.*;
+import at.fhhagenberg.sqelevator.view.style.BorderStyle;
+>>>>>>> develop
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
@@ -11,9 +17,9 @@ import javafx.scene.layout.*;
 
 public class RemoteConsoleView {
 
-    private RemoteConsoleViewModel viewModel;
+    private IRemoteConsoleViewModel viewModel;
 
-    public RemoteConsoleView(RemoteConsoleViewModel viewModel) {
+    public RemoteConsoleView(IRemoteConsoleViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
@@ -21,7 +27,7 @@ public class RemoteConsoleView {
 
         TabPane tabPane = new TabPane();
 
-        for (Elevator elevator : viewModel.elevatorListProperty) {
+        for (Elevator elevator : viewModel.getElevatorListProperty()) {
             Tab tab = new Tab();
             tab.setText(String.format("Elevator %d", elevator.getElevatorNumber()));
             tab.setClosable(false);

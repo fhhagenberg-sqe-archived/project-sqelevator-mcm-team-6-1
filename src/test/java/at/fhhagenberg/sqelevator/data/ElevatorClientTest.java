@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator;
+package at.fhhagenberg.sqelevator.data;
 
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
