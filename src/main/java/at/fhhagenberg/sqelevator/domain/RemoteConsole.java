@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.model;
+package at.fhhagenberg.sqelevator.domain;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
