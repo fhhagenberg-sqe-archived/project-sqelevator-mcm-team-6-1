@@ -1,4 +1,4 @@
-package at.fhhagenberg.sqelevator.logic;
+package at.fhhagenberg.sqelevator.logic.automaticmode;
 
 import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Direction;

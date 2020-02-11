@@ -15,4 +15,5 @@ public interface IRemoteConsoleViewModel extends ElevatorStatusObserver {
     BooleanProperty getIsConnectedProperty();
 
     ObjectProperty<Mode> getModeProperty();
+
 }

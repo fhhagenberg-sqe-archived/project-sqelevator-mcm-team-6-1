@@ -29,7 +29,8 @@ public class RemoteConsoleView {
             var masterPane = new HBox();
 
             HBox statusControlPane = new HBox();
-            statusControlPane.getChildren().addAll(new ElevatorStatusPane(elevator, viewModel), new ElevatorStatusControlPane(elevator, viewModel));
+            statusControlPane.getChildren().addAll(new ElevatorStatusPane(elevator, viewModel),
+                    new ElevatorStatusControlPane(elevator, viewModel));
             statusControlPane.setSpacing(20);
 
             masterPane.getChildren().addAll(statusControlPane, new AlarmListPane(elevator));

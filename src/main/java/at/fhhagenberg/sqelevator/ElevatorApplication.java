@@ -1,6 +1,7 @@
 package at.fhhagenberg.sqelevator;
 
 import at.fhhagenberg.sqelevator.logic.*;
+import at.fhhagenberg.sqelevator.logic.automaticmode.AutomaticElevatorMode;
 import at.fhhagenberg.sqelevator.view.RemoteConsoleView;
 import at.fhhagenberg.sqelevator.data.ElevatorClient;
 import javafx.application.Application;
@@ -10,6 +11,7 @@ import javafx.stage.Stage;
 import sqelevator.IElevator;
 
 import java.rmi.Naming;
+import java.rmi.RemoteException;
 
 public class ElevatorApplication extends Application {
 
@@ -17,21 +19,25 @@ public class ElevatorApplication extends Application {
     RemoteConsoleView view;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        var controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
-        var client = new ElevatorClient(controller);
-        var automaticElevatorMode = new AutomaticElevatorMode(client);
-        var pollingService = new ElevatorStatusPollingService(client, client.getElevators(), 100);
+    public void start(Stage primaryStage) {
 
-        pollingService.startPollingService();
+        try {
+            var controller = (IElevator) Naming.lookup("rmi://localhost/ElevatorSim");
+            var client = new ElevatorClient(controller);
+            var automaticElevatorMode = new AutomaticElevatorMode(client);
+            var pollingService = new ElevatorStatusPollingService(client, client.getElevators(), 100);
+            pollingService.startPollingService();
 
-        this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode);
-        this.view = new RemoteConsoleView(viewModel);
+            this.viewModel = new RemoteConsoleViewModel(client, automaticElevatorMode);
+            this.view = new RemoteConsoleView(viewModel);
 
-        var weightAlarmObservable = new WeightAlarmObserver();
+            var weightAlarmObservable = new WeightAlarmObserver();
 
-        pollingService.addObserver(weightAlarmObservable);
-        pollingService.addObserver(viewModel);
+            pollingService.addObserver(weightAlarmObservable);
+            pollingService.addObserver(viewModel);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
 
         primaryStage.setTitle("Elevator Remote Console");
         primaryStage.setScene( new Scene(this.view.createView(), 1200, 900, Color.WHITE));
