@@ -20,6 +20,8 @@ public class ElevatorStatus {
 
     private ElevatorStatus(Elevator elevator) {
         this.elevator = elevator;
+        this.elevatorButtonStatuses = new boolean[0];
+        this.elevatorFloorStatuses = new ElevatorFloorStatus[0];
     }
 
     public boolean isConnected() {
