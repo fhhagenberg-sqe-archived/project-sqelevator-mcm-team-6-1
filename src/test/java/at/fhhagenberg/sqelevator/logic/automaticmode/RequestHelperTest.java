@@ -154,4 +154,33 @@ public class RequestHelperTest {
         var requestHelper = new RequestHelper(elevatorClient);
         assertEquals(0, requestHelper.findAvailableElevators(List.of()).size());
     }
+
+    @Test
+    public void testFindAllAvailableFloors_AllFloorsUncommitted() throws RemoteException {
+        var elevatorClient = mock(IElevatorClient.class);
+        var requestHelper = new RequestHelper(elevatorClient);
+
+        var elevator = mock(Elevator.class);
+
+        when(elevatorClient.getDirection(elevator)).thenReturn(Direction.UNCOMMITED);
+
+        var result = requestHelper.findAvailableElevators(List.of(elevator));
+
+        assertEquals(1,  result.size());
+        assertEquals(elevator, result.get(0));
+    }
+
+    @Test
+    public void testFindAllAvailableFloors_AllFloorsCommitted() throws RemoteException {
+        var elevatorClient = mock(IElevatorClient.class);
+        var requestHelper = new RequestHelper(elevatorClient);
+
+        var elevator = mock(Elevator.class);
+
+        when(elevatorClient.getDirection(elevator)).thenReturn(Direction.DOWN);
+
+        var result = requestHelper.findAvailableElevators(List.of(elevator));
+
+        assertEquals(0,  result.size());
+    }
 }
