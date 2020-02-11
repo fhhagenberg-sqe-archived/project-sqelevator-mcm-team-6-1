@@ -17,6 +17,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(ApplicationExtension.class)
 public class ModeControlTest {
@@ -45,7 +46,7 @@ public class ModeControlTest {
         var manual = (Label)robot.lookup("#Manual").queryAll().iterator().next();
         var automatic = (Label)robot.lookup("#Automatic").queryAll().iterator().next();
         robot.interrupt();
-        assertEquals(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, Insets.EMPTY)), automatic.getBackground());
+        assertNotEquals(Background.EMPTY, automatic.getBackground());
         assertEquals(Background.EMPTY, manual.getBackground());
 
     }

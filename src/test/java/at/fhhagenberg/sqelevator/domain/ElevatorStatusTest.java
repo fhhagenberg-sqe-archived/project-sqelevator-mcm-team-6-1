@@ -26,8 +26,10 @@ class ElevatorStatusTest {
         assertEquals(0.0, elevatorStatus.getPayload());
         assertNull(elevatorStatus.getCurrentFloor());
         assertFalse(elevatorStatus.getTargetedFloor().isPresent());
-        assertNull(elevatorStatus.getElevatorButtonStatuses());
-        assertNull(elevatorStatus.getElevatorFloorStatuses());
+        assertNotNull(elevatorStatus.getElevatorButtonStatuses());
+        assertEquals(elevatorStatus.getElevatorButtonStatuses().length, 0);
+        assertNotNull(elevatorStatus.getElevatorFloorStatuses());
+        assertEquals(elevatorStatus.getElevatorFloorStatuses().length, 0);
         assertNull(elevatorStatus.getDirection());
         assertNull(elevatorStatus.getDoorStatus());
     }
@@ -87,7 +89,8 @@ class ElevatorStatusTest {
         var elevatorStatusBuilder = ElevatorStatus.build(elevator);
         var elevatorButtonStatuses = new boolean[] { true, false };
 
-        assertNull(elevatorStatusBuilder.get().getElevatorButtonStatuses());
+        assertNotNull(elevatorStatusBuilder.get().getElevatorButtonStatuses());
+        assertEquals(elevatorStatusBuilder.get().getElevatorButtonStatuses().length, 0);
 
         elevatorStatusBuilder.buttonStatus(elevatorButtonStatuses);
 
@@ -135,7 +138,8 @@ class ElevatorStatusTest {
 
         var elevatorFloorStatuses = new ElevatorFloorStatus[] { elevatorFloorStatus };
 
-        assertNull(elevatorStatusBuilder.get().getElevatorFloorStatuses());
+        assertNotNull(elevatorStatusBuilder.get().getElevatorFloorStatuses());
+        assertEquals(elevatorStatusBuilder.get().getElevatorFloorStatuses().length, 0);
 
         elevatorStatusBuilder.elevatorFloorStatus(elevatorFloorStatuses);
 
