@@ -37,7 +37,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.addObserver(elevatorStatusObserver);
         elevatorStatusPollingService.startPollingService();
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ElevatorStatusPollingServiceTest {
         var elevator = mock(Elevator.class);
         var pollingTime = 100L;
 
-        when(elevatorClient.getCurrentWeightLoad(elevator)).thenReturn(1000.0);
+        when(elevatorClient.getCurrentWeightLoad(elevator)).thenReturn(10000.0);
 
         var elevatorStatusPollingService = new ElevatorStatusPollingService(elevatorClient, List.of(elevator), pollingTime);
 
@@ -88,12 +88,12 @@ public class ElevatorStatusPollingServiceTest {
 
             var elevatorStatus = elevatorStatuses.get(0);
 
-            assertEquals(1000.0, elevatorStatus.getPayload());
+            assertEquals(10000.0, elevatorStatus.getPayload());
 
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -232,7 +232,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -272,7 +272,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -300,7 +300,7 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 
     @Test
@@ -328,6 +328,6 @@ public class ElevatorStatusPollingServiceTest {
             return null;
         }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
+        verify(elevatorStatusObserver, timeout(10000)).update(anyList());
     }
 }
