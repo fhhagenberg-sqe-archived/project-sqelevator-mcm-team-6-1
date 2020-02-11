@@ -4,9 +4,11 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
-import at.fhhagenberg.sqelevator.logic.IAutomaticModeStrategy;
+
+import at.fhhagenberg.sqelevator.domain.Mode;
+import at.fhhagenberg.sqelevator.logic.automaticmode.IAutomaticModeStrategy;
+import at.fhhagenberg.sqelevator.logic.IElevatorStatusPollingService;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
-import at.fhhagenberg.sqelevator.view.panes.ElevatorFloorStatusPane;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
@@ -16,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.quality.Strictness;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
@@ -36,6 +39,7 @@ public class ElevatorFloorStatusPaneTest {
     private Elevator elevator;
     private ElevatorFloor elevatorFloor;
 
+    @Mock
     private RemoteConsoleViewModel viewModel;
     private List<Elevator> elevators;
 
@@ -50,9 +54,11 @@ public class ElevatorFloorStatusPaneTest {
         elevators = new ArrayList<>();
         elevator = new Elevator();
         elevators.add(elevator);
+
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
         elevatorFloor = new ElevatorFloor(new Floor(1));
         viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
 
         var pane = new ElevatorFloorStatusPane(elevator, elevatorFloor, viewModel);
         var scene = new Scene(pane, 500, 550);

@@ -42,7 +42,7 @@ public class DoorsControlTest {
         var open = (Label)robot.lookup("#Open").queryAll().iterator().next();
         var closed = (Label)robot.lookup("#Closed").queryAll().iterator().next();
 
-        elevator.setDoorsStatus(DoorStatus.CLOSED);
+        elevator.setDoorStatus(DoorStatus.CLOSED);
         assertEquals(Background.EMPTY, open.backgroundProperty().get());
         assertNotEquals(Background.EMPTY, closed.backgroundProperty().get());
     }
@@ -52,10 +52,10 @@ public class DoorsControlTest {
         var open = (Label)robot.lookup("#Open").queryAll().iterator().next();
         var closed = (Label)robot.lookup("#Closed").queryAll().iterator().next();
 
-        elevator.setDoorsStatus(DoorStatus.CLOSED);
+        elevator.setDoorStatus(DoorStatus.CLOSED);
         assertEquals(Background.EMPTY, open.backgroundProperty().get());
         assertNotEquals(Background.EMPTY, closed.backgroundProperty().get());
-        elevator.setDoorsStatus(DoorStatus.OPEN);
+        elevator.setDoorStatus(DoorStatus.OPEN);
         assertNotEquals(Background.EMPTY, open.backgroundProperty().get());
         assertEquals(Background.EMPTY, closed.backgroundProperty().get());
     }

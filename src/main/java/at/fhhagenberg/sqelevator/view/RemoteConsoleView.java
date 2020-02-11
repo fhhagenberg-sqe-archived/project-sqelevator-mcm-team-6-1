@@ -1,7 +1,7 @@
 package at.fhhagenberg.sqelevator.view;
 
+import at.fhhagenberg.sqelevator.logic.IRemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.domain.*;
-import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
 import at.fhhagenberg.sqelevator.view.panes.AlarmListPane;
 import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusControlPane;
 import at.fhhagenberg.sqelevator.view.panes.ElevatorStatusPane;
@@ -11,9 +11,9 @@ import javafx.scene.layout.*;
 
 public class RemoteConsoleView {
 
-    private RemoteConsoleViewModel viewModel;
+    private IRemoteConsoleViewModel viewModel;
 
-    public RemoteConsoleView(RemoteConsoleViewModel viewModel) {
+    public RemoteConsoleView(IRemoteConsoleViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
@@ -21,7 +21,7 @@ public class RemoteConsoleView {
 
         TabPane tabPane = new TabPane();
 
-        for (Elevator elevator : viewModel.elevatorListProperty) {
+        for (Elevator elevator : viewModel.getElevatorListProperty()) {
             Tab tab = new Tab();
             tab.setText(String.format("Elevator %d", elevator.getElevatorNumber()));
             tab.setClosable(false);
@@ -29,7 +29,8 @@ public class RemoteConsoleView {
             var masterPane = new HBox();
 
             HBox statusControlPane = new HBox();
-            statusControlPane.getChildren().addAll(new ElevatorStatusPane(elevator, viewModel), new ElevatorStatusControlPane(elevator, viewModel));
+            statusControlPane.getChildren().addAll(new ElevatorStatusPane(elevator, viewModel),
+                    new ElevatorStatusControlPane(elevator, viewModel));
             statusControlPane.setSpacing(20);
 
             masterPane.getChildren().addAll(statusControlPane, new AlarmListPane(elevator));

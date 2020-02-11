@@ -10,7 +10,7 @@ public class SpeedControl extends BorderPane {
     public SpeedControl(Elevator elevator) {
         Label speedLabel = new Label("Speed: ");
         Label currentSpeedLabel = new Label("0 km/h");
-        currentSpeedLabel.textProperty().bind(elevator.getVelocity().asString().concat(" km/h"));
+        currentSpeedLabel.textProperty().bind(elevator.velocityProperty().asString().concat(" km/h"));
         currentSpeedLabel.setPadding(new Insets(0, 5, 0, 15));
 
         speedLabel.setStyle("-fx-font-size: 20;");
