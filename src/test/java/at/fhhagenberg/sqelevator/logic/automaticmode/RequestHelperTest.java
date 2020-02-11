@@ -100,6 +100,45 @@ public class RequestHelperTest {
                 Arguments.of(3, elevators(3, Direction.UNCOMMITED), true));
     }
 
+    @Test
+    public void testCheckElevatorAlreadyAddressed_ElevatorNull() throws RemoteException {
+        RequestHelper requestHelper = new RequestHelper(elevatorClient);
+
+        var elevator = requestHelper.checkElevatorAlreadyAddressed(1, null);
+
+        assertNull(elevator);
+    }
+
+    @Test
+    public void testCheckElevatorAlreadyAddressed_CurrentElevatorFloorNull_DirectionUncommitted() throws RemoteException {
+        RequestHelper requestHelper = new RequestHelper(elevatorClient);
+
+        Elevator elevator = new Elevator();
+        elevator.setCurrentElevatorFloor(null);
+        elevator.setDirection(Direction.UNCOMMITED);
+
+        var result = requestHelper.checkElevatorAlreadyAddressed(1, List.of(elevator));
+
+        assertNull(result);
+    }
+
+    @Test
+    public void testCheckElevatorAlreadyAddressed_CurrentElevatorFloorNull_DirectionOtherThanUncommitted() throws RemoteException {
+
+        Elevator elevator = new Elevator();
+        elevator.setCurrentElevatorFloor(null);
+        elevator.setDirection(Direction.UP);
+
+        var elevatorClient = mock(IElevatorClient.class);
+        when(elevatorClient.getTargetedFloor(elevator)).thenReturn(Optional.of(new ElevatorFloor(new Floor(1))));
+
+        RequestHelper requestHelper = new RequestHelper(elevatorClient);
+
+        var result = requestHelper.checkElevatorAlreadyAddressed(1, List.of(elevator));
+
+        assertEquals(elevator, result);
+    }
+
     private static List<Elevator> elevators(int floor, Direction direction) {
         Elevator elevator = new Elevator();
 
@@ -113,6 +152,6 @@ public class RequestHelperTest {
     @Test
     public void testFindAllAvailableFloors() throws RemoteException {
         var requestHelper = new RequestHelper(elevatorClient);
-        assertEquals(new ArrayList<>(), requestHelper.findAvailableElevators());
+        assertEquals(0, requestHelper.findAvailableElevators().size());
     }
 }
