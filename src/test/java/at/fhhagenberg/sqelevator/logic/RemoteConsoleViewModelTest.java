@@ -36,6 +36,21 @@ class RemoteConsoleViewModelTest {
     }
 
     @Test
+    void testSetTarget_ThrowRemoteException() throws RemoteException {
+        var elevatorClient = mock(IElevatorClient.class);
+        var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
+
+        doThrow(RemoteException.class).when(elevatorClient).setTarget(any(Elevator.class), any(Floor.class));
+
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
+
+        viewModel.targetFloor(mock(Elevator.class), mock(Floor.class));
+
+        assertFalse(viewModel.getIsConnectedProperty().get());
+    }
+
+    @Test
     void testSetTarget_ElevatorNull() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
