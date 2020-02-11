@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +37,21 @@ class RemoteConsoleViewModelTest {
     }
 
     @Test
+    void testSetTarget_ThrowRemoteException() throws RemoteException {
+        var elevatorClient = mock(IElevatorClient.class);
+        var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
+
+        doThrow(RemoteException.class).when(elevatorClient).setTarget(any(Elevator.class), any(Floor.class));
+
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
+
+        viewModel.targetFloor(mock(Elevator.class), mock(Floor.class));
+
+        assertFalse(viewModel.getIsConnectedProperty().get());
+    }
+
+    @Test
     void testSetTarget_ElevatorNull() {
         var elevatorClient = mock(IElevatorClient.class);
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
@@ -44,6 +60,17 @@ class RemoteConsoleViewModelTest {
         viewModel.getModeProperty().set(Mode.MANUAL);
 
         assertThrows(IllegalArgumentException.class, () -> viewModel.targetFloor(null, mock(Floor.class)));
+    }
+
+    @Test
+    void testSetTarget_ManualMode() {
+        var elevatorClient = mock(IElevatorClient.class);
+        var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
+
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.AUTOMATIC);
+
+        assertDoesNotThrow(() -> viewModel.targetFloor(null, null));
     }
 
     @Test
@@ -91,6 +118,32 @@ class RemoteConsoleViewModelTest {
 
         assertEquals(1, viewModel.getElevatorListProperty().get().size());
         assertEquals(elevator.getElevatorNumber(), viewModel.getElevatorListProperty().get().get(0).getElevatorNumber());
+    }
+
+    @Test
+    void testUpdate_NotConnected() throws InterruptedException {
+        // workaround for Platform.runLater(...) in view model
+        var panel = new JFXPanel();
+
+        var elevatorClient = mock(IElevatorClient.class);
+        var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
+
+        var elevator = new Elevator();
+        elevator.setElevatorNumber(1);
+        elevator.setVelocity(0.0);
+
+        when(elevatorClient.getElevators()).thenReturn(List.of(elevator));
+
+        var elevatorStatus = ElevatorStatus.build(elevator)
+                .notConnected();
+
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        assertTrue(viewModel.getIsConnectedProperty().get());
+
+        viewModel.update(List.of(elevatorStatus));
+        waitForRunLater();
+
+        assertFalse(viewModel.getIsConnectedProperty().get());
     }
 
     @Test
