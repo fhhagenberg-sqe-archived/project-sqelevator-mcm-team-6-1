@@ -98,6 +98,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }
