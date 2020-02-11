@@ -54,7 +54,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
 
             assertEquals(5.0, elevatorStatus.getVelocity());
 
@@ -78,7 +82,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
 
             assertEquals(1000.0, elevatorStatus.getPayload());
 
@@ -102,7 +110,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
             var buttonStatuses = elevatorStatus.getElevatorButtonStatuses();
 
             assertEquals(3, buttonStatuses.length);
@@ -135,7 +147,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
             var maybeTargetedFloor = elevatorStatus.getTargetedFloor();
 
             assertTrue(maybeTargetedFloor.isPresent());
@@ -167,7 +183,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
             var maybeTargetedFloor = elevatorStatus.getTargetedFloor();
 
             assertFalse(maybeTargetedFloor.isPresent());
@@ -197,7 +217,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
             var currentFloor = elevatorStatus.getCurrentFloor();
 
             assertTrue(currentFloor.getUpRequest().get());
@@ -230,7 +254,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
             var floorStatuses = elevatorStatus.getElevatorFloorStatuses();
 
             assertEquals(1, floorStatuses.length);
@@ -261,7 +289,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
 
             assertEquals(Direction.DOWN, elevatorStatus.getDirection());
 
@@ -285,7 +317,11 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
+            var elevatorStatuses = (List<ElevatorStatus>) invocationOnMock.getArgument(0);
+
+            assertEquals(1, elevatorStatuses.size());
+
+            var elevatorStatus = elevatorStatuses.get(0);
 
             assertEquals(DoorStatus.OPEN, elevatorStatus.getDoorStatus());
 
