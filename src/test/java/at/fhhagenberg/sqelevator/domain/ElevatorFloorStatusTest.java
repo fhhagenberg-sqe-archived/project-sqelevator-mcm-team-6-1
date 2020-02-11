@@ -3,17 +3,20 @@ package at.fhhagenberg.sqelevator.domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class ElevatorFloorStatusTest {
 
     @Test
     void testBuild() {
-        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build();
+        var elevatorFloor = mock(ElevatorFloor.class);
+        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build(elevatorFloor);
 
         assertNotNull(elevatorFloorStatusBuilder);
 
         var elevatorFloorStatus = elevatorFloorStatusBuilder.get();
 
+        assertEquals(elevatorFloor, elevatorFloorStatusBuilder.get().getElevatorFloor());
         assertFalse(elevatorFloorStatus.isUpRequested());
         assertFalse(elevatorFloorStatus.isDownRequested());
         assertFalse(elevatorFloorStatus.isServiced());
@@ -21,7 +24,8 @@ public class ElevatorFloorStatusTest {
 
     @Test
     void testSetIsUpRequested() {
-        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build();
+        var elevatorFloor = mock(ElevatorFloor.class);
+        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build(elevatorFloor);
 
         assertFalse(elevatorFloorStatusBuilder.get().isUpRequested());
 
@@ -32,7 +36,8 @@ public class ElevatorFloorStatusTest {
 
     @Test
     void testSetIsDownRequested() {
-        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build();
+        var elevatorFloor = mock(ElevatorFloor.class);
+        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build(elevatorFloor);
 
         assertFalse(elevatorFloorStatusBuilder.get().isDownRequested());
 
@@ -43,7 +48,8 @@ public class ElevatorFloorStatusTest {
 
     @Test
     void testSetIsServiced() {
-        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build();
+        var elevatorFloor = mock(ElevatorFloor.class);
+        var elevatorFloorStatusBuilder = ElevatorFloorStatus.build(elevatorFloor);
 
         assertFalse(elevatorFloorStatusBuilder.get().isServiced());
 

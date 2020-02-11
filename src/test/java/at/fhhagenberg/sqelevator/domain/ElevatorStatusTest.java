@@ -1,20 +1,26 @@
 package at.fhhagenberg.sqelevator.domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-public class ElevatorStatusTest {
+@ExtendWith(MockitoExtension.class)
+class ElevatorStatusTest {
 
     @Test
     void testBuild() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertNotNull(elevatorStatusBuilder);
 
         var elevatorStatus = elevatorStatusBuilder.get();
 
         assertTrue(elevatorStatus.isConnected());
+        assertEquals(elevator, elevatorStatus.getElevator());
         assertEquals(0, elevatorStatus.getPosition());
         assertEquals(0.0, elevatorStatus.getVelocity());
         assertEquals(0.0, elevatorStatus.getPayload());
@@ -28,27 +34,21 @@ public class ElevatorStatusTest {
 
     @Test
     void testNotConnected() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertNotNull(elevatorStatusBuilder);
 
         var elevatorStatus = elevatorStatusBuilder.notConnected();
 
+        assertEquals(elevator, elevatorStatus.getElevator());
         assertFalse(elevatorStatus.isConnected());
-        assertEquals(0, elevatorStatus.getPosition());
-        assertEquals(0.0, elevatorStatus.getVelocity());
-        assertEquals(0.0, elevatorStatus.getPayload());
-        assertNull(elevatorStatus.getCurrentFloor());
-        assertFalse(elevatorStatus.getTargetedFloor().isPresent());
-        assertNull(elevatorStatus.getElevatorButtonStatuses());
-        assertNull(elevatorStatus.getElevatorFloorStatuses());
-        assertNull(elevatorStatus.getDirection());
-        assertNull(elevatorStatus.getDoorStatus());
     }
 
     @Test
     void testSetPosition() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertEquals(0, elevatorStatusBuilder.get().getPosition());
 
@@ -59,7 +59,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetVelocity() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertEquals(0.0, elevatorStatusBuilder.get().getVelocity());
 
@@ -70,7 +71,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetPayload() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertEquals(0.0, elevatorStatusBuilder.get().getPayload());
 
@@ -81,7 +83,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetElevatorButtonStatuses() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
         var elevatorButtonStatuses = new boolean[] { true, false };
 
         assertNull(elevatorStatusBuilder.get().getElevatorButtonStatuses());
@@ -93,7 +96,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetTargetedFloor() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
         var elevatorFloor = new ElevatorFloor(new Floor(1));
 
         assertNotNull(elevatorStatusBuilder.get().getTargetedFloor());
@@ -107,7 +111,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetCurrentFloor() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
         var elevatorFloor = new ElevatorFloor(new Floor(1));
 
         assertNull(elevatorStatusBuilder.get().getCurrentFloor());
@@ -119,8 +124,10 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetElevatorFloorStatus() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
-        var elevatorFloorStatus = ElevatorFloorStatus.build()
+        var elevator = mock(Elevator.class);
+        var elevatorFloor = mock(ElevatorFloor.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
+        var elevatorFloorStatus = ElevatorFloorStatus.build(elevatorFloor)
                 .upRequested(true)
                 .downRequested(true)
                 .serviced(true)
@@ -139,7 +146,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetDirection() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertNull(elevatorStatusBuilder.get().getDirection());
 
@@ -150,7 +158,8 @@ public class ElevatorStatusTest {
 
     @Test
     void testSetDoorStatus() {
-        var elevatorStatusBuilder = ElevatorStatus.build();
+        var elevator = mock(Elevator.class);
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator);
 
         assertNull(elevatorStatusBuilder.get().getDoorStatus());
 

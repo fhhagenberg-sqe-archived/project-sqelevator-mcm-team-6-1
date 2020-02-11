@@ -9,6 +9,7 @@ import at.fhhagenberg.sqelevator.domain.ElevatorStatus;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ElevatorStatusPollingService implements IElevatorStatusPollingService {
 
@@ -30,17 +31,25 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
     public void startPollingService() {
         this.pollingStatusThread = new Thread(() -> {
             while (true) {
-                for (Elevator elevator : elevators) {
-                    try {
-                        var elevatorStatus = pollElevatorStatus(elevator);
-                        notifyAll(elevator, elevatorStatus);
+                try {
+                    var states = new LinkedList<ElevatorStatus>();
 
-                        Thread.sleep(pollingInterval);
-                    } catch (InterruptedException | RemoteException e) {
-                        notifyAll(elevator, ElevatorStatus.build().notConnected());
-
-                        Thread.currentThread().interrupt();
+                    for (Elevator elevator : elevators) {
+                        try {
+                            var elevatorStatus = pollElevatorStatus(elevator);
+                            states.add(elevatorStatus);
+                        } catch (RemoteException ex) {
+                            var notConnectedStates = elevators.stream().map(e -> ElevatorStatus.build(e).notConnected()).collect(Collectors.toList());
+                            notifyAll(notConnectedStates);
+                            Thread.currentThread().interrupt();
+                        }
                     }
+
+                    notifyAll(states);
+                    Thread.sleep(pollingInterval);
+
+                } catch(InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
         });
@@ -54,7 +63,7 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
     }
 
     private ElevatorStatus pollElevatorStatus(Elevator elevator) throws RemoteException {
-        var elevatorStatusBuilder = ElevatorStatus.build()
+        var elevatorStatusBuilder = ElevatorStatus.build(elevator)
                 .velocity(client.getCurrentVelocity(elevator))
                 .payload(client.getCurrentWeightLoad(elevator))
                 .buttonStatus(client.getElevatorFloorButtonsStatus(elevator))
@@ -81,7 +90,7 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
     private ElevatorFloorStatus pollElevatorFloorStatus(Elevator elevator, ElevatorFloor elevatorFloor) throws RemoteException {
         var floor = elevatorFloor.getFloor();
 
-        return ElevatorFloorStatus.build()
+        return ElevatorFloorStatus.build(elevatorFloor)
                 .upRequested(client.hasFloorBeenRequestedUp(floor))
                 .downRequested(client.hasFloorBeenRequestedDown(floor))
                 .serviced(client.isServiceEnabled(elevator, floor))
@@ -94,7 +103,7 @@ public class ElevatorStatusPollingService implements IElevatorStatusPollingServi
     }
 
     @Override
-    public void notifyAll(Elevator elevator, ElevatorStatus elevatorStatus) {
-        this.observers.forEach(observer -> observer.update(elevator, elevatorStatus));
+    public void notifyAll(List<ElevatorStatus> elevatorStatuses) {
+        this.observers.forEach(observer -> observer.update(elevatorStatuses));
     }
 }

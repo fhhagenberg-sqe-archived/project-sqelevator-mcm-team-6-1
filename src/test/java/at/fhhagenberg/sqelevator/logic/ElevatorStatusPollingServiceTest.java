@@ -37,7 +37,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.addObserver(elevatorStatusObserver);
         elevatorStatusPollingService.startPollingService();
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -54,14 +54,14 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
 
             assertEquals(5.0, elevatorStatus.getVelocity());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -78,14 +78,14 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
 
             assertEquals(1000.0, elevatorStatus.getPayload());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
             var buttonStatuses = elevatorStatus.getElevatorButtonStatuses();
 
             assertEquals(3, buttonStatuses.length);
@@ -111,9 +111,9 @@ public class ElevatorStatusPollingServiceTest {
             assertFalse(buttonStatuses[2]);
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
             var maybeTargetedFloor = elevatorStatus.getTargetedFloor();
 
             assertTrue(maybeTargetedFloor.isPresent());
@@ -148,9 +148,9 @@ public class ElevatorStatusPollingServiceTest {
             assertEquals(1, floor.getFloor().getFloorNumber());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -167,15 +167,15 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
             var maybeTargetedFloor = elevatorStatus.getTargetedFloor();
 
             assertFalse(maybeTargetedFloor.isPresent());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
             var currentFloor = elevatorStatus.getCurrentFloor();
 
             assertTrue(currentFloor.getUpRequest().get());
@@ -206,9 +206,9 @@ public class ElevatorStatusPollingServiceTest {
             assertEquals(1, currentFloor.getFloor().getFloorNumber());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -230,7 +230,7 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
             var floorStatuses = elevatorStatus.getElevatorFloorStatuses();
 
             assertEquals(1, floorStatuses.length);
@@ -242,9 +242,9 @@ public class ElevatorStatusPollingServiceTest {
             assertFalse(floorStatus.isServiced());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -261,14 +261,14 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
 
             assertEquals(Direction.DOWN, elevatorStatus.getDirection());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 
     @Test
@@ -285,13 +285,13 @@ public class ElevatorStatusPollingServiceTest {
         elevatorStatusPollingService.startPollingService();
 
         doAnswer(invocationOnMock -> {
-            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(1);
+            var elevatorStatus = (ElevatorStatus) invocationOnMock.getArgument(0);
 
             assertEquals(DoorStatus.OPEN, elevatorStatus.getDoorStatus());
 
             return null;
-        }).when(elevatorStatusObserver).update(any(Elevator.class), any(ElevatorStatus.class));
+        }).when(elevatorStatusObserver).update(anyList());
 
-        verify(elevatorStatusObserver, timeout(1000)).update(any(Elevator.class), any(ElevatorStatus.class));
+        verify(elevatorStatusObserver, timeout(1000)).update(anyList());
     }
 }

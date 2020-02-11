@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,11 +25,12 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(901.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertEquals(1, elevator.getAlarms().size());
 
@@ -44,11 +46,12 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(0.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertTrue(elevator.getAlarms().isEmpty());
     }
@@ -60,12 +63,13 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(901.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertEquals(1, elevator.getAlarms().size());
 

@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import at.fhhagenberg.sqelevator.domain.*;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
@@ -47,25 +48,28 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
     }
 
     @Override
-    public void update(Elevator elevator, ElevatorStatus elevatorStatus) {
-        Platform.runLater(() -> {
-            if (elevatorStatus.isConnected()) {
-                this.isConnectedProperty.set(true);
+    public void update(List<ElevatorStatus> elevatorStatuses) {
+        for (var elevatorStatus : elevatorStatuses) {
+            Platform.runLater(() -> {
+                if (elevatorStatus.isConnected()) {
+                    this.isConnectedProperty.set(true);
 
-                this.updateElevator(elevator, elevatorStatus);
-                this.updateElevatorFloors(elevator, elevatorStatus);
-                this.updateElevatorFloorButtons(elevator, elevatorStatus);
+                    this.updateElevator(elevatorStatus);
+                    this.updateElevatorFloors(elevatorStatus);
+                    this.updateElevatorFloorButtons(elevatorStatus);
 
-                if (modeProperty.get() == Mode.AUTOMATIC) {
-                    CompletableFuture.runAsync(() -> automaticModeStrategy.execute(elevatorListProperty.get()));
+                    if (this.modeProperty.get() == Mode.AUTOMATIC) {
+                        CompletableFuture.runAsync(() -> this.automaticModeStrategy.execute(elevatorListProperty.get()));
+                    }
+                } else {
+                    isConnectedProperty.set(false);
                 }
-            } else {
-                isConnectedProperty.set(false);
-            }
-        });
+            });
+        }
     }
 
-    private void updateElevator(Elevator elevator, ElevatorStatus elevatorStatus) {
+    private void updateElevator(ElevatorStatus elevatorStatus) {
+        final var elevator = elevatorStatus.getElevator();
         elevatorStatus.getTargetedFloor().ifPresent(elevator::setTargetedElevatorFloor);
 
         elevator.setCurrentElevatorFloor(elevatorStatus.getCurrentFloor());
@@ -75,23 +79,20 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
         elevator.setDirection(elevatorStatus.getDirection());
     }
 
-    private void updateElevatorFloors(Elevator elevator, ElevatorStatus elevatorStatus) {
-        final var elevatorFloors = elevator.getElevatorFloors().toArray(ElevatorFloor[]::new);
-        final var floorStatuses = elevatorStatus.getElevatorFloorStatuses();
+    private void updateElevatorFloors(ElevatorStatus elevatorStatus) {
+        for (var elevatorFloorStatus : elevatorStatus.getElevatorFloorStatuses()) {
+            var elevatorFloor = elevatorFloorStatus.getElevatorFloor();
 
-        for (int floorNumber = 0; floorNumber < elevatorFloors.length; floorNumber++) {
-            var elevatorFloor = elevatorFloors[floorNumber];
-            var floorStatus = floorStatuses[floorNumber];
-
-            elevatorFloor.setUpRequest(floorStatus.isUpRequested());
-            elevatorFloor.setDownRequest(floorStatus.isDownRequested());
-            elevatorFloor.setServiceEnabled(floorStatus.isServiced());
+            elevatorFloor.setUpRequest(elevatorFloorStatus.isUpRequested());
+            elevatorFloor.setDownRequest(elevatorFloorStatus.isDownRequested());
+            elevatorFloor.setServiceEnabled(elevatorFloorStatus.isServiced());
         }
     }
 
-    private void updateElevatorFloorButtons(Elevator elevator, ElevatorStatus elevatorStatus) {
-        var elevatorFloorButtons = elevator.getElevatorFloorButtons();
-        var elevatorFloorButtonsStatus = elevatorStatus.getElevatorButtonStatuses();
+    private void updateElevatorFloorButtons(ElevatorStatus elevatorStatus) {
+        final var elevator = elevatorStatus.getElevator();
+        final var elevatorFloorButtons = elevator.getElevatorFloorButtons();
+        final var elevatorFloorButtonsStatus = elevatorStatus.getElevatorButtonStatuses();
 
         for (int buttonNumber = 0; buttonNumber < elevatorFloorButtons.length; buttonNumber++) {
             var elevatorFloorButton = elevatorFloorButtons[buttonNumber];

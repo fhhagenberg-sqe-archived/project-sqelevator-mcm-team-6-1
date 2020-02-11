@@ -14,18 +14,22 @@ public class WeightAlarmObserver implements AlarmObserver {
     private static final double WEIGHT_THRESHOLD = 100;
 
     @Override
-    public void update(Elevator elevator, ElevatorStatus elevatorStatus) {
-        if (isOverThreshold(elevatorStatus.getPayload(), elevator.getMaximumPayload())) {
-            var alarms = elevator.getAlarms();
-            var weightAlarm = new Alarm("Payload approaching maximum payload!", LocalDateTime.now());
+    public void update(List<ElevatorStatus> elevatorStatuses) {
+        for (var elevatorStatus : elevatorStatuses) {
+            var elevator = elevatorStatus.getElevator();
 
-            if (alarms.isEmpty()) {
-                elevator.alarmsProperty().add(weightAlarm);
-            } else {
-                var mostRecentAlarm = alarms.get(alarms.size() - 1);
+            if (isOverThreshold(elevatorStatus.getPayload(), elevator.getMaximumPayload())) {
+                var alarms = elevator.getAlarms();
+                var weightAlarm = new Alarm("Payload approaching maximum payload!", LocalDateTime.now());
 
-                if (mostRecentAlarm.getTimestamp().plusMinutes(1).isBefore(weightAlarm.getTimestamp())) {
-                    Platform.runLater(() -> elevator.alarmsProperty().add(weightAlarm));
+                if (alarms.isEmpty()) {
+                    elevator.alarmsProperty().add(weightAlarm);
+                } else {
+                    var mostRecentAlarm = alarms.get(alarms.size() - 1);
+
+                    if (mostRecentAlarm.getTimestamp().plusMinutes(1).isBefore(weightAlarm.getTimestamp())) {
+                        Platform.runLater(() -> elevator.alarmsProperty().add(weightAlarm));
+                    }
                 }
             }
         }
