@@ -48,16 +48,16 @@ public class RequestHelper {
         }
     }
 
-    public List<Elevator> findAvailableElevators() throws RemoteException {
-        List<Elevator> elevators = new ArrayList<>();
+    public List<Elevator> findAvailableElevators(List<Elevator> elevators) throws RemoteException {
+        List<Elevator> availableElevators = new ArrayList<>();
 
-        for (int i = 0; i < elevators.size(); i++) {
-            if (client.getDirection(elevators.get(i)) == Direction.UNCOMMITED) {
-                elevators.add(elevators.get(i));
+        for (Elevator elevator : elevators) {
+            if (client.getDirection(elevator) == Direction.UNCOMMITED) {
+                availableElevators.add(elevator);
             }
         }
 
-        return elevators;
+        return availableElevators;
     }
 
     public boolean areAllElevatorsInitialized(boolean isFullyInitialized, List<Elevator> elevators) {

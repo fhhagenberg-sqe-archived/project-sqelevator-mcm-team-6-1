@@ -152,6 +152,6 @@ public class RequestHelperTest {
     @Test
     public void testFindAllAvailableFloors() throws RemoteException {
         var requestHelper = new RequestHelper(elevatorClient);
-        assertEquals(0, requestHelper.findAvailableElevators().size());
+        assertEquals(0, requestHelper.findAvailableElevators(List.of()).size());
     }
 }

@@ -146,7 +146,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         for (Integer outsideRequest : outsideRequests) {
             Elevator elevator = this.helper.checkElevatorAlreadyAddressed(outsideRequest, elevators);
             if (elevator == null) {
-                List<Elevator> availableElevators = this.helper.findAvailableElevators();
+                List<Elevator> availableElevators = this.helper.findAvailableElevators(elevators);
 
                 if (availableElevators != null && !availableElevators.isEmpty()) {
                     elevator = this.outsideRequestManager.findClosestElevator(availableElevators, outsideRequest, elevators);
