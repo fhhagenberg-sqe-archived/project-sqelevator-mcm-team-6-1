@@ -27,10 +27,10 @@ public class RequestHelper {
 
             // check if there is an elevator already on the way to this floor
             for (Elevator elevator : elevators) {
-                if (!(Direction.UNCOMMITED == elevator.directionProperty().get()) && client.getTargetedFloor(elevator).isPresent()) {
-                    var targetedFloor = client.getTargetedFloor(elevator).get();
+                if (!(Direction.UNCOMMITED == elevator.directionProperty().get())) {
+                    var targetedFloor = client.getTargetedFloor(elevator).orElse(null);
 
-                    if (targetedFloor.getFloor().getFloorNumber() == toFloor) {
+                    if (targetedFloor != null && targetedFloor.getFloor().getFloorNumber() == toFloor) {
                         return elevator;
                     }
                 }
