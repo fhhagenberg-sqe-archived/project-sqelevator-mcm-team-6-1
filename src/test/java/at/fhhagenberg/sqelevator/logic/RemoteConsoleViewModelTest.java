@@ -4,7 +4,9 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import at.fhhagenberg.sqelevator.domain.*;
 import at.fhhagenberg.sqelevator.logic.automaticmode.IAutomaticModeStrategy;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.layout.Pane;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -87,5 +89,18 @@ class RemoteConsoleViewModelTest {
 
         assertEquals(1, viewModel.getElevatorListProperty().get().size());
         assertEquals(elevator.getElevatorNumber(), viewModel.getElevatorListProperty().get().get(0).getElevatorNumber());
+    }
+
+    @Test
+    void test() {
+        // workaround for Platform.runLater(...) in view model
+        var panel = new JFXPanel();
+
+        var elevatorClient = mock(IElevatorClient.class);
+        var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
+
+        var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+
+        viewModel.update(null);
     }
 }
