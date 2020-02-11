@@ -13,7 +13,6 @@ public class Elevator {
 
     private int elevatorNumber;
     private double maximumPayload;
-    private ElevatorStatus elevatorStatus;
 
     private ListProperty<ElevatorFloor> elevatorFloors = new SimpleListProperty<>(FXCollections.observableArrayList());
     private ListProperty<ElevatorFloorButton> floorButtons = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -42,14 +41,6 @@ public class Elevator {
 
     public void setMaximumPayload(double maximumPayload) {
         this.maximumPayload = maximumPayload;
-    }
-
-    public ElevatorStatus getElevatorStatus() {
-        return elevatorStatus;
-    }
-
-    public void setElevatorStatus(ElevatorStatus elevatorStatus) {
-        this.elevatorStatus = elevatorStatus;
     }
 
     public List<ElevatorFloor> getElevatorFloors() {
@@ -85,36 +76,13 @@ public class Elevator {
         this.floorRequests.set(floorRequests);
     }
 
-    public boolean isFloorRequested(Integer floor) {
-        return this.getFloorRequests().contains(floor);
-    }
-
-    public int getCurrentFloorNumber() {
-        if (this.getCurrentElevatorFloor() == null) {
-            return -1;
-        }
-        return this.getCurrentElevatorFloor().getFloor().getFloorNumber();
-    }
-
     @Override
     public String toString() {
         return "Elevator " + elevatorNumber;
     }
 
-    public ListProperty<ElevatorFloor> elevatorFloorsProperty() {
-        return elevatorFloors;
-    }
-
     public void setElevatorFloors(ObservableList<ElevatorFloor> elevatorFloors) {
         this.elevatorFloors.set(elevatorFloors);
-    }
-
-    public ObservableList<ElevatorFloorButton> getFloorButtons() {
-        return floorButtons.get();
-    }
-
-    public ListProperty<ElevatorFloorButton> floorButtonsProperty() {
-        return floorButtons;
     }
 
     public void setFloorButtons(ObservableList<ElevatorFloorButton> floorButtons) {
@@ -191,10 +159,6 @@ public class Elevator {
 
     public void setDirection(Direction direction) {
         this.direction.set(direction);
-    }
-
-    public ListProperty<Integer> floorRequestsProperty() {
-        return floorRequests;
     }
 
     public ObservableList<Alarm> getAlarms() {
