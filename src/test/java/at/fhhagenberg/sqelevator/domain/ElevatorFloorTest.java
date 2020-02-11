@@ -12,6 +12,9 @@ public class ElevatorFloorTest {
     public void testFloor() {
         ElevatorFloor elevatorFloor = new ElevatorFloor(new Floor(1));
         assertEquals(1, elevatorFloor.getFloor().getFloorNumber());
+        var floor = new Floor(2);
+        elevatorFloor.setFloor(floor);
+        assertEquals(2, elevatorFloor.getFloor().getFloorNumber());
     }
 
     @Test

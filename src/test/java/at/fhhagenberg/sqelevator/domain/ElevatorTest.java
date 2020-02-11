@@ -1,5 +1,6 @@
 package at.fhhagenberg.sqelevator.domain;
 
+import at.fhhagenberg.sqelevator.view.controls.ElevatorFloorButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,7 @@ public class ElevatorTest {
 
         elevator.setElevatorFloors(list);
         assertEquals(list, elevator.getElevatorFloors());
+        assertEquals(list, elevator.elevatorFloorsProperty().get());
     }
 
     @Test
@@ -112,5 +114,46 @@ public class ElevatorTest {
         list.add(1);
         elevator.setFloorRequests(FXCollections.observableList(list));
         assertEquals(list, elevator.getFloorRequests());
+    }
+
+    @Test
+    public void testGetCurrentFloorNumber() {
+        Elevator elevator = new Elevator();
+        assertEquals(-1, elevator.getCurrentFloorNumber());
+
+        elevator.setCurrentElevatorFloor(new ElevatorFloor(new Floor(10)));
+        assertEquals(10, elevator.getCurrentFloorNumber());
+    }
+
+    @Test
+    public void testFloorRequested() {
+        Elevator elevator = new Elevator();
+        var list = FXCollections.observableList(List.of(1, 2, 3, 4));
+        elevator.setFloorRequests(list);
+        assertTrue(elevator.isFloorRequested(1));
+        assertFalse(elevator.isFloorRequested(5));
+        assertEquals(list, elevator.floorRequestsProperty().get());
+    }
+
+    @Test
+    public void testElevatorStatus() {
+        Elevator elevator = new Elevator();
+        var status = ElevatorStatus.build(elevator);
+        assertNull(elevator.getElevatorStatus());
+        elevator.setElevatorStatus(status.get());
+
+        assertEquals(status.get(), elevator.getElevatorStatus());
+    }
+
+    @Test
+    public void testFloorButtons() {
+        Elevator elevator = new Elevator();
+        var button = new ElevatorFloorButton(1);
+        var button1 = new ElevatorFloorButton(2);
+        var button2 = new ElevatorFloorButton(3);
+        var list = FXCollections.observableList(List.of(button, button1, button2));
+        elevator.setFloorButtons(list);
+        assertEquals(list, elevator.floorButtonsProperty().get());
+        assertEquals(list, elevator.getFloorButtons());
     }
 }

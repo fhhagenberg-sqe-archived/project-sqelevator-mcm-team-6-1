@@ -22,8 +22,4 @@ public class RemoteConsole {
     public void setElevators(ObservableList<Elevator> elevators) {
         this.elevators = elevators;
     }
-
-    public void addElevator(Elevator elevator) {
-        this.elevators.add(elevator);
-    }
 }
