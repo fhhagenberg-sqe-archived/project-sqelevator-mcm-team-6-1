@@ -44,10 +44,6 @@ public class ElevatorFloor implements Comparable<ElevatorFloor> {
         return floor;
     }
 
-    public void setFloor(Floor floor) {
-        this.floor.set(floor);
-    }
-
     @Override
     public int compareTo(ElevatorFloor o) {
         return Integer.compare(this.floorProperty().get().getFloorNumber(), o.floorProperty().get().getFloorNumber());
