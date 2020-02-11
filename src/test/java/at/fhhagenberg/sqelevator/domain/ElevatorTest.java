@@ -29,14 +29,6 @@ public class ElevatorTest {
     }
 
     @Test
-    public void testElevatorStatus() {
-        Elevator elevator = new Elevator();
-        assertNull(elevator.getElevatorStatus());
-        elevator.setElevatorStatus(new ElevatorStatus());
-        assertNotNull(elevator.getElevatorStatus());
-    }
-
-    @Test
     public void testElevatorFloors() {
         Elevator elevator = new Elevator();
         ElevatorFloor elevatorFloor1 = new ElevatorFloor(new Floor(1));

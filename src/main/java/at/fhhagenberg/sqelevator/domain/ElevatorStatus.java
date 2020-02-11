@@ -4,6 +4,7 @@ import java.util.Optional;
 
 public class ElevatorStatus {
 
+    private Elevator elevator;
     private boolean isConnected = true;
 
     private int position;
@@ -16,6 +17,10 @@ public class ElevatorStatus {
     private ElevatorFloorStatus[] elevatorFloorStatuses;
     private Direction direction;
     private DoorStatus doorStatus;
+
+    private ElevatorStatus(Elevator elevator) {
+        this.elevator = elevator;
+    }
 
     public boolean isConnected() {
         return isConnected;
@@ -57,13 +62,21 @@ public class ElevatorStatus {
         return doorStatus;
     }
 
-    public static ElevatorStatusBuilder build() {
-        return new ElevatorStatusBuilder();
+    public Elevator getElevator() {
+        return this.elevator;
+    }
+
+    public static ElevatorStatusBuilder build(Elevator elevator) {
+        return new ElevatorStatusBuilder(elevator);
     }
 
     public static class ElevatorStatusBuilder {
 
-        private ElevatorStatus status = new ElevatorStatus();
+        private ElevatorStatus status;
+
+        private ElevatorStatusBuilder(Elevator elevator) {
+            status = new ElevatorStatus(elevator);
+        }
 
         public ElevatorStatusBuilder position(int position) {
             status.position = position;
@@ -111,7 +124,6 @@ public class ElevatorStatus {
         }
 
         public ElevatorStatus notConnected() {
-            status = new ElevatorStatus();
             status.isConnected = false;
             return status;
         }
