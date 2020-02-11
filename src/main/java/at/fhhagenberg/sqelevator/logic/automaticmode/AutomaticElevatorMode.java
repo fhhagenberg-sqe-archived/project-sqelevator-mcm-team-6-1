@@ -36,17 +36,39 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
 
     @Override
     public void execute(List<Elevator> elevators) {
-        this.elevators = elevators.stream().filter(this::isElevatorAvailable).collect(Collectors.toList());
+        this.elevators = elevators;
         isFullyInitialized = this.helper.areAllElevatorsInitialized(isFullyInitialized, elevators);
 
         if (isFullyInitialized) {
             try {
                 initialize();
+
+                this.freeUpTargetsAndWorkaroundForStuckElevators();
+
                 this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
                 this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
                 startElevatorRoutine();
             } catch (RemoteException e) {
                 LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+            }
+        }
+    }
+
+
+    private void freeUpTargetsAndWorkaroundForStuckElevators() throws RemoteException {
+        for (int i = 0; i < elevators.size(); i++) {
+            int currentFloorNumber = client.getCurrentFloor(elevators.get(i)).getFloor().getFloorNumber();
+            this.workaroundForStuckElevators(currentFloorNumber, i);
+
+            if (currentTargets[i] != null
+                    && currentFloorNumber == currentTargets[i]
+                    && client.getElevatorDoorStatus(elevators.get(i)) == DoorStatus.OPEN) {
+                currentTargets[i] = null;
+            }
+
+            if (client.getElevatorDoorStatus(elevators.get(i)) == DoorStatus.OPEN) {
+                insideRequests[i] = insideRequests[i].stream().filter(r -> r == currentFloorNumber)
+                        .collect(Collectors.toList());
             }
         }
     }
@@ -68,7 +90,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         long notMovedTime = System.currentTimeMillis() - systemMilliSecSinceLastMoved[i];
         if (notMovedTime > 300) {
             client.setTarget(elevators.get(i), currentFloorNumber);
-
             try {
                 Thread.sleep(300);
                 if (currentTargets[i] != null) {
@@ -77,7 +98,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
-                Thread.currentThread().interrupt();
             }
         }
     }
@@ -104,10 +124,9 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         }
 
         if (outsideRequests == null) {
-            outsideRequests = new ArrayList<>();
+            outsideRequests = new ArrayList();
         }
     }
-
     private void startElevatorRoutine() throws RemoteException {
         if (client != null && elevators != null && !elevators.isEmpty()) {
             for (int i = 0; i < elevators.size(); i++) {
