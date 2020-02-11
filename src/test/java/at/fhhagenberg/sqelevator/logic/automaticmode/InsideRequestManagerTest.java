@@ -104,7 +104,6 @@ public class InsideRequestManagerTest {
 
     @Test
     public void testInsideRequestsFromClient() throws RemoteException {
-
         doAnswer(invocationOnMock -> {
             return elevators();
         }).when(client).getElevators();

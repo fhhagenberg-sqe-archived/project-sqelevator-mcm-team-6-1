@@ -6,6 +6,7 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AutomaticElevatorMode implements IAutomaticModeStrategy {
@@ -37,13 +38,11 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         if (isFullyInitialized) {
             try {
                 initialize();
-
-//                this.freeUpTargetsAndWorkaroundForStuckElevators();
-
                 this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
                 this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
                 startElevatorRoutine();
             } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -54,24 +53,6 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
         this.helper = new RequestHelper(client);
         this.outsideRequestManager = new OutsideRequestManager(client, helper);
         this.insideRequestManager = new InsideRequestManager(client, helper);
-    }
-
-    private void freeUpTargetsAndWorkaroundForStuckElevators() throws RemoteException {
-        for (int i = 0; i < elevators.size(); i++) {
-            int currentFloorNumber = client.getCurrentFloor(elevators.get(i)).getFloor().getFloorNumber();
-            this.workaroundForStuckElevators(currentFloorNumber, i);
-
-            if (currentTargets[i] != null
-                && currentFloorNumber == currentTargets[i]
-                && client.getElevatorDoorStatus(elevators.get(i)) == DoorStatus.OPEN) {
-                currentTargets[i] = null;
-            }
-
-            if (client.getElevatorDoorStatus(elevators.get(i)) == DoorStatus.OPEN) {
-                insideRequests[i] = insideRequests[i].stream().filter(r -> r == currentFloorNumber)
-                        .collect(Collectors.toList());
-            }
-        }
     }
 
     private void workaroundForStuckElevators(int currentFloorNumber, int i) throws RemoteException {
@@ -92,6 +73,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
