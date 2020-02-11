@@ -25,6 +25,7 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(901.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
@@ -45,6 +46,7 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(0.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
@@ -61,6 +63,7 @@ public class WeightAlarmObserverTest {
         elevator.setMaximumPayload(1000.0);
 
         var elevatorStatus = mock(ElevatorStatus.class);
+        when(elevatorStatus.getElevator()).thenReturn(elevator);
         when(elevatorStatus.getPayload()).thenReturn(901.0);
 
         var weightAlarmObserver = new WeightAlarmObserver();
