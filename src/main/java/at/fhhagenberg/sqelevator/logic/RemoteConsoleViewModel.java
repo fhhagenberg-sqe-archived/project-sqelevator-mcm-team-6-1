@@ -32,18 +32,20 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
 
     @Override
     public void targetFloor(Elevator elevator, Floor floor) {
-        if (elevator == null) {
-            throw new IllegalArgumentException("Elevator must not be null!");
-        }
+        if(modeProperty.get() == Mode.MANUAL) {
+            if (elevator == null) {
+                throw new IllegalArgumentException("Elevator must not be null!");
+            }
 
-        if (floor == null) {
-            throw new IllegalArgumentException("Floor must not be null!");
-        }
+            if (floor == null) {
+                throw new IllegalArgumentException("Floor must not be null!");
+            }
 
-        try {
-            client.setTarget(elevator, floor);
-        } catch (RemoteException e) {
-            isConnectedProperty.set(false);
+            try {
+                client.setTarget(elevator, floor);
+            } catch (RemoteException e) {
+                isConnectedProperty.set(false);
+            }
         }
     }
 

@@ -11,9 +11,12 @@ import javafx.stage.Stage;
 import sqelevator.IElevator;
 
 import java.rmi.Naming;
-import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ElevatorApplication extends Application {
+
+    private static final Logger LOGGER = Logger.getLogger("ElevatorApplication");
 
     IRemoteConsoleViewModel viewModel;
     RemoteConsoleView view;
@@ -36,7 +39,7 @@ public class ElevatorApplication extends Application {
             pollingService.addObserver(weightAlarmObservable);
             pollingService.addObserver(viewModel);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, exception.getLocalizedMessage());
         }
 
         primaryStage.setTitle("Elevator Remote Console");

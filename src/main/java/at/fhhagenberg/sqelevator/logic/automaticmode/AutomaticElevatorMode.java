@@ -6,10 +6,14 @@ import at.fhhagenberg.sqelevator.data.IElevatorClient;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class AutomaticElevatorMode implements IAutomaticModeStrategy {
+
+    private static final Logger LOGGER = Logger.getLogger("AutomaticElevatorMode");
+
     private List<Elevator> elevators;
     private IElevatorClient client;
     private List<Integer> outsideRequests;
@@ -44,7 +48,9 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                 this.outsideRequests = this.outsideRequestManager.getOutsideRequestsFromClient();
                 this.insideRequests = this.insideRequestManager.getInsideRequestsFromClient(elevators);
                 startElevatorRoutine();
-            } catch (RemoteException e) { }
+            } catch (RemoteException e) {
+                LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+            }
         }
     }
 
@@ -91,7 +97,7 @@ public class AutomaticElevatorMode implements IAutomaticModeStrategy {
                     Thread.sleep(300);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
             }
         }
     }

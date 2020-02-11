@@ -19,7 +19,7 @@ public class RequestHelper {
         if (elevators != null) {
             // check if there is an elevator available whose target floor is already set on our target floor
             for (Elevator elevator : elevators) {
-                if (Direction.UNCOMMITED == elevator.directionProperty().get()  && null != elevator.getCurrentElevatorFloor() &&
+                if (Direction.UNCOMMITED == elevator.directionProperty().get() && null != elevator.getCurrentElevatorFloor() &&
                         client.getCurrentFloor(elevator).getFloor().getFloorNumber() == toFloor) {
                     return elevator;
                 }
@@ -27,10 +27,12 @@ public class RequestHelper {
 
             // check if there is an elevator already on the way to this floor
             for (Elevator elevator : elevators) {
-                if (!(Direction.UNCOMMITED == elevator.directionProperty().get()) &&
-                        client.getTargetedFloor(elevator).isPresent() &&
-                        client.getTargetedFloor(elevator).get().getFloor().getFloorNumber() == toFloor) {
-                    return elevator;
+                if (!(Direction.UNCOMMITED == elevator.directionProperty().get()) && client.getTargetedFloor(elevator).isPresent()) {
+                    var targetedFloor = client.getTargetedFloor(elevator).get();
+
+                    if (targetedFloor.getFloor().getFloorNumber() == toFloor) {
+                        return elevator;
+                    }
                 }
             }
         }

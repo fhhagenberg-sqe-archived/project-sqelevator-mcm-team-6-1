@@ -5,6 +5,7 @@ import at.fhhagenberg.sqelevator.domain.Elevator;
 import at.fhhagenberg.sqelevator.domain.ElevatorFloor;
 import at.fhhagenberg.sqelevator.domain.Floor;
 
+import at.fhhagenberg.sqelevator.domain.Mode;
 import at.fhhagenberg.sqelevator.logic.automaticmode.IAutomaticModeStrategy;
 import at.fhhagenberg.sqelevator.logic.IElevatorStatusPollingService;
 import at.fhhagenberg.sqelevator.logic.RemoteConsoleViewModel;
@@ -57,6 +58,7 @@ public class ElevatorFloorStatusPaneTest {
         Mockito.when(elevatorClient.getElevators()).thenReturn(elevators);
         elevatorFloor = new ElevatorFloor(new Floor(1));
         viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
 
         var pane = new ElevatorFloorStatusPane(elevator, elevatorFloor, viewModel);
         var scene = new Scene(pane, 500, 550);

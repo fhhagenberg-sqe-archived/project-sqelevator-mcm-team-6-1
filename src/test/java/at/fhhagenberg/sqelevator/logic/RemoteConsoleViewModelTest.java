@@ -25,6 +25,7 @@ class RemoteConsoleViewModelTest {
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
         var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
 
+        viewModel.getModeProperty().set(Mode.MANUAL);
         viewModel.targetFloor(mock(Elevator.class), mock(Floor.class));
 
         verify(elevatorClient).setTarget(any(Elevator.class), any(Floor.class));
@@ -36,6 +37,7 @@ class RemoteConsoleViewModelTest {
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
 
         var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
 
         assertThrows(IllegalArgumentException.class, () -> viewModel.targetFloor(null, mock(Floor.class)));
     }
@@ -46,6 +48,7 @@ class RemoteConsoleViewModelTest {
         var automaticModeStrategy = mock(IAutomaticModeStrategy.class);
 
         var viewModel = new RemoteConsoleViewModel(elevatorClient, automaticModeStrategy);
+        viewModel.getModeProperty().set(Mode.MANUAL);
 
         assertThrows(IllegalArgumentException.class, () -> viewModel.targetFloor(mock(Elevator.class), null));
     }
