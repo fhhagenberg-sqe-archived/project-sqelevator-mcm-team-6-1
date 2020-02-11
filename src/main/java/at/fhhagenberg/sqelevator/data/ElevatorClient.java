@@ -118,7 +118,7 @@ public class ElevatorClient implements IElevatorClient {
         var elevatorNumber = elevator.getElevatorNumber();
         var currentFloorNumber = this.client.getElevatorFloor(elevatorNumber);
 
-        return this.getFloorByNumber(elevator, currentFloorNumber).get();
+        return this.getFloorByNumber(elevator, currentFloorNumber).orElseThrow(RemoteException::new);
     }
 
     @Override
