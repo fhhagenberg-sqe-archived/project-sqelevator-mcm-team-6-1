@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +29,7 @@ public class WeightAlarmObserverTest {
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertEquals(1, elevator.getAlarms().size());
 
@@ -48,7 +49,7 @@ public class WeightAlarmObserverTest {
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertTrue(elevator.getAlarms().isEmpty());
     }
@@ -64,8 +65,8 @@ public class WeightAlarmObserverTest {
 
         var weightAlarmObserver = new WeightAlarmObserver();
 
-        weightAlarmObserver.update(elevator, elevatorStatus);
-        weightAlarmObserver.update(elevator, elevatorStatus);
+        weightAlarmObserver.update(List.of(elevatorStatus));
+        weightAlarmObserver.update(List.of(elevatorStatus));
 
         assertEquals(1, elevator.getAlarms().size());
 
