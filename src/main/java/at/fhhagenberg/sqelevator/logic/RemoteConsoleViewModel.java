@@ -11,9 +11,12 @@ import at.fhhagenberg.sqelevator.domain.*;
 
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
+
+    private static final Logger LOGGER = Logger.getLogger("RemoteConsoleViewModel");
 
     private IElevatorClient client;
     private IAutomaticModeStrategy automaticModeStrategy;
@@ -21,6 +24,9 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
     private ListProperty<Elevator> elevatorListProperty;
     private ObjectProperty<Mode> modeProperty = new SimpleObjectProperty<>(Mode.AUTOMATIC);
     private BooleanProperty isConnectedProperty = new SimpleBooleanProperty(true);
+
+    private boolean isAutomaticModeRunning = false;
+    private Thread automaticModeThread;
 
     public RemoteConsoleViewModel(IElevatorClient client, IAutomaticModeStrategy automaticModeStrategy) {
         this.client = client;
@@ -32,7 +38,7 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
 
     @Override
     public void targetFloor(Elevator elevator, Floor floor) {
-        if(modeProperty.get() == Mode.MANUAL) {
+        if (modeProperty.get() == Mode.MANUAL) {
             if (elevator == null) {
                 throw new IllegalArgumentException("Elevator must not be null!");
             }
@@ -60,14 +66,40 @@ public class RemoteConsoleViewModel implements IRemoteConsoleViewModel {
                     this.updateElevatorFloors(elevatorStatus);
                     this.updateElevatorFloorButtons(elevatorStatus);
 
-                    if (this.modeProperty.get() == Mode.AUTOMATIC) {
-                        CompletableFuture.runAsync(() -> this.automaticModeStrategy.execute(elevatorListProperty.get()));
+                    if (this.modeProperty.get() == Mode.AUTOMATIC && !isAutomaticModeRunning) {
+                        startAutomaticMode();
+                    }
+                    else if(this.modeProperty.get() == Mode.MANUAL && isAutomaticModeRunning) {
+                        stopAutomaticMode();
                     }
                 } else {
                     isConnectedProperty.set(false);
                 }
             });
         }
+    }
+
+    private void startAutomaticMode() {
+        this.isAutomaticModeRunning = true;
+
+        this.automaticModeThread = new Thread(() -> {
+            while (isAutomaticModeRunning) {
+                try {
+                    this.automaticModeStrategy.execute(elevatorListProperty.get());
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        this.automaticModeThread.start();
+    }
+
+    private void stopAutomaticMode() {
+        this.automaticModeThread = null;
+        this.isAutomaticModeRunning = false;
     }
 
     private void updateElevator(ElevatorStatus elevatorStatus) {
