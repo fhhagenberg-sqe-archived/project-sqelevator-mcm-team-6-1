@@ -100,4 +100,27 @@ public class InsideRequestManagerTest {
         list.add(elevator2);
         return list;
     }
+
+
+    @Test
+    public void testInsideRequestsFromClient() throws RemoteException {
+
+        doAnswer(invocationOnMock -> {
+            return elevators();
+        }).when(client).getElevators();
+        doAnswer(invocationOnMock -> {
+            return 3;
+        }).when(client).getFloorNum();
+        doAnswer(invocationOnMock -> {
+            return new boolean[] { true, false, true, false};
+        }).when(client).getElevatorFloorButtonsStatus(any(Elevator.class));
+
+        var insideRequestManager = new InsideRequestManager(client, helper);
+        insideRequestManager.initialize();
+
+        assertEquals(2, insideRequestManager.getInsideRequestsFromClient(elevators()).length);
+        var elevators = elevators();
+        elevators.remove(elevators.get(0));
+        assertEquals(2, insideRequestManager.getInsideRequestsFromClient(elevators).length);
+    }
 }
